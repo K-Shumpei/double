@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <!-- JQuery を使えるようにする -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+        <!-- class -->
+        <script src="js/class.js"></script>
+
+        <!-- html function -->
+        <script src="js/display.js"></script>
+
+        <!-- data -->
+        <script src="js/data/ability.js"></script>
+        <script src="js/data/availableMove.js"></script>
+        <script src="js/data/basicMove.js"></script>
+        <script src="js/data/basicPokemon.js"></script>
+        <script src="js/data/item.js"></script>
+        <script src="js/data/move.js"></script>
+        <script src="js/data/pokemon.js"></script>
+
+        <!-- effect -->
+        <script src="js/effect/ability.js"></script>
+        <script src="js/effect/item.js"></script>
+        <script src="js/effect/move/activateOtherMove.js"></script>
+        <script src="js/effect/move/fling.js"></script>
+        <script src="js/effect/move/forAbility.js"></script>
+        <script src="js/effect/move/move.js"></script>
+        <script src="js/effect/move/statusMove.js"></script>
+
+        <!-- function -->
+        <script src="js/function/base.js"></script>
+        <script src="js/function/function.js"></script>
+        <script src="js/function/onField.js"></script>
+
+        <!-- turn process -->
+        <script src="js/turn_process/1_summon.js"></script>
+        <script src="js/turn_process/2_decideOrder.js"></script>
+        <script src="js/turn_process/3_moveSuccess.js"></script>
+        <script src="js/turn_process/4-1_statusMove.js"></script>
+        <script src="js/turn_process/4-2_damageCalc.js"></script>
+        <script src="js/turn_process/4_moveProcess.js"></script>
+        <script src="js/turn_process/5_endProcess.js"></script>
+        <script src="js/turn_process/main.js"></script>
+
+
+    </head>
+
+    <!--
+    <style type="text/css">
+        .figure{
+            position: relative;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .img{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            z-index: 2;
+        }
+        .symbol{
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+    </style>
+    -->
+      
+    <body>
+    <h1 id="headline">パスワードを入力してください</h1>
+
+    <div id="password">
+        <form id="emitPass" action="">
+            <input id="pass" autocomplete="off" type="password" autofocus><button>送信</button>
+        </form>
+    </div>
+
+    <div id="mainContent">
+        <div id="register">
+            なまえ：<input id="name" type="text" list="nameList" value="" size="30" autocomplete="off" onchange="setID()">
+                <datalist id="nameList">
+                    <script type="text/javascript">
+                    for (i = 0; i < basePokemon.length; i++){
+                        document.write("<option value='"+ basePokemon[i][1] +"''>")
+                    }
+                    </script>
+                </datalist>
+                <input type="button" value="ランダム" onclick="setRandom()">
+                <input type="button" value="リセット" onclick="setReset()">
+                <br>
+                
+                タイプ：<span id="type"></span><br>
+                性別：
+                <input type='radio' name='sex' id="male" value="♂"> ♂
+                <input type='radio' name='sex' id="female" value="♀"> ♀
+                <input type='radio' name='sex' id="not" value="-"> -
+
+            <hr>
+            
+            Lv. <input id="lv" type="number" value="50" min="1" max="100" step="1" size="5">
+                <input type="button" value="1" onclick="setLV(value), AVcalc()">
+                <input type="button" value="50" onclick="setLV(value), AVcalc()">
+                <input type="button" value="100" onclick="setLV(value), AVcalc()">
+            特性：<select id="ability"></select>
+            持ち物：<input id=item type="text" list="pokeItem" value="" autocomplete="off" onchange="itemForm(value)">
+            <datalist id="pokeItem">
+                <script type="text/javascript">
+                for (i = 0; i < item_list.length; i++){
+                    document.write("<option value='"+ item_list[i] +"''>")
+                }
+                </script>
+            </datalist>
+
+            <hr>
+
+            <script type="text/javascript">
+                const parameter = ["H", "A", "B", "C", "D", "S"]
+    
+                document.write("<form name='input_value'><table>")
+                document.write("<tr align='center'><td></td><td></td><td align='left'>実数値</td><td width='70'>種族値</td><td align='left'>個体値</td><td align='left'>努力値</td>")
+                document.write("<td colspan='2'>性格</td>")
+                document.write("</tr>")
+                for (i = 0; i < 6; i++){
+                    let parameter_AV = parameter[i] + "_AV"
+                    let parameter_BS = parameter[i] + "_BS"
+                    let parameter_IV = parameter[i] + "_IV"
+                    let parameter_EV = parameter[i] + "_EV"
+                    
+                    document.write("<tr align='center'><td>" + parameter[i] + "</td><td></td>")
+                    document.write("<td><input type='number' id='"+ parameter_AV +"' value='")
+                    if (i == 0){
+                        document.write("175")
+                    } else {
+                        document.write("120")
+                    }
+                    document.write("' min='1' max='999' step='1' onchange='EV_calc()'>")
+                    document.write("<input type='button' value='▲' >")
+                    document.write("<input type='button' value='▼' ></td>")
+                    document.write("<td><span id='"+ parameter_BS +"'>100<span></td>")
+                    document.write("<td><input type='number' id='"+ parameter_IV +"' value='31' min='0' max='31' step='1' onchange='AVcalc()'>")
+                    document.write("<input type='button' value='0' onclick='setIV("+i+", value), AVcalc()'>")
+                    document.write("<input type='button' value='31' onclick='setIV("+i+", value), AVcalc()'></td>")
+                    document.write("<td><input type='number' id='"+ parameter_EV +"' value='0' min='0' max='252' step='4' onchange='EVchangeStep(), AVcalc()'>")
+                    document.write("<input type='button' value='▲' onclick='EVchange("+i+", value), AVcalc()'>")
+                    document.write("<input type='button' value='▼' onclick='EVchange("+i+", value), AVcalc()'>")
+                    document.write("<input type='button' value='0' onclick='setEV("+i+", value), AVcalc()'>")
+                    document.write("<input type='button' value='252' onclick='setEV("+i+", value), AVcalc()'></td>")
+                    if (i == 0){
+                        document.write("<td>+</td><td>-</td>")
+                    } else {
+                        if (i == 1){
+                            document.write("<td><input type='radio' name='plus' id='naturePlus"+i+"' onclick='setNature(), AVcalc()' checked></td>")
+                            document.write("<td><input type='radio' name='minus' id='natureMinus"+i+"' onclick='setNature(), AVcalc()' checked></td>")
+                        } else {
+                            document.write("<td><input type='radio' name='plus' id='naturePlus"+i+"' onclick='setNature(), AVcalc()'></td>")
+                            document.write("<td><input type='radio' name='minus' id='natureMinus"+i+"' onclick='setNature(), AVcalc()'></td>")
+                        }
+                    }
+                    document.write("</tr>")
+                }
+                document.write("<tr><td></td><td></td><td></td><td></td><td></td><td align='left'>残り <span id='EVlast'>510</span></td><td colspan='2' id='nature' width='80' align='center'>てれや</td></tr>")
+    
+                document.write("</table></form>")
+            </script>
+    
+            <hr>
+            
+            <script type="text/javascript">
+                const label = ["move", "type", "label", "power", "accuracy", "PP", "direct", "protect", "focus", "discription"]
+    
+                document.write("<table>")
+                document.write("<tr align='center'><td>技</td><td>タイプ</td><td>威力</td><td>命中</td><td>PP</td></tr>")
+                document.write("<tr align='center'>")
+                for (i = 0; i < 4; i++){
+                    document.write("<td><input type='text' id='move"+i+"' list='move' value='' onchange='setMove("+i+")'></td>")
+                    document.write("<td align='center' width='80'><span id='type"+i+"'></span></td>")
+                    document.write("<td align='center' width='35'><span id='power"+i+"'></span></td>")
+                    document.write("<td align='center' width='35'><span id='accuracy"+i+"'></span></td>")
+                    document.write("<td align='center' width='35'><span id='PP"+i+"'></span></td>")
+                    document.write("<td><input type='button' value='▲' onclick='PPchange("+i+", value)'></td>")
+                    document.write("<td><input type='button' value='▼' onclick='PPchange("+i+", value)'></td>")
+                    document.write("<td align='left'><span id='discription"+i+"'></span></td>")
+                    document.write("</tr>")
+                }
+                document.write("</table>")
+            </script>
+    
+            <hr>
+    
+            <form id="team">
+                <input type="radio" name="team" value="0" id="team0" checked>1
+                <input type="radio" name="team" value="1" id="team1">2
+                <input type="radio" name="team" value="2" id="team2">3
+                <input type="radio" name="team" value="3" id="team3">4
+                <input type="radio" name="team" value="4" id="team4">5
+                <input type="radio" name="team" value="5" id="team5">6
+                <input type="button" value="決定" onclick="setPokemon()">
+                <input type="button" value="全部セット" onclick="setAll()">
+            </form>
+    
+            <!--
+            <form id="edit">
+                <input type="radio" name="edit" value="0" checked>1
+                <input type="radio" name="edit" value="1">2
+                <input type="radio" name="edit" value="2">3
+                <input type="radio" name="edit" value="3">4
+                <input type="radio" name="edit" value="4">5
+                <input type="radio" name="edit" value="5">6
+                <input type="button" value="編集" onclick="edit_pokemon()">
+            </form>
+            -->
+    
+            <hr>
+    
+            チームを保存：
+            <input id="savePartyName" placeholder="ファイル名">.xlsx 
+            <input type="button" id="saveParty" value="保存" onclick="saveParty()"><br>
+            チームを呼出：
+            <input type="file" class="custom-file-input" id="customFile">
+            <hr>
+
+        </div>
+
+    <div id="trainer_name">
+        <form id="team_set" action="">
+            <input id="my_name" autocomplete="off" placeholder="トレーナーネームを入力" maxlength="10"><button>対戦相手を探す</button>
+        </form>
+    </div>
+        
+    <div id="select">
+        <form id="battle_start" name="select" action="">
+            <table align="center">
+                <tr>
+                    <td>
+                        <table>
+                            <tr><td><button type="submit" id="battle_start_button">対戦開始</button></td></tr>
+                            <tr><td>1番目<select id="select0"></select></td></tr>
+                            <tr><td>2番目<select id="select1"></select></td></tr>
+                            <tr><td>3番目<select id="select2"></select></td></tr>
+                            <tr><td>4番目<select id="select3"></select></td></tr>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td colspan="2" align="center"><span id="myName"></span></td>
+                                <td colspan="2" align="center"><span id="yourName"></span></td>
+                            </tr>
+                            <tr>
+                                <td><img src="" id="player_0" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="player_1" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="enemy_0"></td>
+                                <td><img src="" id="enemy_1"></td>
+                            </tr>
+                            <tr>
+                                <td><img src="" id="player_2" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="player_3" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="enemy_2"></td>
+                                <td><img src="" id="enemy_3"></td>
+                            </tr>
+                            <tr>
+                                <td><img src="" id="player_4" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="player_5" style="transform: scale(-1, 1);"></td>
+                                <td><img src="" id="enemy_4"></td>
+                                <td><img src="" id="enemy_5"></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+
+    <hr>
+
+    <table align="center">
+        <tr>
+            <td>
+                <script type="text/javascript">
+                    document.write("<table align='center' height='100'>")
+                    for (let i = 0; i < 6; i++){
+                        document.write("<td><div id='"+i+"_team'><table border='1'>")
+                        // 名前・性別・レベル
+                        document.write("<tr align='center'><td><table><tr>")
+                        document.write("<td><span id='"+i+"_name'></span></td>")
+                        document.write("<td><span id='"+i+"_sex'></span></td>")
+                        document.write("<td>Lv.<span id='"+i+"_level'>50</span></td>")
+                        document.write("</tr></table></td></tr>")
+                        // 特性・持ち物・状態異常
+                        document.write("<tr align='center'><td><span id='"+i+"_type'></span></td></tr>")
+                        document.write("<tr><td>特性：<span id='"+i+"_ability'></span></td></tr>")
+                        document.write("<tr><td>持ち物：<span id='"+i+"_item'></span></td></tr>")
+                        document.write("<tr><td>状態異常：<span id='"+i+"_abnormal'></span></td></tr>")
+                        // 実数値
+                        document.write("<tr align='center'><td><table>")
+                        document.write("<tr><td align='left'>HP</td><td align='right'><font id='"+i+"_HP_color'><span id='"+i+"_last_HP'></span></font>/<span id='"+i+"_full_HP'></span></td><td align='left'>&nbsp;<font id='"+i+"_atk'>攻撃</font></td><td align='right'><span id='"+i+"_A_AV'></span><td></tr>")
+                        document.write("<tr><td align='left'><font id='"+i+"_def'>防御</font></td><td align='right'><span id='"+i+"_B_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_sp_atk'>特攻</font></td><td align='right'><span id='"+i+"_C_AV'></span><td></tr>")
+                        document.write("<tr><td align='left'><font id='"+i+"_sp_def'>特防</font></td><td align='right'><span id='"+i+"_D_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_speed'>素早</font></td><td align='right'><span id='"+i+"_S_AV'></span><td></tr>")
+                        document.write("</table></td></tr>")
+                        // 技
+                        document.write("<tr align='center'><td><table>")
+                        for (let j = 0; j < 4; j++){
+                            document.write("<tr id='"+i+"_move_"+j+"_color'><td align='left' width='140'><font color='white'><span id='"+i+"_move_"+j+"'></span></font></td>")
+                            document.write("<td align='right' width='60'><font color='white'><span id='"+i+"_last_"+j+"'></span>/<span id='"+i+"_PP_"+j+"'></span></font></td></tr>")
+                        }
+                        document.write("</table></td></tr>")
+
+                        document.write("</table></div></td>")
+                    }
+                    document.write("</tr></table>")
+                </script>
+            </td>
+            <td><div id="each_party">
+                <table>
+                    <tr>
+                        <td colspan="2" align="center"><span id="my_TN"></span></td>
+                        <td colspan="2" align="center"><span id="opp_TN"></span></td>
+                    </tr>
+                    <tr>
+                        <td><img src="" id="me_0" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="me_1" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="opp_0"></td>
+                        <td><img src="" id="opp_1"></td>
+                    </tr>
+                    <tr>
+                        <td><div id="me_0_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_0_HP_bar"></meter></div></td>
+                        <td><div id="me_1_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_1_HP_bar"></meter></div></td>
+                        <td><div id="opp_0_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_0_HP_bar"></meter></div></td>
+                        <td><div id="opp_1_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_1_HP_bar"></meter></div></td>
+                    </tr>
+                    <tr>
+                        <td><img src="" id="me_2" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="me_3" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="opp_2"></td>
+                        <td><img src="" id="opp_3"></td>
+                    </tr>
+                    <tr>
+                        <td><div id="me_2_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_2_HP_bar"></meter></div></td>
+                        <td><div id="me_3_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_3_HP_bar"></meter></div></td>
+                        <td><div id="opp_2_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_2_HP_bar"></meter></div></td>
+                        <td><div id="opp_3_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_3_HP_bar"></meter></div></td>
+                    </tr>
+                    <tr>
+                        <td><img src="" id="me_4" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="me_5" style="transform: scale(-1, 1);"></td>
+                        <td><img src="" id="opp_4"></td>
+                        <td><img src="" id="opp_5"></td>
+                    </tr>
+                    <tr>
+                        <td><div id="me_4_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_4_HP_bar"></meter></div></td>
+                        <td><div id="me_5_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_5_HP_bar"></meter></div></td>
+                        <td><div id="opp_4_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_4_HP_bar"></meter></div></td>
+                        <td><div id="opp_5_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_5_HP_bar"></meter></div></td>
+                    </tr>
+                </table>
+            </div></td>
+        </tr>
+    </table>
+    
+
+    <hr>
+        
+    <div id="battle_table">
+        <form id="battle" name="battle"><table align="center">
+            <tr>
+                <td>対戦のログ<br><textarea id="log" cols="80" rows="15" readonly></textarea></td>
+                <td>
+                    <table rules="all">
+                        <tr>
+                            <td>
+                                <div id="com_log_0"><span id="com_log_name_0"></span><span id="com_log_tgt_0"></span><span id="com_log_com_0"></span></div>
+                                <div id="com_log_1"><span id="com_log_name_1"></span><span id="com_log_tgt_1"></span><span id="com_log_com_1"></span></div>
+                            </td>  
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <!-- 0番目 -->
+                                <div id="command_0"><span id="name_0"></span>の行動</div>
+                                <div id="choise_0"><input type="button" value="戦う" onclick="choiseMove(0)"><input type="button" value="交代" onclick="choiseHand(0)"></div>
+                                <!-- 技選択 -->
+                                <div id="com_move_00"><input type="radio" name="move0" value="0" onclick="decideMoveCommand(0, 0)"><span id="move_00"></span></div>
+                                <div id="com_move_01"><input type="radio" name="move0" value="1" onclick="decideMoveCommand(0, 1)"><span id="move_01"></span></div>
+                                <div id="com_move_02"><input type="radio" name="move0" value="2" onclick="decideMoveCommand(0, 2)"><span id="move_02"></span></div>
+                                <div id="com_move_03"><input type="radio" name="move0" value="3" onclick="decideMoveCommand(0, 3)"><span id="move_03"></span></div>
+                                <!-- 攻撃対象選択 -->
+                                <div id="target_comment_0">攻撃対象</div>
+                                <div id="com_tgt_00"><input type="radio" name="tgt0" value="0" onclick="decideAction(0)"><span id="tgt_00"></span></div>
+                                <div id="com_tgt_01"><input type="radio" name="tgt0" value="1" onclick="decideAction(0)"><span id="tgt_01"></span></div>
+                                <div id="com_tgt_02"><input type="radio" name="tgt0" value="2" onclick="decideAction(0)"><span id="tgt_02"></span></div>
+                                <div id="com_tgt_03"><input type="radio" name="tgt0" value="3" onclick="decideAction(0)"><span id="tgt_03"></span></div>
+                                <!-- 手持ち選択 -->
+                                <div id="hand_comment_0">交代先</div>
+                                <div id="com_hand_00"><input type="radio" name="hand0" value="0" onclick="decideAction(0)"><span id="hand_00"></span></div>
+                                <div id="com_hand_01"><input type="radio" name="hand0" value="1" onclick="decideAction(0)"><span id="hand_01"></span></div>
+                                <div id="com_hand_02"><input type="radio" name="hand0" value="2" onclick="decideAction(0)"><span id="hand_02"></span></div>
+                                <div id="com_hand_03"><input type="radio" name="hand0" value="3" onclick="decideAction(0)"><span id="hand_03"></span></div>
+                                <!-- 決定ボタン -->
+                                <div id="decide_0"><input type="button" value="決定" onclick="decide(0)"></div>
+                                
+                                <!-- 1番目 -->
+                                <div id="command_1"><span id="name_1"></span>の行動</div>
+                                <div id="choise_1"><input type="button" value="戦う" onclick="choiseMove(1)"><input type="button" value="交代" onclick="choiseHand(1)"></div>
+                                <!-- 技選択 -->
+                                <div id="com_move_10"><input type="radio" name="move1" value="0" onclick="decideMoveCommand(1, 0)"><span id="move_10"></span></div>
+                                <div id="com_move_11"><input type="radio" name="move1" value="1" onclick="decideMoveCommand(1, 1)"><span id="move_11"></span></div>
+                                <div id="com_move_12"><input type="radio" name="move1" value="2" onclick="decideMoveCommand(1, 2)"><span id="move_12"></span></div>
+                                <div id="com_move_13"><input type="radio" name="move1" value="3" onclick="decideMoveCommand(1, 3)"><span id="move_13"></span></div>
+                                <!-- 攻撃対象選択 -->
+                                <div id="target_comment_1">攻撃対象</div>
+                                <div id="com_tgt_10"><input type="radio" name="tgt1" value="0" onclick="decideAction(1)"><span id="tgt_10"></span></div>
+                                <div id="com_tgt_11"><input type="radio" name="tgt1" value="1" onclick="decideAction(1)"><span id="tgt_11"></span></div>
+                                <div id="com_tgt_12"><input type="radio" name="tgt1" value="2" onclick="decideAction(1)"><span id="tgt_12"></span></div>
+                                <div id="com_tgt_13"><input type="radio" name="tgt1" value="3" onclick="decideAction(1)"><span id="tgt_13"></span></div>
+                                <!-- 手持ち選択 -->
+                                <div id="hand_comment_1">交代先</div>
+                                <div id="com_hand_10"><input type="radio" name="hand1" value="0" onclick="decideAction(1)"><span id="hand_10"></span></div>
+                                <div id="com_hand_11"><input type="radio" name="hand1" value="1" onclick="decideAction(1)"><span id="hand_11"></span></div>
+                                <div id="com_hand_12"><input type="radio" name="hand1" value="2" onclick="decideAction(1)"><span id="hand_12"></span></div>
+                                <div id="com_hand_13"><input type="radio" name="hand1" value="3" onclick="decideAction(1)"><span id="hand_13"></span></div>
+                                <!-- 決定ボタン -->
+                                <div id="decide_1"><input type="button" value="決定" onclick="decide(1)"></div>
+
+                                <hr>
+
+                                <!-- 1匹目 -->
+                                <div id="com_change_00"><input type="radio" name="change0" value="0" onclick="decideNext(0)"><span id="change_00"></span></div>
+                                <div id="com_change_01"><input type="radio" name="change0" value="1" onclick="decideNext(0)"><span id="change_01"></span></div>
+                                <div id="com_change_02"><input type="radio" name="change0" value="2" onclick="decideNext(0)"><span id="change_02"></span></div>
+                                <div id="com_change_03"><input type="radio" name="change0" value="3" onclick="decideNext(0)"><span id="change_03"></span></div>
+                                <!-- 上下ボタン -->
+                                <div id="change_above_0"><input type="radio" name="up_down_0" value="0" onclick="decidePosition(0)">上に出す</div>
+                                <div id="change_below_0"><input type="radio" name="up_down_0" value="1" onclick="decidePosition(0)">下に出す</div>
+                                <!-- 2匹目 -->
+                                <div id="com_change_10"><input type="radio" name="change1" value="0" onclick="decideNext(1)"><span id="change_10"></span></div>
+                                <div id="com_change_11"><input type="radio" name="change1" value="1" onclick="decideNext(1)"><span id="change_11"></span></div>
+                                <div id="com_change_12"><input type="radio" name="change1" value="2" onclick="decideNext(1)"><span id="change_12"></span></div>
+                                <div id="com_change_13"><input type="radio" name="change1" value="3" onclick="decideNext(1)"><span id="change_13"></span></div>
+                                <!-- 上下ボタン -->
+                                <div id="change_above_1"><input type="radio" name="up_down_1" value="0" onclick="decidePosition(1)">上に出す</div>
+                                <div id="change_below_1"><input type="radio" name="up_down_1" value="1" onclick="decidePosition(1)">下に出す</div>
+
+                                <!-- 最終決定ボタン -->
+                                <div id="emit_command"><button type="submit" id="emit_com">決定</button></div>
+                                <div id="back_command"><input type="button" value="戻る" onclick="back()"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <table align="center">
+                        <tr>
+                            <td><table align="center">
+                                <tr><td><img src="" id="me_0_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
+                                <tr><td><div id="me_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                                <tr><td><img src="" id="me_1_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
+                                <tr><td><div id="me_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                            </table></td>
+                            <td><img src="vs.png" width="150" height="120"></td>
+                            <td><table align="center">
+                                <tr><td><img src="" id="opp_0_in_battle" width="192" height="192"></td></tr>
+                                <tr><td><div id="opp_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                                <tr><td><img src="" id="opp_1_in_battle" width="192" height="192"></td></tr>
+                                <tr><td><div id="opp_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                            </table></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table></form>
+    </div>
+    </div>
+
+    <script>
+        for (let i = 0; i < 6; i++){
+            document.getElementById("me_" + i + "_bar").style.display = "none"
+            document.getElementById("opp_" + i + "_bar").style.display = "none"
+        }
+        document.getElementById("mainContent").style.display = "none"
+        document.getElementById("trainer_name").style.display = "none"
+        document.getElementById("select").style.display = "none"
+        document.getElementById("each_party").style.display = "none"
+        document.getElementById("battle_table").style.display = "none"
+        for (let i = 0; i < 2; i++){
+            document.getElementById("command_" + i).style.display = "none"
+            document.getElementById("choise_" + i).style.display = "none"
+            document.getElementById("target_comment_" + i).style.display = "none"
+            document.getElementById("hand_comment_" + i).style.display = "none"
+            document.getElementById("decide_" + i).style.display = "none"
+            document.getElementById("change_above_" + i).style.display = "none"
+            document.getElementById("change_below_" + i).style.display = "none"
+
+            for (let j = 0; j < 4; j++){
+                document.getElementById("com_move_" + i + j).style.display = "none"
+                document.getElementById("com_tgt_" + i + j).style.display = "none"
+                document.getElementById("com_hand_" + i + j).style.display = "none"
+                document.getElementById("com_change_" + i + j).style.display = "none"
+            }
+        }
+        document.getElementById("emit_command").style.display = "none"
+        document.getElementById("back_command").style.display = "none"
+
+
+        
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="index.js"></script>
+</body>
+
+
+</html>
