@@ -854,6 +854,7 @@ function choiseMove(position){
     for ( const party of myParty ) {
         if ( party.myPosition == position ) {
             // 選択中のポケモン名を表示
+            document.getElementById(`com_log_${position}`).style.display = "block"
             document.getElementById(`com_log_name_${position}`).textContent = `${party.myName}は `
             // 技を見せる
             for ( let i = 0; i < 4; i++ ) {
@@ -988,62 +989,64 @@ function decideAction(position){
 function back(){
     // 最終決定ボタンを隠す
     document.getElementById(`emit_command`).style.display = "none"
+    // 戻るボタンを見せる
+    document.getElementById('back_command').style.display = "block"
 
-    if ( faintedJudge(myParty) == 0 ) {
-        for ( let i = 0; i < 2; i++ ) {
-            // 〜の行動　を隠す
-            document.getElementById(`name_${i}`).textContent = ""
-            document.getElementById(`command_${i}`).style.display = "none"
-            // 「攻撃」か「交代」のボタン　を隠す
-            document.getElementById(`choise_${i}`).style.display = "none"
-            // 「攻撃対象」の文字をを隠す
-            document.getElementById(`target_comment_${i}`).style.display = "none"
-            // 「交代先」の文字をを隠す
-            document.getElementById(`hand_comment_${i}`).style.display = "none"
-            // 選択した内容を消す
-            document.getElementById(`com_log_name_${i}`).textContent = ""
-            document.getElementById(`com_log_tgt_${i}`).textContent = ""
-            document.getElementById(`com_log_com_${i}`).textContent = ""
-            // 技　と　攻撃対象　と　手持ち　を隠す
-            for ( let j = 0; j < 4; j++ ) {
-                // 技　を隠す
-                document.getElementById(`com_move_${i}${j}`).style.display = "none"
-                document.getElementById(`move_${i}${j}`).textContent = ""
-                const radio_move = document.querySelectorAll(`input[name=move${i}]`)
-                for ( const element of radio_move ) element.checked = false
-                // 攻撃対象　を隠す
-                document.getElementById(`com_tgt_${i}${j}`).style.display = "none"
-                document.getElementById(`tgt_${i}${j}`).textContent = ""
-                const radio_tgt = document.querySelectorAll(`input[name=tgt${i}]`)
-                for ( const element of radio_tgt ) element.checked = false
-                // 手持ち　を隠す
-                document.getElementById(`com_hand_${i}${j}`).style.display = "none"
-                document.getElementById(`hand_${i}${j}`).textContent = ""
-                const radio_hand = document.querySelectorAll(`input[name=hand${i}]`)
-                for ( const element of radio_hand ) element.checked = false
-            }
-        }
-        // 初めからやり直す
-        showCommand()
-    } else {
-        for ( let i = 0; i < 2; i++ ) {
-            // 上下　を隠す
-            document.getElementById(`change_above_${i}`).style.display = "none"
-            document.getElementById(`change_below_${i}`).style.display = "none"
-            const radio_up_down = document.querySelectorAll(`input[name=up_down_${i}]`)
-            for ( const element of radio_up_down ) element.checked = false
+    for ( let i = 0; i < 2; i++ ) {
+        // 〜の行動　を隠す
+        document.getElementById(`name_${i}`).textContent = ""
+        document.getElementById(`command_${i}`).style.display = "none"
+        // 「攻撃」か「交代」のボタン　を隠す
+        document.getElementById(`choise_${i}`).style.display = "none"
+        // 「攻撃対象」の文字をを隠す
+        document.getElementById(`target_comment_${i}`).style.display = "none"
+        // 「交代先」の文字をを隠す
+        document.getElementById(`hand_comment_${i}`).style.display = "none"
+        // 選択した内容を消す
+        document.getElementById(`com_log_${i}`).style.display = "none"
+        document.getElementById(`com_log_name_${i}`).textContent = ""
+        document.getElementById(`com_log_tgt_${i}`).textContent = ""
+        document.getElementById(`com_log_com_${i}`).textContent = ""
 
-            for ( let j = 0; j < 4; j++ ) {
-                // 交代先　を隠す
-                document.getElementById(`com_change_${i}${j}`).style.display = "none"
-                document.getElementById(`change_${i}${j}`).textContent = ""
-                const radio_change = document.querySelectorAll(`input[name=change${i}]`)
-                for ( const element of radio_change ) element.checked = false
-            }
+        // ログを削除
+        document.getElementById(`change_log_${i}`).style.display = "none"
+        document.getElementById(`change_name_${i}`).textContent = ""
+        document.getElementById(`change_position_${i}`).textContent = ""
+        // 上下　を隠す
+        document.getElementById(`change_above_${i}`).style.display = "none"
+        document.getElementById(`change_below_${i}`).style.display = "none"
+        // チェックを外す
+        const radio_up_down = document.querySelectorAll(`input[name=up_down_${i}]`)
+        for ( const element of radio_up_down ) element.checked = false
+
+        // 技　と　攻撃対象　と　手持ち　を隠す
+        for ( let j = 0; j < 4; j++ ) {
+            // 技　を隠す
+            document.getElementById(`com_move_${i}${j}`).style.display = "none"
+            document.getElementById(`move_${i}${j}`).textContent = ""
+            const radio_move = document.querySelectorAll(`input[name=move${i}]`)
+            for ( const element of radio_move ) element.checked = false
+            // 攻撃対象　を隠す
+            document.getElementById(`com_tgt_${i}${j}`).style.display = "none"
+            document.getElementById(`tgt_${i}${j}`).textContent = ""
+            const radio_tgt = document.querySelectorAll(`input[name=tgt${i}]`)
+            for ( const element of radio_tgt ) element.checked = false
+            // 手持ち　を隠す
+            document.getElementById(`com_hand_${i}${j}`).style.display = "none"
+            document.getElementById(`hand_${i}${j}`).textContent = ""
+            const radio_hand = document.querySelectorAll(`input[name=hand${i}]`)
+            for ( const element of radio_hand ) element.checked = false
+
+            // 交代先　を隠す
+            document.getElementById(`com_change_${i}${j}`).style.display = "none"
+            document.getElementById(`change_${i}${j}`).textContent = ""
+            const radio_change = document.querySelectorAll(`input[name=change${i}]`)
+            for ( const element of radio_change ) element.checked = false
         }
-        // 初めからやり直す
-        showCommandToDecideNext()      
     }
+
+    if ( faintedJudge(myParty) == 0 ) showCommand()
+    else showCommandToDecideNext()      
 }
 
 // 交代先を選ぶとき
@@ -1066,6 +1069,12 @@ function decideNext(position) {
         document.getElementById(`com_change_${position}${i}`).style.display = "none"
     }
 
+    // 選択のログを記録
+    const form = document.forms.battle
+    const change = [form.change0.value, form.change1.value]
+    document.getElementById(`change_log_${position}`).style.display = "block"
+    document.getElementById(`change_name_${position}`).textContent = document.getElementById(`change_${position}${change[position]}`).textContent + "を "
+
     if ( faintedJudge(myParty) == 1 ) {
         // ポケモンを出す位置を指定
         for ( const poke of myParty ) {
@@ -1086,6 +1095,12 @@ function decidePosition(position) {
     // 上下ボタンを隠す
     document.getElementById(`change_above_${position}`).style.display = "none"
     document.getElementById(`change_below_${position}`).style.display = "none"
+    // ログの記録
+    const form = document.forms.battle
+    const up_down = [form.up_down_0.value, form.up_down_1.value]
+    const text = ( up_down[position] == 0 )? "上に " : "下に "
+    document.getElementById(`change_position_${position}`).textContent = text
+
     if ( position == 0 ) {
         // 控えを見せる
         for ( const poke of myParty ) {

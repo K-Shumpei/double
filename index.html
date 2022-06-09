@@ -373,6 +373,8 @@
                             <td>
                                 <div id="com_log_0"><span id="com_log_name_0"></span><span id="com_log_tgt_0"></span><span id="com_log_com_0"></span></div>
                                 <div id="com_log_1"><span id="com_log_name_1"></span><span id="com_log_tgt_1"></span><span id="com_log_com_1"></span></div>
+                                <div id="change_log_0"><span id="change_name_0"></span><span id="change_position_0"></span>繰り出す</div>
+                                <div id="change_log_1"><span id="change_name_1"></span><span id="change_position_1"></span>繰り出す</div>
                             </td>  
                         </tr>
 
@@ -426,6 +428,7 @@
 
                                 <hr>
 
+                                <div id="change_text">次に出すポケモン</div>
                                 <!-- 1匹目 -->
                                 <div id="com_change_00"><input type="radio" name="change0" value="0" onclick="decideNext(0)"><span id="change_00"></span></div>
                                 <div id="com_change_01"><input type="radio" name="change0" value="1" onclick="decideNext(0)"><span id="change_01"></span></div>
@@ -485,6 +488,8 @@
         document.getElementById("each_party").style.display = "none"
         document.getElementById("battle_table").style.display = "none"
         for (let i = 0; i < 2; i++){
+            document.getElementById("com_log_" + i).style.display = "none"
+            document.getElementById("change_log_" + i).style.display = "none"
             document.getElementById("command_" + i).style.display = "none"
             document.getElementById("choise_" + i).style.display = "none"
             document.getElementById("target_comment_" + i).style.display = "none"
@@ -500,6 +505,7 @@
                 document.getElementById("com_change_" + i + j).style.display = "none"
             }
         }
+        document.getElementById("change_text").style.display = "none"
         document.getElementById("emit_command").style.display = "none"
         document.getElementById("back_command").style.display = "none"
 

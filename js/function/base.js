@@ -73,6 +73,11 @@ function getOppParty(poke) {
 // 戦闘中のポケモン
 function allPokeInBattle() {
     let result = []
+    for ( let i = 0; i < 12; i++ ) {
+        for ( const poke of myParty ) {
+
+        }
+    }
     for ( const party of myParty ) {
         if ( party.myPosition != null ) { result.push(party) }
     }
@@ -278,10 +283,10 @@ function resetAilment(poke) {
     poke.myBad_poison              = false // もうどく経過ターン数
 }
 
-function resetBaind(poke) {
-    poke.myCondition.myBaind_long   = false // ねばりのかぎづめ
-    poke.myCondition.myBaind_turn   = false // バインド経過ターン数
-    poke.myCondition.myBaind_strong = false // しめつけバンド
+function resetBind(poke) {
+    poke.myCondition.myBind_long   = false // ねばりのかぎづめ
+    poke.myCondition.myBind_turn   = false // バインド経過ターン数
+    poke.myCondition.myBind_strong = false // しめつけバンド
 }
 
 // ほおぶくろ
@@ -491,7 +496,8 @@ function isTarget(poke){
     if ( poke.myMove.target == "相手全体" ) return oppPokeInBattle(poke)
     if ( poke.myMove.target == "自分以外" ) {
         let target = []
-        for ( const _poke of allPokeInBattle() ) if ( poke.myID != _poke.myID ) target.push(_poke)
+        for ( const _poke of oppPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
+        for ( const _poke of myPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
         return target
     }
 
@@ -818,9 +824,9 @@ function natureRate(nature){
         for (let j = 0; j < 5; j++){
             if (nature == nature_list[i][j]){
                 if (i == j){
-                    return {atk: 1.0, def: 1.0, sp_atk: 1.0, sp_def: 1.0, speed: 1.0}
+                    return {Atk: 1.0, Def: 1.0, Sp_atk: 1.0, Sp_def: 1.0, Speed: 1.0}
                 } else {
-                    let rate = {atk: 1.0, def: 1.0, sp_atk: 1.0, sp_def: 1.0, speed: 1.0}
+                    let rate = {Atk: 1.0, Def: 1.0, Sp_atk: 1.0, Sp_def: 1.0, Speed: 1.0}
                     rate[para[i]] = 1.1
                     rate[para[j]] = 0.9
                     return rate

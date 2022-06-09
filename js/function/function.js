@@ -586,7 +586,11 @@ function formChange(poke, name, declaration) {
         const BS = next[para]
         const IV = poke[`my${para}_iv`]
         const EV = poke[`my${para}_ev`]
+        console.log(BS)
+        console.log(IV)
+        console.log(EV)
         poke[`my${para}`] = Math.floor((Math.floor(((BS*2 + IV + Math.floor(EV/4)) * poke.myLevel)/100) + 5) * rate[para])
+        console.log(poke[`my${para}`])
     }
 
     // H実数値の書き換え

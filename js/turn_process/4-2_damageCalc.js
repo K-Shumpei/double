@@ -275,7 +275,7 @@ function powerCalculation(poke, tgt){
     }
     //if ( poke.myAbility == "ちからずく" && isAbility(poke) && con.p_con.includes("ちからずく有効") )
     if ( poke.myAbility == "パンクロック" && isAbility(poke) ) {
-        if ( music.includes(poke.myMove.name) ) correction = Math.round(correction * 5325 / 4096)
+        if ( musicMove.includes(poke.myMove.name) ) correction = Math.round(correction * 5325 / 4096)
     }
     // ダークオーラ、フェアリーオーラ * 5448 / 4096 → 四捨五入
     if ( isDarkAura() == "aura" && poke.myMove.type == "あく" ) correction = Math.round(correction * 5448 / 4096)

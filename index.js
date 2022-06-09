@@ -354,9 +354,10 @@ $(function () {
         showNowCondition()
         // コマンド欄を表示
         if ( faintedJudge(myParty) ) {
+            back()
             showCommandToDecideNext()
         } else if ( faintedJudge(oppParty) ) {
-            
+
         } else {
             back()
         }

@@ -1040,11 +1040,11 @@ function activateMoveEffect(poke){
         if ( bind.includes(poke.myMove.name) ) {
             if ( tgt.substitute )               continue // みがわりが有効でないこと
             if ( tgt.poke.myRest_hp > 0 )            continue // ひんし状態でないこと
-            if ( tgt.poke.myCondition.myBaind_turn ) continue // すでにバインド状態でないこと
+            if ( tgt.poke.myCondition.myBind_turn ) continue // すでにバインド状態でないこと
 
-            tgt.poke.myCondition.myBaind_turn = 1
-            if ( poke.myItem == "ねばりのかぎづめ" && isItem(poke) ) tgt.poke.myCondition.myBaind_lone = true
-            if ( poke.myItem == "しめつけバンド" && isItem(poke) ) tgt.poke.myCondition.myBaind_strong = true
+            tgt.poke.myCondition.myBind_turn = 1
+            if ( poke.myItem == "ねばりのかぎづめ" && isItem(poke) ) tgt.poke.myCondition.myBind_lone = true
+            if ( poke.myItem == "しめつけバンド" && isItem(poke) ) tgt.poke.myCondition.myBind_strong = true
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しめつけられた !`)
         }
         // ひみつのちからの追加効果
@@ -1190,8 +1190,8 @@ function activateMoveEffect(poke){
                 poke.myCondition.myLeech_seed = false
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の やどりぎのタネが 消え去った`)
             }
-            if ( poke.myCondition.myBaind_turn ) {
-                resetBaind(poke)
+            if ( poke.myCondition.myBind_turn ) {
+                resetBind(poke)
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は バインドから 解放された`)
             }
             if ( isField(poke).mySpikes > 0 ) {
@@ -1308,15 +1308,21 @@ function abilityEffect(poke){
                 changeMyRank(poke, "sp_atk", 1)
             }
             if ( poke.myAbility == "ビーストブースト" ) {
-                let beast = {parameter: poke.myRank_atk, text: "atk"}
-                for ( const para of ["def", "sp_atk", "sp_def", "speed"] ) {
-                    if ( beast.parameter < poke[`myRank_${para}`] ) {
-                        beast.parameter = poke[`myRank_${para}`]
-                        beast.text = para
-                    }
-                }
-                writeLog(`${poke.myTN} の ${poke.myName} の 特性『${poke.myAbility}』 !`)
-                changeMyRank(poke, beast.text, 1)
+                const value = [
+                    {parameter: "atk", value: poke.myAtk}, 
+                    {parameter: "def", value: poke.myDef}, 
+                    {parameter: "sp_atk", value: poke.mySp_atk}, 
+                    {parameter: "sp_def", value: poke.mySp_def}, 
+                    {parameter: "speed", value: poke.mySpeed}, 
+                ]
+
+                value.sort( (a,b) => {
+                    if ( a.value > b.value ) return -1
+                    else return 1
+                })
+
+                abilityDeclaration(poke)
+                changeMyRank(poke, value[0].parameter, 1)
             }
         }
     }

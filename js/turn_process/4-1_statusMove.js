@@ -1054,7 +1054,7 @@ function statusMoveForMe(poke) {
         */
     }
     if ( poke.myMove.name == "みがわり" ) {
-        resetBaind(poke)
+        resetBind(poke)
         poke.myRest_hp -= Math.floor(poke.myFull_hp / 4)
         eatBerryInPinch(poke)
         poke.myCondition.mySubstitute = Math.floor(poke.myFull_hp / 4)

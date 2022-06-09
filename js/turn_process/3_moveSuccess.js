@@ -1325,7 +1325,7 @@ function dynaWeightFailure(poke) {
 function abilityFailure(poke) {
     // しめりけ: 爆発技
     if ( moisture.includes(poke.myMove.name) ) {
-        for (const _poke of allPokeInBattle()) {
+        for ( const _poke of allPokeInBattle() ) {
             if ( _poke.myAbility == "しめりけ" && isAbility(_poke) ) {
                 writeLog(`${_poke.myTN} の ${_poke.myName} の 特性『しめりけ』 !`)
                 writeLog(`${poke.myMove.name} は うまく決まらなかった....`)

@@ -259,14 +259,14 @@ class Condition {
         this.assurance     = false // ダメおしのダメージが上がるならtrue
         this.attract       = false // メロメロをされたポケモンのID
         this.autotomize    = 0     // ボディパージの回数
-        this.baind_long    = false // ねばりのかぎづめが有効ならtrue
-        this.baind_turn    = false // バインド経過ターン数
-        this.baind_strong  = false // しめつけバンドが有効ならtrue
         this.beak_blast    = false // くちばしキャノン 行動待ちならtrue, それ以外ならfalse
         this.belch         = false // ゲップ使用可能ならtrue
         this.berserk       = false // ぎゃくじょうが発動したらtrue
         this.bide_damage   = 0     // がまんで受けたダメージ(ここでは2倍されていない)
         this.bide_turn     = false // がまん経過ターン数(1~2)、放つときは3
+        this.bind_long     = false // ねばりのかぎづめが有効ならtrue
+        this.bind_turn     = false // バインド経過ターン数
+        this.bind_strong   = false // しめつけバンドが有効ならtrue
         this.cant_escape   = false // 逃げられない状態を付与したポケモンのID
         this.cant_move     = false // 反動で次のターン動けなくなる 
         this.charge        = false // じゅうでん経過ターン数(1ターン目で特防アップ、2ターン目で電気技の威力アップ)
@@ -371,14 +371,14 @@ class Condition {
     set myAssurance( value )     { this.assurance = value }
     set myAttract( value )       { this.attract = value }
     set myAutotomize( value )    { this.autotomize = value }
-    set myBaind_long( value )    { this.baind_long = value }
-    set myBaind_turn( value )    { this.baind_turn = value }
-    set myBaind_strong( value )  { this.baind_strong = value }
     set myBeak_blast( value )    { this.beak_blast = value }
     set myBelch( value )         { this.belch = value }
     set myBerserk( value )       { this.berserk = value }
     set myBide_damage( value )   { this.bide_damage = value }
     set myBide_turn( value )     { this.bide_turn = value }
+    set myBind_long( value )     { this.bind_long = value }
+    set myBind_turn( value )     { this.bind_turn = value }
+    set myBind_strong( value )   { this.bind_strong = value }
     set myCant_escape( value )   { this.cant_escape = value }
     set myCant_move( value )     { this.cant_move = value }
     set myCharge( value )        { this.charge = value }
@@ -481,14 +481,14 @@ class Condition {
     get myAqua_ring()     { return this.aqua_ring }
     get myAttract()       { return this.attract }
     get myAutotomize()    { return this.autotomize }
-    get myBaind_long()    { return this.baind_long }
-    get myBaind_turn()    { return this.baind_turn }
-    get myBaind_strong()  { return this.baind_strong }
     get myBeak_blast()    { return this.beak_blast }
     get myBelch()         { return this.belch }
     get myBerserk()       { return this.berserk }
     get myBide_damage()   { return this.bide_damage }
     get myBide_turn()     { return this.bide_turn }
+    get myBind_long()     { return this.bind_long }
+    get myBind_turn()     { return this.bind_turn }
+    get myBind_strong()   { return this.bind_strong }
     get myCant_escape()   { return this.cant_escape }
     get myCant_move()     { return this.cant_move }
     get myCharge()        { return this.charge }

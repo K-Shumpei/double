@@ -470,7 +470,7 @@ function acidCheck(){
                 }
             }
 
-            if ( poke.myBad_poison ) myBad_poison += 1
+            if ( poke.myBad_poison ) poke.myBad_poison += 1
         }
     }
 }
@@ -512,29 +512,29 @@ function curse(){
 // 12.バインド
 function bindCheck(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( !poke.myCondition.myBaind_turn ) continue // バインド状態であること
+        if ( !poke.myCondition.myBind_turn ) continue // バインド状態であること
 
         ( poke.myCondition.myDynamax )?      dyna   = 1 / 2 : dyna   = 1     // ダイマックス
-        ( poke.myCondition.myBaind_strong )? strong = 1 / 6 : strong = 1 / 8 // しめつけバンド
+        ( poke.myCondition.myBind_strong )? strong = 1 / 6 : strong = 1 / 8 // しめつけバンド
         const damage = Math.floor(poke.myFull_hp * strong * dyna)
         
-        if ( poke.myCondition.myBaind_long ) { // ねばりのかぎづめ
-            if ( poke.myCondition.myBaind_turn == 8 ) {
+        if ( poke.myCondition.myBind_long ) { // ねばりのかぎづめ
+            if ( poke.myCondition.myBind_turn == 8 ) {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドから解放された`)
-                resetBaind(poke)
+                resetBind(poke)
             } else {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドのダメージを受けている`)
                 changeHP(poke, Math.max(damage, 1), "-")
-                poke.myCondition.myBaind_turn += 1
+                poke.myCondition.myBind_turn += 1
             }
         } else {
-            if ( poke.myCondition.myBaind_turn == 5 && getRandom() < 0.5 ) {
+            if ( poke.myCondition.myBind_turn == 5 && getRandom() < 0.5 ) {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドから解放された`)
-                resetBaind(poke)
+                resetBind(poke)
             } else {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドのダメージを受けている`)
                 changeHP(poke, Math.max(damage, 1), "-")
-                poke.myCondition.myBaind_turn += 1
+                poke.myCondition.myBind_turn += 1
             }
         }
     }
