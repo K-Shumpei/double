@@ -1038,8 +1038,8 @@ function activateMoveEffect(poke){
         }
         // バインド状態
         if ( bind.includes(poke.myMove.name) ) {
-            if ( tgt.substitute )               continue // みがわりが有効でないこと
-            if ( tgt.poke.myRest_hp > 0 )            continue // ひんし状態でないこと
+            if ( tgt.substitute )                   continue // みがわりが有効でないこと
+            if ( tgt.poke.myRest_hp == 0 )          continue // ひんし状態でないこと
             if ( tgt.poke.myCondition.myBind_turn ) continue // すでにバインド状態でないこと
 
             tgt.poke.myCondition.myBind_turn = 1
@@ -1049,7 +1049,7 @@ function activateMoveEffect(poke){
         }
         // ひみつのちからの追加効果
         if ( poke.myMove.name == "ひみつのちから" ) {
-            if ( tgt.substitute )           continue // みがわりが有効でないこと
+            if ( tgt.substitute )                 continue // みがわりが有効でないこと
             if ( poke.myCondition.mySheer_force ) continue // ちからずくが無効であること
             if ( getRandom() < 0.3 * isGrace(poke) ) {
                 if ( fieldStatus.myGrassy ) getAbnormal(tgt.poke, "ねむり")

@@ -904,6 +904,15 @@ function decideMoveCommand(position, num){
         }
         decideAction(position)
     }
+    if ( move.target == "ランダム1体" ) {
+        document.getElementById(`com_log_tgt_${position}`).textContent = `ランダムな相手に `
+        // 技を隠す
+        for ( let i = 0; i < 4 ;i++ ) {
+            document.getElementById(`com_move_${position}${i}`).style.display = "none"
+            document.getElementById(`move_${position}${i}`).textContent = ""
+        }
+        decideAction(position)
+    }
 }
 
 // 「交代」を選んだ時
@@ -1105,7 +1114,7 @@ function decidePosition(position) {
         // 控えを見せる
         for ( const poke of myParty ) {
             // 戦闘していなくて、ひんしでない
-            if ( poke.myPosition == null && poke.myRest_hp > 0 && poke.myPosition != document.forms.battle.change0.value ) {
+            if ( poke.myPosition == null && poke.myRest_hp > 0 && poke.myPosition != form.change0.value ) {
                 document.getElementById(`com_change_1${poke.myBench}`).style.display = "block"
                 document.getElementById(`change_1${poke.myBench}`).textContent = poke.myName
             }
@@ -1114,11 +1123,6 @@ function decidePosition(position) {
         //決定ボタンを見せる
         document.getElementById(`emit_command`).style.display = "block"
     }
-}
-
-
-function showCondition() {
-    alert("HH")
 }
 
 // 現在の状態を画面に表示
@@ -1137,6 +1141,11 @@ function showNowCondition() {
         document.getElementById(`${num}_C_AV`).textContent = poke.mySp_atk
         document.getElementById(`${num}_D_AV`).textContent = poke.mySp_def
         document.getElementById(`${num}_S_AV`).textContent = poke.mySpeed
+        // バトル場のHP
+        if ( poke.myPosition != null ) {
+            document.getElementById(`rest_hp_${poke.myPosition}`).textContent = poke.myRest_hp
+            document.getElementById(`full_hp_${poke.myPosition}`).textContent = poke.myFull_hp
+        }
         // HPが０なら赤字
         if ( poke.myRest_hp == 0 ) {
             document.getElementById(`${num}_HP_color`).color = "red"
@@ -1154,5 +1163,152 @@ function showNowCondition() {
             document.getElementById(`${num}_move_${i}_color`).style.background = getColorCode(moveSearchByName(poke[`myMove_${i}`]).type)
         }
 
+    }
+}
+
+//
+function checkCondition(position) {
+    let text = ""
+
+    const poke = getPokeToCheck(position)
+
+    // ランク変化
+    text += `攻撃：${poke.myRank_atk}`
+    text += `防御：${poke.myRank_def}\n`
+    text += `特攻：${poke.myRank_sp_atk}`
+    text += `特防：${poke.myRank_sp_def}`
+    text += `素早さ：${poke.myRank_speed}\n`
+    text += `回避率：${poke.myRank_evasion}`
+    text += `命中率：${poke.myRank_accuracy}\n`
+    text += `\n`
+
+    // ポケモンの状態
+    const condition = poke.myCondition
+    if ( condition.myAqua_ring )          text += `アクアリング\n`
+    if ( condition.myAtrract ) {}
+    if ( condition.myAutotomize )         text += `ボディパージ：${condition.myAutotomize}回\n`
+    if ( condition.myBind_turn )          text += `バインド ${condition.myBind_turn}ターン目\n`
+    if ( condition.myCant_escape )        text += `逃げられない\n`
+    if ( condition.myCant_move )          text += `反動で動けない\n`
+    if ( condition.myCharge == 2 )        text += `じゅうでん\n`
+    if ( condition.myChi_strike )         text += `キョダイシンゲキ：${condition.myChi_strike}回\n`
+    if ( condition.myConfusion )          text += `こんらん：${condition.myConfusion}ターン目\n`
+    if ( condition.myCritical )           text += `きゅうしょアップ\n`
+    if ( condition.myDefense_curl )       text += `まるくなる\n`
+    if ( condition.myDisable_turn )       text += `かなしばり：残り${condition.myDisable_turn}ターン\n`
+    if ( condition.myEmbargo )            text += `さしおさえ：残り${condition.myEmbargo}ターン\n`
+    if ( condition.myEncore_turn )        text += `アンコール：残り${condition.myEncore_turn}ターン\n`
+    if ( condition.muFlush_fire )         text += `もらいび\n`
+    if ( condition.myForesight )          text += `みやぶられている\n`
+    if ( condition.myHeal_block )         text += `回復封じ：${condition.myHeal_block}ターン目\n`
+    if ( condition.myIngrain )            text += `ねをはる\n`
+    if ( condition.myLaser_focus == 2  )  text += `とぎすます\n`
+    if ( condition.myLock_on == 2 )       text += `ロックオン\n`
+    if ( condition.myMagnet_rise )        text += `でんじふゆう：${condition.myMagnet_rise}ターン目\n`
+    if ( condition.myMicle )              text += `ミクルのみ\n`
+    if ( condition.myMinimize )           text += `ちいさくなる\n`
+    if ( condition.myMiracle_eye )        text += `ミラクルアイ\n`
+    if ( condition.myNo_ability )         text += `特性なし\n`
+    if ( condition.myPerish_song )        text += `ほろびカウント：${condition.myPerish_song}\n`
+    if ( condition.myStockpile )          text += `たくわえる：${condition.myStockpile}回\n`
+    if ( condition.myTaunt )              text += `ちょうはつ：${condition.myTaunt}ターン目\n`
+    if ( condition.myTelekinesis )        text += `テレキネシス：${condition.myTelekinesis}ターン目\n`
+    if ( condition.myThroat_chop )        text += `じごくづき：${condition.myThroat_chop}ターン目\n`
+
+    // フィールドの状態
+    const field = ( poke.myParty == "me" )? myField : oppField
+    // 壁
+    if ( field.myAurora_veil ) {
+        let turn = 5
+        if ( poke.myParty == "me" && field.myAurora_clay ) turn = 8
+        if ( poke.myParty == "opp" && field.myAurora_veil > 5 ) turn = 8
+        const rest = turn - field.myAurora_veil + 1
+        text += `オーロラベール　${rest}/${turn}\n`
+    }
+    if ( field.myLight_screen ) {
+        let turn = 5
+        if ( poke.myParty == "me" && field.myLight_clay ) turn = 8
+        if ( poke.myParty == "opp" && field.myLight_screen > 5 ) turn = 8
+        const rest = turn - field.myLight_screen + 1
+        text += `ひかりのかべ ${rest}/${turn}\n`
+    }
+    if ( field.myReflect ) {
+        let turn = 5
+        if ( poke.myParty == "me" && field.myReflect_clay ) turn = 8
+        if ( poke.myParty == "opp" && field.myReflect > 5 ) turn = 8
+        const rest = turn - field.myReflect + 1
+        text += `リフレクター ${rest}/${turn}\n`
+    }
+    // 設置技
+    if ( field.mySpikes )       text += `まきびし +${field.mySpikes}\n`
+    if ( field.myToxic_spikes ) text += `どくびし +${field.myToxic_spikes}\n`
+    if ( field.myStealth_rock ) text += `ステルスロック\n`
+    if ( field.mySticky_web )   text += `ねばねばネット\n`
+    if ( field.mySteelsurge )   text += `キョダイコウジン\n`
+    // 合体技
+    if ( field.myFire_ocean ) text += `ひのうみ ${4-field.myFire_ocean}/4\n`
+    if ( field.myRainbow )    text += `にじ ${4-field.myRainbow}/4\n`
+    if ( field.myWetland )    text += `しつげん ${4-field.myWetland}/4\n`
+    // キョダイマックス技
+    if ( field.myVine_lash ) text += `キョダイベンタツ ${4-field.myVine_lash}/4\n`
+    if ( field.myWildfire )  text += `キョダイゴクエン ${4-field.myWildfire}/4\n`
+    if ( field.myCannonade ) text += `キョダイホウゲキ ${4-field.myCannonade}/4\n`
+    if ( field.myVolcalith ) text += `キョダイフンセキ ${4-field.myVolcalith}/4\n`
+    // その他
+    if ( field.myLucky_chant ) text += `おまじない ${5-field.myLucky_chant}/5\n`
+    if ( field.myMist )        text += `しろいきり ${5-field.myMist}/5\n`
+    if ( field.mySafeguard )   text += `しんぴのまもり ${5-field.mySafeguard}/5\n`
+    if ( field.myTailwind )    text += `おいかぜ ${4-field.myTailwind}/4\n`
+
+    // 全体の場の状態
+    // 天候
+    if ( fieldStatus.myDrought )    text += `おおひでり\n`
+    if ( fieldStatus.myHeavy_rain ) text += `おおあめ\n`
+    if ( fieldStatus.myTurbulence ) text += `らんきりゅう\n`
+    const weather = [
+        {en: "Graupel",   ja: "あられ"}, 
+        {en: "Sandstorm", ja: "すなあらし"}, 
+        {en: "Sunny",     ja: "にほんばれ"}, 
+        {en: "Rainy",     ja: "あめ"}
+    ]
+    for ( const w of weather ) {
+        if ( fieldStatus[`my${w.en}`] ) {
+            const turn = ( myField.myWeather_long || fieldStatus[`my${w.en}`] )? 8 : 5
+            const rest = turn - fieldStatus[`my${w.en}`] + 1
+            text += `${w.ja} ${rest}/${turn}\n`
+        }
+    }
+    // フィールド
+    const terrain = [
+        {en: "Electric", ja: "エレキ"}, 
+        {en: "Grassy",   ja: "グラス"}, 
+        {en: "Misty",    ja: "ミスト"}, 
+        {en: "Psychic",  ja: "サイコ"}
+    ]
+    for ( const t of terrain ) {
+        if ( fieldStatus[`my${t.en}`] ) {
+            const turn = ( myField.myExtender || fieldStatus[`my${t.en}`] )? 8 : 5
+            const rest = turn - fieldStatus[`my${t.en}`] + 1
+            text += `${t.ja} ${rest}/${turn}\n`
+        }
+    }
+    // その他
+    if ( fieldStatus.myEchoed_voice ) text += `エコーボイス +${fieldStatus.myEchoed_voice}\n`
+    if ( fieldStatus.myGravity )      text += `じゅうりょく ${5-fieldStatus.myGravity}/5\n`
+    if ( fieldStatus.myMud_sport )    text += `どろあそび ${5-fieldStatus.myMud_sport}/5\n`
+    if ( fieldStatus.myWater_sport )  text += `みずあそび ${5-fieldStatus.myWater_sport}/5\n`
+    if ( fieldStatus.myMagic_room )   text += `マジックルーム\n`
+    if ( fieldStatus.myTrick_room )   text += `トリックルーム ${5-fieldStatus.myTrick_room}/5\n`
+    if ( fieldStatus.myWonder_room )  text += `ワンダールーム ${fieldStatus.myWonder_room}/5\n`
+
+    alert(text)
+}
+
+function getPokeToCheck(position) {
+    const party = ( position <= 1 )? myParty : oppParty
+    for ( const poke of party ) {
+        if ( poke.myPosition == position || poke.myPosition == position - 2 ) {
+            return poke
+        }
     }
 }

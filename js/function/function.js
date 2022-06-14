@@ -591,6 +591,7 @@ function formChange(poke, name, declaration) {
         console.log(EV)
         poke[`my${para}`] = Math.floor((Math.floor(((BS*2 + IV + Math.floor(EV/4)) * poke.myLevel)/100) + 5) * rate[para])
         console.log(poke[`my${para}`])
+        poke[`my${para}_org`] = poke[`my${para}`]
     }
 
     // H実数値の書き換え
@@ -605,8 +606,10 @@ function formChange(poke, name, declaration) {
     // 特性の書き換え
     if ( poke.myName.includes("ヒヒダルマ")) poke.myAbility = "ダルマモード"
     else poke.myAbility = next.ability[0]
+    poke.myAbility_org  = poke.myAbility
     // タイプの書き換え
-    poke.myType = next.type
+    poke.myType     = next.type
+    poke.myType_org = [].concat(poke.myType)
 
     // 特性の発動
     activateAbility(poke)

@@ -211,7 +211,8 @@ function enableToRecycle(poke){
         poke.myCondition.myUnburden = true
     }
 
-    poke.myRecycle = poke.myItem
+    const item = poke.myItem
+    poke.myRecycle = item
     poke.myItem = ""
 
 
@@ -499,6 +500,13 @@ function isTarget(poke){
         for ( const _poke of oppPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
         for ( const _poke of myPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
         return target
+    }
+
+    if ( poke.myMove.target == "ランダム1体" ) {
+        const num = oppPokeInBattle(poke).length
+        if ( num == 0 ) return []
+        if ( num == 1 ) return oppPokeInBattle(poke)
+        if ( num == 2 ) return [shuffle(oppPokeInBattle(poke))[0]]
     }
 
     // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択)
@@ -818,7 +826,7 @@ function natureRate(nature){
         ['おくびょう', 'せっかち', 'ようき', 'むじゃき', 'まじめ']
     ]
 
-    const para = ["atk", "def", "sp_atk", "sp_def", "speed"]
+    const para = ["Atk", "Def", "Sp_atk", "Sp_def", "Speed"]
 
     for (let i = 0; i < 5; i++){
         for (let j = 0; j < 5; j++){

@@ -102,8 +102,6 @@ class Party {
     set mySp_atk_org( value )   { this.sp_atk_org = value }
     set mySp_def_org( value )   { this.sp_def_org = value }
     set mySpeed_org( value )    { this.speed_org = value }
-    set myAccuracy_org( value ) { this.accuracy_org = value }
-    set myEvasion_org( value )  { this.evasion_org = value }
     // ランク変化
     set myRank_atk( value )      { this.rank_atk = value }
     set myRank_def( value )      { this.rank_def = value }
@@ -353,7 +351,7 @@ class Condition {
         this.struggle      = false // わるあがきしか使えなければtrue
         this.substitute    = false // みがわり残りHP
         this.tar_shot      = false // タールショット状態ならtrue
-        this.taunt         = 0      // ちょうはつ経過ターン数
+        this.taunt         = 0     // ちょうはつ経過ターン数
         this.telekinesis   = false // テレキネシス状態の経過ターン数
         this.thrash_move   = false // あばれる状態になった技
         this.thrash_turn   = 0     // あばれる状態の経過ターン数

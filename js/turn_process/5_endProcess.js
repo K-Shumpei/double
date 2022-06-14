@@ -661,10 +661,11 @@ function sleepCheck(){
 function perishSong(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myPerish_song ) { // 4からスタート、1の時にひんしになる
-            writeLog(`${poke.myTN} の ${poke.myName} の ほろびのカウントが ${poke.myCondition.myPerish_song}に なった !`)
+            writeLog(`${poke.myTN} の ${poke.myName} の ほろびのカウントが ${poke.myCondition.myPerish_song - 1}に なった !`)
             if ( poke.myCondition.myPerish_song == 1 ) {
                 poke.myCondition.myPerish_song = false
-                //comeBack(poke)
+                poke.myRest_hp = 0
+                toHand(poke)
             } else {
                 poke.myCondition.myPerish_song -= 1
             }
@@ -677,10 +678,10 @@ function oneSideFieldEnd(){
     for ( const field of [myField, oppField] ) {
         // a. リフレクター
         if ( field.myReflect ) {
-            ( field.myReflect_cray )? turn = 8 : turn = 5
+            const turn = ( field.myReflect_clay )? 8 : 5
             if ( field.myReflect == turn ) {
                 field.myReflect = false
-                field.myReflect_cray = false
+                field.myReflect_clay = false
                 writeLog(`${field.myTN} の場の リフレクターが なくなった`)
             } else {
                 field.myReflect += 1
@@ -688,10 +689,10 @@ function oneSideFieldEnd(){
         }
         // b. ひかりのかべ
         if ( field.myLight_screen ) {
-            ( field.myLight_cray )? turn = 8 : turn = 5
+            const turn = ( field.myLight_clay )? 8 : 5
             if ( field.myLight_screen == turn ) {
                 field.myLight_screen = false
-                field.myLight_cray = false
+                field.myLight_clay = false
                 writeLog(`${field.myTN} の場の ひかりのかべが なくなった`)
             } else {
                 field.myLight_screen += 1
@@ -762,10 +763,10 @@ function oneSideFieldEnd(){
         }
         // j. オーロラベール
         if ( field.myAurora_veil ) {
-            ( field.myAurora_cray )? turn = 8 : turn = 5
+            const turn = ( field.myAurora_clay )? 8 : 5
             if ( field.Aurora_veil == turn ) {
                 field.myAurora_veil = false
-                field.myAurora_cray = false
+                field.myAurora_clay = false
                 writeLog(`${field.myTN} の場の オーロラベールが なくなった`)
             } else {
                 field.myAurora_veil += 1

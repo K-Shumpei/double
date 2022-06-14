@@ -50,7 +50,7 @@ function statusMoveToChangeMyField(poke) {
         writeLog(`${poke.myTN} の場は 守りの体制に入った`)
     }
     if ( poke.myMove.name == "ひかりのかべ" ) {
-        isField(poke).myLight_Screen = 1
+        isField(poke).myLight_screen = 1
         writeLog(`${poke.myTN} の場に ひかりのかべが 現れた`)
         if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myLight_clay = true
     }
@@ -193,8 +193,8 @@ function statusMoveForAllOfUs(poke) {
         }
         if ( poke.myMove.name == "アロマセラピー" ) {
             // writeLog(`心地よい 香りが 広がった !`)
-            writeLog(`${poke.myTN} の ${poke.myName} の ${poke.myAilment}が 治った !`)
-            resetAilment(poke)
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
+            resetAilment(tgt.poke)
         }
         if ( poke.myMove.name == "いのちのしずく" ) {
             const damage = Math.floor(tgt.poke.myFull_HP / 4 * isDynamax(tgt.poke))
@@ -202,7 +202,7 @@ function statusMoveForAllOfUs(poke) {
         }
         if ( poke.myMove.name == "いやしのすず" ) {
             // writeLog(`鈴の音が響き渡った !`)
-            writeLog(`${poke.myTN} の ${poke.myName} の ${poke.myAilment}が 治った !`)
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
             resetAilment(poke)
         }
         if ( poke.myMove.name == "コーチング" ) {
@@ -306,7 +306,7 @@ function statusMoveForAll(poke) {
             
         }
         if ( poke.myMove.name == "ほろびのうた" ) {
-            
+            tgt.poke.myCondition.myPerish_song = 4
         }
     }
 }
@@ -372,7 +372,7 @@ function statusMoveForExceptForMe(poke) {
 
 // 対象が1体選択の技
 function statusMoveForOneOfThem(poke) {
-    const tgt = poke.myTarget[0].poke
+    const tgt = poke.myTarget[0]
 
     if ( poke.myMove.name == "いばる" || poke.myMove.name == "おだてる" ) {
         // if (user[0].f_con.includes("しんぴのまもり" ) && con.ability != "すりぬけ" ) return
@@ -384,7 +384,7 @@ function statusMoveForOneOfThem(poke) {
         if ( poke.myMove.name == move.name ) {
             if ( poke.myMove.name == "ちからをすいとる" ) tgt.poke.myCondition.myStrength_sap = tgt.poke.myRank_atk
             for ( const rank of move.rank ) {
-                changeRank(tgt, rank.parameter, rank.change, isSpirit(poke, tgt))
+                changeRank(tgt.poke, rank.parameter, rank.change, isSpirit(poke, tgt))
             }
         }
     }
@@ -393,7 +393,7 @@ function statusMoveForOneOfThem(poke) {
     // 状態変化を付与する技
     for ( const move of statusMoveToMakeAbnormalForOneOfThem ) {
         if ( poke.myMove.name == move.name ) {
-            getAbnormal(tgt, move.ailment)
+            getAbnormal(tgt.poke, move.ailment)
         }
     }
 
@@ -419,17 +419,18 @@ function statusMoveForOneOfThem(poke) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いのHPを 分け合った`)
         const atk_HP = poke.myRest_hp
         const def_HP = tgt.poke.myRest_hp
-        ( tgt.muCondition.myDynamax )? num = [2, def_HP / 2] : num = [1, 0]
-        poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num[0]) / 2), poke.myFull_hp)
-        tgt.poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num[0]) / 2 + num[1]), tgt.poke.myFull_hp)
+        const num = ( tgt.muCondition.myDynamax )? {first: 2, second: def_HP / 2} : {first: 1, second: 0}
+        poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2), poke.myFull_hp)
+        tgt.poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2 + num.second), tgt.poke.myFull_hp)
     }
     if ( poke.myMove.name == "いちゃもん" ) {
         tgt.muCondition.myTorment = true
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は いちゃもんを受けた`)
     }
     if ( poke.myMove.name == "いやしのはどう" ) {
-        ( tgt.poke.myCondition.myDynamax )? dyna = 1 / 2 : dyna = 1
-        ( poke.myAbility == "メガランチャー" && isAbility(poke) )? damage = Math.fiveCut(tgt.poke.myFull_HP * 3 / 4 * dyna) : damage = Math.ceil(tgt.poke.myFull_HP / 2 * dyna)
+        const damage = ( poke.myAbility == "メガランチャー" && isAbility(poke) )? 
+            Math.fiveCut(tgt.poke.myFull_HP * 3 / 4 * isDynamax(tgt.poke)) :
+            Math.ceil(tgt.poke.myFull_HP / 2 * isDamage(tgt.poke))
         changeHP(tgt, damage, "+")
     }
     if ( poke.myMove.name == "うらみ" ) {
@@ -441,7 +442,8 @@ function statusMoveForOneOfThem(poke) {
         }
     }
     if ( poke.myMove.name == "おきみやげ" ) {
-        //toHand(me, you, con)
+        poke.myRest_hp = 0
+        toHand(poke)
     }
     if ( poke.myMove.name == "おさきにどうぞ" ) {
 
@@ -461,10 +463,10 @@ function statusMoveForOneOfThem(poke) {
         const atk_D = poke.mySp_def
         const def_B = tgt.poke.myDef
         const def_D = tgt.poke.mySp_def
-        poke.myDef    = Math.floor((atk_B + def_B) / 2)
-        tgt.poke.myDef     = Math.floor((atk_B + def_B) / 2)
-        poke.mySp_def = Math.floor((atk_D + def_D) / 2)
-        tgt.poke.mySp_def  = Math.floor((atk_D + def_D) / 2)
+        poke.myDef        = Math.floor((atk_B + def_B) / 2)
+        tgt.poke.myDef    = Math.floor((atk_B + def_B) / 2)
+        poke.mySp_def     = Math.floor((atk_D + def_D) / 2)
+        tgt.poke.mySp_def = Math.floor((atk_D + def_D) / 2)
     }
     if ( poke.myMove.name == "ガードスワップ" ) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いの 防御ランクと 特防ランクを 入れ替えた`)
@@ -472,13 +474,76 @@ function statusMoveForOneOfThem(poke) {
         const atk_D = poke.myRank_sp_def
         const def_B = tgt.poke.myRank_def
         const def_D = tgt.poke.myRank_sp_def
-        poke.myRank_def    = def_B
-        poke.myRank_sp_def = def_D
+        poke.myRank_def         = def_B
+        poke.myRank_sp_def      = def_D
         tgt.poke.myRank_def     = atk_B
         tgt.poke.myRank_sp_def  = atk_D
     }
     if ( poke.myMove.name == "きりばらい" ) {
         // 回避率低下が防がれた後にしろいきりが解除される
+
+        // 対象の場だけ解除
+        if ( isField(tgt.poke).myReflect ) {
+            isField(tgt.poke).myRecycle = false
+            isField(tgt.poke).myReflect_clay = false
+            writeLog(`${tgt.poke.myTN} の場の リフレクターが消え去った`)
+        }
+        if ( isField(tgt.poke).myLight_screen ) {
+            isField(tgt.poke).myLight_screen = false
+            isField(tgt.poke).myLight_clay = false
+            writeLog(`${tgt.poke.myTN} の場の ひかりのかべが消え去った`)
+        }
+        if ( isField(tgt.poke).myAurora_vail ) {
+            isField(tgt.poke).myAurora_vail = false
+            isField(tgt.poke).myAurora_clay = false
+            writeLog(`${tgt.poke.myTN} の場の オーロラベールが消え去った`)
+        }
+        if ( isField(tgt.poke).mySafeguard ) {
+            isField(tgt.poke).mySafeguard = false
+            writeLog(`${tgt.poke.myTN} の場の しんぴのまもりが消え去った`)
+        }
+        if ( isField(tgt.poke).myMist ) {
+            isField(tgt.poke).myMist = false
+            writeLog(`${tgt.poke.myTN} の場の しろいきりが消え去った`)
+        }
+        // お互いの場で解除
+        for ( const field of [myField, oppField] ) {
+            if ( field.mySpikes ) {
+                field.mySpikes = false
+                writeLog(`${field.myTN} の場の まきびしが消え去った`)
+            }
+            if ( field.myToxic_spikes ) {
+                field.myToxic_spikes = false
+                writeLog(`${field.myTN} の場の どくびしが消え去った`)
+            }
+            if ( field.myStealth_rock ) {
+                field.myStealth_rock = false
+                writeLog(`${field.myTN} の場の ステルスロックが消え去った`)
+            }
+            if ( field.mySticky_web ) {
+                field.mySticky_web = false
+                writeLog(`${field.myTN} の場の ねばねばネットが消え去った`)
+            }
+            if ( field.mySteelSurge ) {
+                field.mySteelSurge = false
+                writeLog(`${field.myTN} の場の キョダイコウジンが消え去った`)
+            }
+        }
+
+        const terrain = [
+            {en: "Electric", ja: "エレキ"}, 
+            {en: "Grassy",   ja: "グラス"}, 
+            {en: "Misty",    ja: "ミスト"}, 
+            {en: "Psychic",  ja: "サイコ"}
+        ]
+        for ( const t of terrain ) {
+            if ( fieldStatus[`my${t.en}`] ) {
+                fieldStatus[`my${t.en}`] = false
+                myField.myExtender = false
+                oppField.myExtender = false
+                writeLog(`${t.ja}フィールドが 消え去った`)
+            }
+        }
         /*
         if (!tgt.p_con.includes("状態変化『みがわり』" ) || con.ability == "すりぬけ" ) {
             if (tgt.ability == "ミラーアーマー" ) {
@@ -490,18 +555,6 @@ function statusMoveForOneOfThem(poke) {
                 bfn.whiteHerb(def, atk)
             }
         }
-        for (const wall of ["ひかりのかべ", "リフレクター", "オーロラベール", "しんぴのまもり", "しろいきり"]) {
-            removeText(user[0].f_con, wall)
-        }
-        for (const trap of ["まきびし", "どくびし", "ステルスロック", "ねばねばネット", "キョダイコウジン"]) {
-            removeText(me.f_con, trap)
-            removeText(user[0].f_con, trap)
-        }
-        for (const user of [me, you]) {
-            removeText(user.f_con, "フィールド" )
-        }
-
-        writeLog(me, you, "周りのものを消し去った" + "\n" )
         */
     }
     if ( poke.myMove.name == "ギフトパス" ) {
@@ -546,9 +599,9 @@ function statusMoveForOneOfThem(poke) {
     if ( poke.myMove.name == "じこあんじ" ) {
         const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
         for ( const para of parameter ) poke[`myRank_${para}`] = tgt[`myRank_${para}`] // ランク変化
-        poke.myCondition.myCritical = tgt.poke.myCondition.myCritical                       // きゅうしょアップ
-        poke.myCondition.myChi_strike = tgt.poke.myCondition.myChi_strike                   // キョダイシンゲキ
-        if ( tgt.poke.myCondition.myLaser_focus ) poke.myCondition.myLaser_focus = 1        // とぎすます
+        poke.myCondition.myCritical = tgt.poke.myCondition.myCritical                  // きゅうしょアップ
+        poke.myCondition.myChi_strike = tgt.poke.myCondition.myChi_strike              // キョダイシンゲキ
+        if ( tgt.poke.myCondition.myLaser_focus ) poke.myCondition.myLaser_focus = 1   // とぎすます
 
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 能力変化を コピーした`)
     }
@@ -563,14 +616,8 @@ function statusMoveForOneOfThem(poke) {
         tgt.poke.myAbility = save
         writeLog(`${poke.myTN} の ${poke.myName} は　特性『${poke.myAbility}』 になった`)
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった`)
-        /*
-        for (const _con of [con, tgt]) {
-            const _user = isMe(me, you, _con)
-            _con.p_con += "技『スキルスワップ』" + "\n"
-            activateAbility(_user[0], _user[1], _con)
-            removeText(_con.p_con, "技『スキルスワップ』" )
-        }
-        */
+        activateAbility(poke)
+        activateAbility(tgt.poke)
     }
     if ( poke.myMove.name == "スケッチ" ) {
         const s_move = moveSearchByName(tgt.poke.myHistory[0].name)

@@ -366,7 +366,6 @@
     <div id="battle_table">
         <form id="battle" name="battle"><table align="center">
             <tr>
-                <td>対戦のログ<br><textarea id="log" cols="80" rows="15" readonly></textarea></td>
                 <td>
                     <table rules="all">
                         <tr>
@@ -452,21 +451,55 @@
                             </td>
                         </tr>
                     </table>
+                    <hr>
+                    対戦のログ<br>
+                    <textarea id="log" cols="80" rows="15" readonly></textarea>
                 </td>
+
                 <td>
                     <table align="center">
                         <tr>
                             <td><table align="center">
+                                <!-- 自分1匹目 -->
                                 <tr><td><img src="" id="me_0_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
+                                <tr><td>
+                                    <table align="right"><tr>
+                                        <td><input type="button" value="状況確認" onclick="checkCondition(0)"></td>
+                                        <td><span id="ailment_0"></span></td>
+                                        <td><span id="rest_hp_0"></span>/<span id="full_hp_0"></span></td>
+                                    </tr></table>
+                                </td></tr>
                                 <tr><td><div id="me_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                                <!-- 自分2匹目 -->
                                 <tr><td><img src="" id="me_1_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
+                                <tr><td>
+                                    <table align="right"><tr>
+                                        <td><input type="button" value="状況確認" onclick="checkCondition(1)"></td>
+                                        <td><span id="ailment_1"></span></td>
+                                        <td><span id="rest_hp_1"></span>/<span id="full_hp_1"></span></td>
+                                    </tr></table>
+                                </td></tr>
                                 <tr><td><div id="me_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
                             </table></td>
                             <td><img src="vs.png" width="150" height="120"></td>
                             <td><table align="center">
+                                <!-- 相手1匹目 -->
                                 <tr><td><img src="" id="opp_0_in_battle" width="192" height="192"></td></tr>
+                                <tr><td>
+                                    <table align="right"><tr>
+                                        <td><input type="button" value="状況確認" onclick="checkCondition(2)"></td>
+                                        <td><span id="ailment_2"></span></td>
+                                    </tr></table>
+                                </td></tr>
                                 <tr><td><div id="opp_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
+                                <!-- 相手2匹目 -->
                                 <tr><td><img src="" id="opp_1_in_battle" width="192" height="192"></td></tr>
+                                <tr><td>
+                                    <table align="right"><tr>
+                                        <td><input type="button" value="状況確認" onclick="checkCondition(3)"></td>
+                                        <td><span id="ailment_3"></span></td>
+                                    </tr></table>
+                                </td></tr>
                                 <tr><td><div id="opp_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
                             </table></td>
                         </tr>

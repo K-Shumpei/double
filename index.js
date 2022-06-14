@@ -232,6 +232,7 @@ $(function () {
         document.getElementById("each_party").style.display = "block"
 
         showCommand()
+        showNowCondition()
     })
 
     // コマンドの送信

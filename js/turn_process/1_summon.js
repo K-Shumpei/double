@@ -5,6 +5,7 @@ function toHand( poke ){
 
     if ( poke.myRest_hp == 0 ) {
         writeLog(`${poke.myTN} の ${poke.myName} は 倒れた !`)
+        document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = ""
 
         for ( const _poke of allPokeInBattle() ){
             if ( _poke.myAbility == "ソウルハート" && isAbility(_poke) ) {
@@ -133,6 +134,15 @@ function toHand( poke ){
     
     // myCondition のリセット
     poke.myCondition = new Condition()
+
+    // 元の値に戻す
+    poke.myAbility = poke.myAbility_org
+    poke.myType    = [].concat(poke.myType_org)
+    poke.myAtk     = poke.myAtk_org
+    poke.myDef     = poke.myDef_org
+    poke.mySp_atk  = poke.mySp_atk_org
+    poke.mySp_def  = poke.mySp_def_org
+    poke.mySpeed   = poke.mySpeed_org
 
     // コマンドの消去
     /*

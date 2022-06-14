@@ -2960,7 +2960,7 @@ function moveSpecificationsInvalidation3(poke) {
 
     if ( check ) {
         writeLog(`しかし うまく決まらなかった....`)
-        poke.myTarget[0] = false
+        return true
     }
 
     for ( const tgt of poke.myTarget ) {
