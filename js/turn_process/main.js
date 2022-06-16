@@ -20,6 +20,8 @@ function runBattle() {
     moveUsedEachPokemon()
     // 7.ターン終了
     endProcess()
+
+    return true
 }
 
 
@@ -143,12 +145,17 @@ function moveUsedEachPokemon() {
         // crossDragon(me, you)
         // 行動するポケモンのHPが残っている時に行動する
         const judge = moveSuccessJudge(poke)
-        if ( judge ) moveEffect(poke)
 
         // コマンドの消去
         poke.myCmd_hand = ""
         poke.myCmd_move = ""
         poke.myCmd_tgt = ""
+
+        if ( judge ) {
+            moveEffect(poke)
+        }
+
+
 
         /*
         if (order[0].move.result == "成功"){

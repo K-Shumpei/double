@@ -1,6 +1,5 @@
 // 変化技の効果処理
 function statusMoveEffect(poke) {
-    console.log(poke.myMove.name)
     if ( poke.myMove.target == "味方の場" ) statusMoveToChangeMyField(poke)
     if ( poke.myMove.target == "相手の場" ) statusMoveToChangeYourField(poke)
     if ( poke.myMove.target == "全体の場" ) statusMoveToChangeAllField(poke)
@@ -419,7 +418,7 @@ function statusMoveForOneOfThem(poke) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いのHPを 分け合った`)
         const atk_HP = poke.myRest_hp
         const def_HP = tgt.poke.myRest_hp
-        const num = ( tgt.muCondition.myDynamax )? {first: 2, second: def_HP / 2} : {first: 1, second: 0}
+        const num = ( tgt.poke.myCondition.myDynamax )? {first: 2, second: def_HP / 2} : {first: 1, second: 0}
         poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2), poke.myFull_hp)
         tgt.poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2 + num.second), tgt.poke.myFull_hp)
     }
@@ -722,14 +721,13 @@ function statusMoveForOneOfThem(poke) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と 能力変化を入れ替えた`)
     }
     if ( poke.myMove.name == "ハロウィン" ) {
+        if ( tgt.poke.myCondition.myForest_curse ) {
+            tgt.poke.myType = tgt.poke.myType.pop()
+            tgt.poke.myCondition.myForest_curse = false
+        }
         tgt.poke.myType.push("ゴースト")
         tgt.poke.myCondition.myHalloween = true
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ゴーストタイプが追加された`)
-        if ( tgt.poke.myCondition.myForest_curse ) {
-            tgt.poke.myCondition.myForest_curse = false
-            const isGrass = tgt.poke.myType.indexOf("くさ")
-            tgt.poke.myType.splice(isGrass, 1)
-        }
     }
     if ( poke.myMove.name == "パワーシェア" ) {
         const A_A = poke.myAtk
@@ -761,16 +759,13 @@ function statusMoveForOneOfThem(poke) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 能力ランクをひっくり返した`)
     }
     if ( poke.myMove.name == "ふきとばし" || poke.myMove.name == "ほえる" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 手持ちに戻された`)
-        /*
-        let hand = []
-        for (let i = 0; i < 4; i++) {
-            if (user[0]["poke" + i].life == "控え" ) hand.push(i)
-        }
-        toHand(user[0], user[1], tgt)
-        tgt.com = shuffle(hand)[0] + 4
-        user[0].f_con += "選択中（ほえる）・・・" + "\n"
-        */
+        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 手持ちに戻された !`)
+        const position = tgt.poke.myPosition       // 現在の位置
+        const next = shuffle(isBench(tgt.poke))[0] // 次に出すポケモン
+        console.log(position)
+        console.log(next)
+        toHand(tgt.poke)                           // 戻す
+        summon(next, position)                     // 出す
     }
     if ( poke.myMove.name == "フラワーヒール" ) {
         ( fieldStatus.myGrassy )? num = 2732 / 4096 : num = 1 / 2
@@ -786,24 +781,24 @@ function statusMoveForOneOfThem(poke) {
     }
     if ( poke.myMove.name == "まほうのこな" ) {
         tgt.poke.myType = ["エスパー"]
-        tgt.poke.myCondition.myHalloween    = false
-        tgt.poke.myCondition.myForest_curse = false
-        // removeText(tgt.p_con, "状態変化『はねやすめ』" )
+        tgt.poke.myCondition.myHalloween    = false // ハロウィン
+        tgt.poke.myCondition.myForest_curse = false // もりののろい
+        tgt.poke.myCondition.myRoost        = false // はねやすめ
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は エスパータイプになった`)
     }
     if ( poke.myMove.name == "みずびたし" ) {
         tgt.poke.myType = ["みず"]
-        tgt.poke.myCondition.myHalloween    = false
-        tgt.poke.myCondition.myForest_curse = false
-        // removeText(tgt.p_con, "状態変化『はねやすめ』" )
+        tgt.poke.myCondition.myHalloween    = false // ハロウィン
+        tgt.poke.myCondition.myForest_curse = false // もりののろい
+        tgt.poke.myCondition.myRoost        = false // はねやすめ
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は みずタイプになった`)
     }
     if ( poke.myMove.name == "ミラータイプ" ) {
-        tgt.poke.myType = ["みず"]
-        tgt.poke.myCondition.myHalloween    = false
-        tgt.poke.myCondition.myForest_curse = false
-        // removeText(tgt.p_con, "状態変化『はねやすめ』" )
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と タイプが同じになった`)
+        poke.myType = [].concat(tgt.poke.myType)
+        poke.myCondition.myHalloween    = false // ハロウィン
+        poke.myCondition.myForest_curse = false // もりののろい
+        poke.myCondition.myRoost        = false // はねやすめ
+        writeLog(`${poke.myTN} の ${poke.myName} は ${tgt.poke.myTN} の ${tgt.poke.myName} と タイプが同じになった`)
     }
     if ( poke.myMove.name == "ミラクルアイ" ) {
         tgt.poke.myCondition.myMiracle_eye = true
@@ -823,14 +818,13 @@ function statusMoveForOneOfThem(poke) {
         */
     }
     if ( poke.myMove.name == "もりののろい" ) {
-        tgt.poke.myType.push("くさ")
-        tgt.poke.myCondition.myForest_curse = false
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に くさタイプが追加された`)
         if ( tgt.poke.myCondition.myHalloween ) {
+            tgt.poke.myType = tgt.poke.myType.pop()
             tgt.poke.myCondition.myHalloween = false
-            const isGhost = tgt.poke.myType.indexOf("ゴースト")
-            tgt.poke.myType.splice(isGhost, 1)
         }
+        tgt.poke.myType.push("くさ")
+        tgt.poke.myCondition.myForest_curse = true
+        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に くさタイプが追加された`)
     }
     if ( poke.myMove.name == "やどりぎのタネ" ) {
         tgt.poke.myCondition.myLeech_seed = poke.myParty + ":" + poke.myPosition
@@ -1003,24 +997,29 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は 背水の陣で 逃げることが できなくなった !`)
     }
     if ( poke.myMove.name == "はねやすめ" ) {
-        /*
-        changeHP(me, you, con, Math.ceil(con.full_HP / 2), "+" )
-        let sptype = 0
-        if (con.p_con.includes("状態変化『もりののろい』" )) sptype += 1
-        if (con.p_con.includes("状態変化『ハロウィン』" )) sptype += 1
+        const damage = Math.ceil(poke.myFull_HP / 2)
+        changeHP(poke, damage, "+")
+        // ひこうタイプがなければ終了
+        if ( !poke.myType.includes("ひこう") ) return
 
-        const n_types = con.type.length - sptype 
-        const isFly = con.type.indexOf("ひこう" )
-        // ひこうタイプがある時
-        if (isFly) {
-            // ひこう単　なら　ノーマル
-            if (n_types == 1) con.type = con.type[isFly] = "ノーマル"
-            // ひこう・何か　なら　何か単 (ひこう・タイプ無し　なら　タイプ無し)
-            if (n_types == 2) con.type = con.type.splice(isFly, 1)
+        if ( poke.myCondition.myHalloween )    poke.myType = poke.myType.pop()
+        if ( poke.myCondition.myForest_curse ) poke.myType = poke.myType.pop()
 
-            con.p_con += "状態変化『はねやすめ』　" + isFly + "　" + n_types + "\n"
+        // ひこう単 => ノーマル
+        if ( poke.myType.length == 1 ) {
+            poke.myType = ["ノーマル"]
+            poke.myCondition.myRoost = "ノーマル"
         }
-        */
+        // ひこう複合 => ひこう消失
+        if ( poke.myType.length == 2 ) {
+            const FlyIndex = poke.myType.indexOf("ひこう")
+            poke.myType.splice(FlyIndex, 1)
+            const position = ( FlyIndex == 0 )? "first" : "second"
+            poke.myCondition.myRoost = position
+        }
+
+        if ( poke.myCondition.myHalloween ) poke.myType.push("ゴースト")
+        if ( poke.myCondition.myForest_curse ) poke.myType.push("くさ")
     }
     if ( poke.myMove.name == "はねる" ) {
         writeLog(`しかし 何も起こらなかった`)
@@ -1101,11 +1100,12 @@ function statusMoveForMe(poke) {
         */
     }
     if ( poke.myMove.name == "みがわり" ) {
-        resetBind(poke)
-        poke.myRest_hp -= Math.floor(poke.myFull_hp / 4)
-        eatBerryInPinch(poke)
-        poke.myCondition.mySubstitute = Math.floor(poke.myFull_hp / 4)
+        const substitute_hp = Math.floor(poke.myFull_hp / 4)
+        poke.myRest_hp               -= substitute_hp // 残り体力の減少
+        poke.myCondition.mySubstitute = substitute_hp // みがわり体力の記録
         showHPbar(poke)
+        resetBind(poke)
+        eatBerryInPinch(poke)
         writeLog(`${poke.myTN} の ${poke.myName} の 身代わりが 現れた`)
     }
     if ( poke.myMove.name == "みきり" ) {

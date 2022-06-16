@@ -44,6 +44,13 @@ class Party {
         this.bad_poison    = false // もうどく経過ターン数
         this.recycle       = false // リサイクル可能な持ち物
         this.rest          = false // ねむる　ねむるでねむり状態になった経過ターン数(1~3)、3で回復
+        // 途中交代
+        this.eject_button  = false // だっしゅつボタンが発動したらtrue
+        this.eject_pack    = false // だっしゅつパックが発動したらtrue
+        this.emergency     = false // ききかいひ/にげごしが発動したらtrue
+        this.red_card      = false // レッドカードが発動したらtrue
+        this.switch        = false // とんぼがえり/ボルトチェンジ/クイックターンが発動すればtrue
+
     }
 
     //セッターメソッド
@@ -145,6 +152,12 @@ class Party {
     set myBad_poison( value )    { this.bad_poison = value }
     set myRecycle( value )       { this.recycle = value }
     set myRest( value )          { this.rest = value }
+    // 途中交代
+    set myEject_button( value )  { this.eject_button = value }
+    set myEject_pack( value )    { this.eject_pack = value }
+    set myEmergency( value )     { this.emergency = value }
+    set myRed_card( value )      { this.red_card = value }
+    set mySwitch( value )        { this.switch = value }
 
     // ゲッターメソッド
     // 基本情報
@@ -246,6 +259,12 @@ class Party {
     get myBad_poison()    { return this.bad_poison }
     get myRecycle()       { return this.recycle }
     get myRest()          { return this.rest }
+    // 途中交代
+    get myEject_button()  { return this.eject_button }
+    get myEject_pack()    { return this.eject_pack }
+    get myEmergency()     { return this.emergency }
+    get myRed_card()      { return this.red_card }
+    get mySwitch()        { return this.switch }
 
 }
 
@@ -262,6 +281,7 @@ class Condition {
         this.berserk       = false // ぎゃくじょうが発動したらtrue
         this.bide_damage   = 0     // がまんで受けたダメージ(ここでは2倍されていない)
         this.bide_turn     = false // がまん経過ターン数(1~2)、放つときは3
+        this.bind_ID       = false // バインド状態を付与したポケモンのID
         this.bind_long     = false // ねばりのかぎづめが有効ならtrue
         this.bind_turn     = false // バインド経過ターン数
         this.bind_strong   = false // しめつけバンドが有効ならtrue
@@ -334,6 +354,7 @@ class Condition {
         this.rank_up       = false // ランクが上がったらtrue
         this.remaining_HP1 = false // 残りHP1で耐える効果
         this.rollout       = 0     // ころがる経過ターン数
+        this.roost         = false // はねやすめによりひこうタイプを失ったら　"ノーマル", "first", "second" のどれか
         this.second        = false // こうこうのしっぽ・まんぷくおこう・あとだし - 同じ優先度内で最後に行動する
         this.shadow        = false // シャドーダイブ状態ならtrue
         this.sheer_force   = false // ちからずくが有効ならtrue
@@ -349,7 +370,7 @@ class Condition {
         this.stockpile_D   = 0     // たくわえるで特防が上がった回数
         this.strength_sap  = false // ちからをすいとるを受けた時の攻撃ランク
         this.struggle      = false // わるあがきしか使えなければtrue
-        this.substitute    = false // みがわり残りHP
+        this.substitute    = 0     // みがわり残りHP
         this.tar_shot      = false // タールショット状態ならtrue
         this.taunt         = 0     // ちょうはつ経過ターン数
         this.telekinesis   = false // テレキネシス状態の経過ターン数
@@ -374,6 +395,7 @@ class Condition {
     set myBerserk( value )       { this.berserk = value }
     set myBide_damage( value )   { this.bide_damage = value }
     set myBide_turn( value )     { this.bide_turn = value }
+    set myBind_ID( value )       { this.bind_ID = value }
     set myBind_long( value )     { this.bind_long = value }
     set myBind_turn( value )     { this.bind_turn = value }
     set myBind_strong( value )   { this.bind_strong = value }
@@ -446,6 +468,7 @@ class Condition {
     set myRank_up( value )       { this.rank_up = value }
     set myRemaining_HP1( value ) { this.remaining_HP1 = value }
     set myRollout( value )       { this.rollout = value }
+    set myRoost( value )         { this.roost = value }
     set mySecond( value )        { this.second = value }
     set myShadow( value )        { this.shadow = value }
     set mySheer_force( value )   { this.sheer_force = value }
@@ -477,6 +500,7 @@ class Condition {
     
     get myAfter_you()     { return this.after_you }
     get myAqua_ring()     { return this.aqua_ring }
+    get myAssurance()     { return this.assurance }
     get myAttract()       { return this.attract }
     get myAutotomize()    { return this.autotomize }
     get myBeak_blast()    { return this.beak_blast }
@@ -484,6 +508,7 @@ class Condition {
     get myBerserk()       { return this.berserk }
     get myBide_damage()   { return this.bide_damage }
     get myBide_turn()     { return this.bide_turn }
+    get myBind_ID()       { return this.bind_ID }
     get myBind_long()     { return this.bind_long }
     get myBind_turn()     { return this.bind_turn }
     get myBind_strong()   { return this.bind_strong }
@@ -556,6 +581,7 @@ class Condition {
     get myRank_up()       { return this.rank_up }
     get myRemaining_HP1() { return this.remaining_HP1 }
     get myRollout()       { return this.rollout }
+    get myRoost()         { return this.roost }
     get mySecond()        { return this.second }
     get myShadow()        { return this.shadow }
     get mySheer_force()   { return this.sheer_force }
@@ -566,7 +592,6 @@ class Condition {
     get mySlow_start()    { return this.slow_start }
     get mySmack_down()    { return this.smack_down }
     get mySpotlight()     { return this.spotlight }
-    get myAssurance()     { return this.assurance }
     get myStockpile()     { return this.stockpile }
     get myStockpile_B()   { return this.stockpile_B }
     get myStockpile_D()   { return this.stockpile_D }

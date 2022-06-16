@@ -1,12 +1,13 @@
 // 戦闘中のポケモンを手持ちに戻す
 function toHand( poke ){
     // 「戦闘中」を「控え」に変更
+    document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = ""
+    document.getElementById(`rest_hp_${poke.myPosition}`).textContent = ""
+    document.getElementById(`full_hp_${poke.myPosition}`).textContent = ""
     poke.myPosition = null
 
     if ( poke.myRest_hp == 0 ) {
         writeLog(`${poke.myTN} の ${poke.myName} は 倒れた !`)
-        document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = ""
-
         for ( const _poke of allPokeInBattle() ){
             if ( _poke.myAbility == "ソウルハート" && isAbility(_poke) ) {
                 abilityDeclaration(_poke)
@@ -63,6 +64,31 @@ function toHand( poke ){
         }
     }
 
+
+
+    for ( const _poke of allPokeInBattle() ) {
+        // 逃げられない状態の解除
+        if ( _poke.myCondition.myCant_escape == poke.myID ) {
+            _poke.myCondition.myCant_escape = false
+        }
+        // メロメロ状態の解除
+        if ( _poke.myCondition.myAttract == poke.myID ) {
+            _poke.myCondition.myAttract = false
+        }
+        // バインド状態の解除
+        if ( _poke.myCondition.myBind_ID == poke.myID ) {
+            resetBind(_poke)
+        }
+        // たこがため
+    }
+
+    if ( poke.myAbility == "きんちょうかん" || poke.myAbility == "じんばいったい" ) {
+        for ( const _poke of oppPokeInBattle(poke) ) {
+            eatBerryInPinch(_poke)
+            eatBerryInAbnormal(_poke)
+        }
+    }
+
     
     /*
     // ダイマックスポケモンを引っ込める時、ダイマックス権を失う
@@ -83,13 +109,6 @@ function toHand( poke ){
         me["poke" + con.num].abnormal = con.abnormal
     }
 
-    // 相手のメロメロの解除
-    cfn.conditionRemove(enemy.con, "poke", "メロメロ")
-    cfn.conditionRemove(enemy.con, "poke", "バインド")
-    cfn.conditionRemove(enemy.con, "poke", "たこがため")
-    cfn.conditionRemove(enemy.con, "poke", "逃げられない")
-
-
     // 特性が「かがくへんかガス」の時
     if ( poke.myAbility == "かがくへんかガス" ) {
         cfn.logWrite(user, enemy, "かがくへんかガスの効果が切れた" + "\n")
@@ -101,14 +120,6 @@ function toHand( poke ){
         cfn.conditionRemove(enemy.con, "poke", "かがくへんかガス")
         efn.activeAbility(user, enemy, 1)
     }
-    // 特性が「きんちょうかん」の時
-    if ( poke.myAbility == "きんちょうかん" ) {
-        bfn.berryPinch(enemy, user)
-        bfn.berryAbnormal(enemy, user)
-    }
-    */
-
-
 
     /*
     if (user.con.f_con.includes("選択中・・・")){
@@ -174,8 +185,6 @@ function toHand( poke ){
             _poke.myBench -= 1
         }
     }
-
-    console.log(myParty)
 }
 
 // ポケモンを戦闘に出す

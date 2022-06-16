@@ -514,9 +514,8 @@ function bindCheck(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( !poke.myCondition.myBind_turn ) continue // バインド状態であること
 
-        ( poke.myCondition.myDynamax )?      dyna   = 1 / 2 : dyna   = 1     // ダイマックス
-        ( poke.myCondition.myBind_strong )? strong = 1 / 6 : strong = 1 / 8 // しめつけバンド
-        const damage = Math.floor(poke.myFull_hp * strong * dyna)
+        const strong = ( poke.myCondition.myBind_strong )? 1 / 6 : 1 / 8 // しめつけバンド
+        const damage = Math.floor(poke.myFull_hp * strong * isDynamax(poke))
         
         if ( poke.myCondition.myBind_long ) { // ねばりのかぎづめ
             if ( poke.myCondition.myBind_turn == 8 ) {
@@ -544,13 +543,13 @@ function bindCheck(){
 function octolock(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         const ID = poke.myCondition.myOctolock
-        if ( ID == false ) continue // たこがため状態であること
-        if ( !poke.myCondition.mySubstitute || ( isPokeByID(ID).myAbility == "すりぬけ" && isAbility(isPokeByID(ID)) ) ) continue
+        if ( !ID ) continue // たこがため状態であること
+        // みがわり状態であり、たこがための使用者がすりぬけでないなら無効
+        if ( poke.myCondition.mySubstitute && !( isPokeByID(ID).myAbility == "すりぬけ" && isAbility(isPokeByID(ID)) ) ) continue
 
-        ( oppJudgeByID(poke.myID, ID) )? spirit = true : spirit = false
         writeLog(`${poke.myTN} の ${poke.myName} は たこがためを受けている`)
-        changeRank(poke, "def", -1, spirit)
-        changeRank(poke, "sp_def", -1, spirit)
+        changeRank(poke, "def", -1, isSpirit(poke, isPokeByID(ID)))
+        changeRank(poke, "sp_def", -1, isSpirit(poke, isPokeByID(ID)))
     }
 }
 
@@ -884,15 +883,27 @@ function bothSideFieldEnd(){
 // 25.はねやすめ解除
 function roostEnd(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        /*
-        if (!tgt.p_con.includes("状態変化『はねやすめ』")) continue
-        const text = searchText(tgt.p_con, "状態変化『はねやすめ』")
-        const isFly = Number(text.split("　")[1])
-        const n_types = Number(text.split("　")[2])
-        if (n_types == 1) tgt.type[isFly] = "ひこう"
-        if (n_types == 2) tgt.type.splice(isFly, 0, "ひこう")
-        removeText("状態変化『はねやすめ』")
-        */
+        if ( !poke.myCondition.myRoost ) continue
+
+        if ( poke.myCondition.myHalloween )    poke.myType = poke.myType.pop()
+        if ( poke.myCondition.myForest_curse ) poke.myType = poke.myType.pop()
+
+        // ひこう単 => ノーマル
+        if ( poke.myCondition.myRoost == "ノーマル" ) {
+            poke.myType = ["ひこう"]
+        }
+        // ひこう複合 => ひこう消失 消失位置にひこうを復活
+        if ( poke.myCondition.myRoost == "first" ) {
+            poke.myType.unshift("ひこう")
+        }
+        if ( poke.myCondition.myRoost == "second" ) {
+            poke.myType.push("ひこう")
+        }
+
+        if ( poke.myCondition.myHalloween ) poke.myType.push("ゴースト")
+        if ( poke.myCondition.myForest_curse ) poke.myType.push("くさ")
+
+        poke.myCondition.myRoost = false
     }
 }
 
@@ -935,8 +946,7 @@ function otherConditionAbilityItem(){
             }
             if ( poke.myAbility == "ナイトメア" ) {
                 for ( const _poke of allPokeInBattle() ) {
-                    ( _poke.myCondition.myDynamax )? dyna = 1 / 2 : dyna = 1
-                    const damage = Math.floor(_poke.myFull_hp / 8 * dyna)
+                    const damage = Math.floor(_poke.myFull_hp / 8 * isDynamax(_poke))
                     if ( _poke.myAilment == "ねむり" ) {
                         abilityDeclaration(poke)
                         changeHP(_poke, Math.max(damage, 1), "-")
@@ -948,13 +958,15 @@ function otherConditionAbilityItem(){
         if ( isItem(poke) ) {
             if ( poke.myItem == "くっつきバリ" ) {
                 const damage = Math.floor(poke.myFull_hp / 8 * isDynamax(poke))
-                writeLog(`${poke.myTN} の ${poke.myName} は くっつきバリの ダメージを受けた`)
+                itemDeclaration(poke)
                 changeHP(poke, Math.max(damage, 1), "-")
             }
             if ( poke.myItem == "どくどくだま" ) {
+                itemDeclaration(poke)
                 getAbnormal(poke, "もうどく")
             }
             if ( poke.myItem == "かえんだま" ) {
+                itemDeclaration(poke)
                 getAbnormal(poke, "やけど")
             }
         }

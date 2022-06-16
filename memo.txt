@@ -142,3 +142,87 @@ move.result
 
 
 
+    <table>
+    <tr>
+        <td>
+            <div id="com_log_0"><span id="com_log_name_0"></span><span id="com_log_tgt_0"></span><span id="com_log_com_0"></span></div>
+            <div id="com_log_1"><span id="com_log_name_1"></span><span id="com_log_tgt_1"></span><span id="com_log_com_1"></span></div>
+            <div id="change_log_0"><span id="change_name_0"></span><span id="change_position_0"></span>繰り出す</div>
+            <div id="change_log_1"><span id="change_name_1"></span><span id="change_position_1"></span>繰り出す</div>
+        </td>  
+    </tr>
+
+    <tr>
+        <td>
+            <!-- 0番目 -->
+            <div id="command_0"><span id="name_0"></span>の行動</div>
+            <div id="choise_0"><input type="button" value="戦う" onclick="choiseMove(0)"><input type="button" value="交代" onclick="choiseHand(0)"></div>
+            <!-- 技選択 -->
+            <div id="com_move_00"><input type="radio" name="move0" value="0" onclick="decideMoveCommand(0, 0)"><span id="move_00"></span></div>
+            <div id="com_move_01"><input type="radio" name="move0" value="1" onclick="decideMoveCommand(0, 1)"><span id="move_01"></span></div>
+            <div id="com_move_02"><input type="radio" name="move0" value="2" onclick="decideMoveCommand(0, 2)"><span id="move_02"></span></div>
+            <div id="com_move_03"><input type="radio" name="move0" value="3" onclick="decideMoveCommand(0, 3)"><span id="move_03"></span></div>
+            <!-- 攻撃対象選択 -->
+            <div id="target_comment_0">攻撃対象</div>
+            <div id="com_tgt_00"><input type="radio" name="tgt0" value="0" onclick="decideAction(0)"><span id="tgt_00"></span></div>
+            <div id="com_tgt_01"><input type="radio" name="tgt0" value="1" onclick="decideAction(0)"><span id="tgt_01"></span></div>
+            <div id="com_tgt_02"><input type="radio" name="tgt0" value="2" onclick="decideAction(0)"><span id="tgt_02"></span></div>
+            <div id="com_tgt_03"><input type="radio" name="tgt0" value="3" onclick="decideAction(0)"><span id="tgt_03"></span></div>
+            <!-- 手持ち選択 -->
+            <div id="hand_comment_0">交代先</div>
+            <div id="com_hand_00"><input type="radio" name="hand0" value="0" onclick="decideAction(0)"><span id="hand_00"></span></div>
+            <div id="com_hand_01"><input type="radio" name="hand0" value="1" onclick="decideAction(0)"><span id="hand_01"></span></div>
+            <div id="com_hand_02"><input type="radio" name="hand0" value="2" onclick="decideAction(0)"><span id="hand_02"></span></div>
+            <div id="com_hand_03"><input type="radio" name="hand0" value="3" onclick="decideAction(0)"><span id="hand_03"></span></div>
+            <!-- 決定ボタン -->
+            <div id="decide_0"><input type="button" value="決定" onclick="decide(0)"></div>
+            
+            <!-- 1番目 -->
+            <div id="command_1"><span id="name_1"></span>の行動</div>
+            <div id="choise_1"><input type="button" value="戦う" onclick="choiseMove(1)"><input type="button" value="交代" onclick="choiseHand(1)"></div>
+            <!-- 技選択 -->
+            <div id="com_move_10"><input type="radio" name="move1" value="0" onclick="decideMoveCommand(1, 0)"><span id="move_10"></span></div>
+            <div id="com_move_11"><input type="radio" name="move1" value="1" onclick="decideMoveCommand(1, 1)"><span id="move_11"></span></div>
+            <div id="com_move_12"><input type="radio" name="move1" value="2" onclick="decideMoveCommand(1, 2)"><span id="move_12"></span></div>
+            <div id="com_move_13"><input type="radio" name="move1" value="3" onclick="decideMoveCommand(1, 3)"><span id="move_13"></span></div>
+            <!-- 攻撃対象選択 -->
+            <div id="target_comment_1">攻撃対象</div>
+            <div id="com_tgt_10"><input type="radio" name="tgt1" value="0" onclick="decideAction(1)"><span id="tgt_10"></span></div>
+            <div id="com_tgt_11"><input type="radio" name="tgt1" value="1" onclick="decideAction(1)"><span id="tgt_11"></span></div>
+            <div id="com_tgt_12"><input type="radio" name="tgt1" value="2" onclick="decideAction(1)"><span id="tgt_12"></span></div>
+            <div id="com_tgt_13"><input type="radio" name="tgt1" value="3" onclick="decideAction(1)"><span id="tgt_13"></span></div>
+            <!-- 手持ち選択 -->
+            <div id="hand_comment_1">交代先</div>
+            <div id="com_hand_10"><input type="radio" name="hand1" value="0" onclick="decideAction(1)"><span id="hand_10"></span></div>
+            <div id="com_hand_11"><input type="radio" name="hand1" value="1" onclick="decideAction(1)"><span id="hand_11"></span></div>
+            <div id="com_hand_12"><input type="radio" name="hand1" value="2" onclick="decideAction(1)"><span id="hand_12"></span></div>
+            <div id="com_hand_13"><input type="radio" name="hand1" value="3" onclick="decideAction(1)"><span id="hand_13"></span></div>
+            <!-- 決定ボタン -->
+            <div id="decide_1"><input type="button" value="決定" onclick="decide(1)"></div>
+
+            <hr>
+
+            <div id="change_text">次に出すポケモン</div>
+            <!-- 1匹目 -->
+            <div id="com_change_00"><input type="radio" name="change0" value="0" onclick="decideNext(0)"><span id="change_00"></span></div>
+            <div id="com_change_01"><input type="radio" name="change0" value="1" onclick="decideNext(0)"><span id="change_01"></span></div>
+            <div id="com_change_02"><input type="radio" name="change0" value="2" onclick="decideNext(0)"><span id="change_02"></span></div>
+            <div id="com_change_03"><input type="radio" name="change0" value="3" onclick="decideNext(0)"><span id="change_03"></span></div>
+            <!-- 上下ボタン -->
+            <div id="change_above_0"><input type="radio" name="up_down_0" value="0" onclick="decidePosition(0)">上に出す</div>
+            <div id="change_below_0"><input type="radio" name="up_down_0" value="1" onclick="decidePosition(0)">下に出す</div>
+            <!-- 2匹目 -->
+            <div id="com_change_10"><input type="radio" name="change1" value="0" onclick="decideNext(1)"><span id="change_10"></span></div>
+            <div id="com_change_11"><input type="radio" name="change1" value="1" onclick="decideNext(1)"><span id="change_11"></span></div>
+            <div id="com_change_12"><input type="radio" name="change1" value="2" onclick="decideNext(1)"><span id="change_12"></span></div>
+            <div id="com_change_13"><input type="radio" name="change1" value="3" onclick="decideNext(1)"><span id="change_13"></span></div>
+            <!-- 上下ボタン -->
+            <div id="change_above_1"><input type="radio" name="up_down_1" value="0" onclick="decidePosition(1)">上に出す</div>
+            <div id="change_below_1"><input type="radio" name="up_down_1" value="1" onclick="decidePosition(1)">下に出す</div>
+
+            <!-- 最終決定ボタン -->
+            <div id="emit_command"><button type="submit" id="emit_com">決定</button></div>
+            <div id="back_command"><input type="button" value="戻る" onclick="back()"></div>
+        </td>
+    </tr>
+    </table>

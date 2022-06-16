@@ -1529,12 +1529,12 @@ function faintedFailure(poke) {
 
     for ( const tgt of target ) {
         poke.myTarget.push({
-            poke: tgt,        // ポケモン
-            success: true,    // 技の成否
-            damage: 0,        // タイプ相性
-            effective: 1,     // タイプ相性
-            critical: false,  // 急所
-            substitute: false // みがわりの有無
+            poke: tgt,                          // ポケモン
+            success: true,                      // 技の成否
+            damage: 0,                          // ダメージ量
+            effective: 1,                       // タイプ相性
+            critical: false,                    // 急所
+            substitute: isSubstitute(poke, tgt) // みがわりの有無
         })
     }
 }
@@ -2345,8 +2345,8 @@ function substituteInvalidation1(poke) {
     if ( check && poke.myMove.name != "つぼをつく" ) return false
 
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success ) continue // すでに失敗していないこと
-        if ( !isSubstitute(poke, tgt.poke) ) continue // みがわり状態であること
+        if ( !tgt.success )    continue // すでに失敗していないこと
+        if ( !tgt.substitute ) continue // みがわり状態であること
         if ( poke.myMove.name == "つぼをつく" && poke.myID == tgt.poke.myID ) continue // つぼをつくなら、対象が自分以外であること
 
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には うまく決まらなかった....`)
@@ -2689,7 +2689,7 @@ function substituteInvalidation2(poke) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
         // みがわり状態であり、変化技であり、音技でなく、身代わり貫通技でない
-        if ( !isSubstitute(poke, tgt.poke) ) continue // みがわり状態であること
+        if ( !tgt.substitute ) continue // みがわり状態であること
         if ( poke.myMove.nature != "変化" ) continue // 変化技であること
             
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
@@ -2757,9 +2757,9 @@ function moveSpecificationsInvalidation3(poke) {
         if ( poke.myMove.name == "なかまづくり" ) {
             if ( poke.myAbility == tgt.poke.myAbility )         tgt.success = false // 対象が自身と同じ特性である
             if ( yourEntrainment.includes(tgt.poke.myAbility) ) tgt.success = false // 対象が上書きできない特性である
-            if ( myEntrainment.includes(poke.myAbility) )        tgt.success = false // 自身がコピーできない特性である
+            if ( myEntrainment.includes(poke.myAbility) )       tgt.success = false // 自身がコピーできない特性である
             if ( tgt.poke.myCondition.myDynamax )               tgt.success = false // 対象がダイマックスしている
-            if ( isSubstitute(poke, tgt.poke) )                 tgt.success = false // 対象がみがわり状態である
+            if ( tgt.substitute )                               tgt.success = false // 対象がみがわり状態である
         }
         // いえき: 対象がすでにとくせいなし状態である/とくせいなしにできない特性である
         if ( poke.myMove.name == "いえき" ) {
@@ -3095,11 +3095,11 @@ function moveSpecificationsInvalidation3(poke) {
         }
         // バトンタッチ/いやしのねがい/みかづきのまい: 交代できる味方がいない
         if ( poke.myMove.name == "バトンタッチ" || poke.myMove.name == "いやしのねがい" || poke.myMove.name == "みかづきのまい" || poke.myMove.name == "テレポート" ) {
-            if ( isBench(poke).length == 0 ) tgt.success = false
+            if ( !isBench(poke) ) tgt.success = false
         }
         // ほえる/ふきとばし: 交代できる相手がいない
         if ( poke.myMove.name == "ほえる" || poke.myMove.name == "ふきとばし" ) {
-            if ( !isBench(tgt.poke).length == 0 ) tgt.success = false
+            if ( !isBench(tgt.poke) ) tgt.success = false
         }
         // てだすけ/サイドチェンジ/アロマミスト/てをつなぐ: 味方がいない
         if ( poke.myMove.name == "てだすけ" || poke.myMove.name == "サイドチェンジ" || poke.myMove.name == "アロマミスト" || poke.myMove.name == "てをつなぐ" ) {

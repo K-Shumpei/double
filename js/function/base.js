@@ -105,15 +105,26 @@ function oppPokeInBattle(poke){
 
 // ひんし判定
 function faintedJudge( party ) {
-    const lives = party.filter( poke => poke.myRest_hp > 0 ).length
-    const battles = party.filter( poke => poke.myPosition != null ).length
+    const battle = party.filter( poke => poke.myPosition != null ).length // バトル場の数
+    const bench  = party.filter( poke => poke.myRest_hp > 0 && !isSwitch(poke) ).length  // 手持ちの数
 
     // 戦闘に出すポケモンの数を返す
-    if ( battles == 2 ) return 0
-    if ( battles == 1 && lives > battles ) return 1
-    if ( battles == 0 && lives > battles ) return Math.min(2, lives)
+    if ( battle == 2 ) return 0
+    if ( battle == 1 && bench > 0 ) return 1
+    if ( battle == 0 && bench > 0 ) return Math.min(2, bench)
 
     return 0
+}
+
+
+function isSwitch(poke) {
+    if ( poke.myEject_button != false ) return true
+    if ( poke.myEject_pack   != false ) return true
+    if ( poke.myEmergency    != false ) return true
+    if ( poke.myRed_card     != false ) return true
+    if ( poke.mySwitch       != false ) return true
+
+    return false
 }
 
 
@@ -129,9 +140,13 @@ function isItem(poke){
 
 // 特性
 function isAbility(poke){
+    if ( poke.myCondition.myNo_ability ) return false                    // 特性なし状態
+    if ( disableByNeutralizingGas.includes(poke.myAbility) ) return true // かがくへんかガスで無効にされない特性
+    for ( const _poke of allPokeInBattle() ) {
+        if ( _poke.myAbility == "かがくへんかガス" ) return false           // かがくへんかガス
+    }
+
     /*
-    if (con.p_con.includes("状態変化『特性なし』")) return false
-    if (me.f_con.includes("かがくへんかガス") && !NeutralizingGas.includes(con.ability)) return false
     if (me.f_con.includes("かたやぶり")){
         const text = searchText(me.f_con, "かたやぶり")
         const parent = text.split("：")[1].split(",")[0]
@@ -285,6 +300,7 @@ function resetAilment(poke) {
 }
 
 function resetBind(poke) {
+    poke.myCondition.myBind_ID     = false // バインドを付与したポケモンのID
     poke.myCondition.myBind_long   = false // ねばりのかぎづめ
     poke.myCondition.myBind_turn   = false // バインド経過ターン数
     poke.myCondition.myBind_strong = false // しめつけバンド
@@ -581,20 +597,9 @@ function checkMoveSuccess(poke) {
 
 
 
-function removeText(con, txt){
-    const list = con.split("\n")
-    const len = list.length - 1
-    con = ""
-    for (let i = 0; i < len; i++){
-        if (!list[i].includes(txt)){
-            con += list[i] + "\n"
-        }
-    }
-}
-
 function shuffle(array){
     for(var i = array.length - 1; i > 0; i--){
-        var r = Math.floor(Math.random() * (i + 1))
+        var r = Math.floor(getRandom() * (i + 1))
         var tmp = array[i]
         array[i] = array[r]
         array[r] = tmp
@@ -602,26 +607,6 @@ function shuffle(array){
     return array
 }
 
-
-
-function searchText(con, text){
-    for (let i = 0; i < con.split("\n").length; i++){
-        if (con.split("\n")[i].includes(text)){
-            return con.split("\n")[i]
-        }
-    }
-    return false
-}
-
-function rewriteText(con, old, text){
-    let array = con.split("\n")
-    for (let i = 0; i < array.length; i++){
-        if (array[i].includes(old)){
-            array[i] = text
-        }
-    }
-    con = array.join("\n")
-}
 
 function allFalse(target){
     let count = 0
@@ -683,12 +668,16 @@ function isWeight(poke){
 
 
 
-
+// 控えの瀕死でないポケモン
 function isBench(poke){
     let result = []
     
     for ( const _poke of getParty(poke) ) {
-        if ( _poke.myBench != null && _poke.myPosition == null && _poke.myRest_hp > 0 ) result.push(_poke)
+        if ( _poke.myPosition != null ) continue // バトル場にいない
+        if ( _poke.myRest_hp == 0 )     continue // ひんしでない
+        if ( isSwitch(_poke) )          continue // 交代待ちをしている
+        
+        result.push(_poke)
     }
 
     return result

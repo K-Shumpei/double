@@ -57,7 +57,6 @@ function isDamageByFixedDamageMove(poke, tgt){
 
     tgt.effective  = 1     // タイプ相性
     tgt.critical   = false // 急所
-    tgt.substitute = tgt.poke.myCondition.mySubstitute // みがわりの有無
 }
 
 

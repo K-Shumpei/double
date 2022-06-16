@@ -493,7 +493,8 @@ function setPokemon(){
     }
 
     // 技の記入
-    for (let i = 0; i < 4; i++){
+    for ( let i = 0; i < 4; i++ ) {
+        if ( !party[`myMove_${i}`] ) continue
         document.getElementById(`${team}_move_${i}`).textContent            = party[`myMove_${i}`]
         document.getElementById(`${team}_PP_${i}`).textContent              = party[`myFull_pp_${i}`]
         document.getElementById(`${team}_last_${i}`).textContent            = party[`myRest_pp_${i}`]
@@ -775,13 +776,6 @@ function buttonInvalidation(){
     }
 }
 
-function all_clear(){
-    // 全てのチェックを外す
-    for (let i = 0; i < 4; i++){
-        document.getElementById("radio_" + i).checked = false
-    }
-}
-
 function change_dyna_move(){
     for (let i = 0; i < 4; i++){
         let move = moveSearchByName(document.getElementById("A_move_" + i).textContent)
@@ -832,9 +826,9 @@ function showCommand() {
     for ( let i = 0; i < 2; i++ ) {
         for ( const poke of myParty ) {
             if ( poke.myPosition == i ) {
-                // 〜の行動　を見せる
-                document.getElementById("name_" + poke.myPosition).textContent = poke.myName
-                document.getElementById(`command_${poke.myPosition}`).style.display = "block"
+                // 選択中のポケモン名を表示
+                document.getElementById(`com_log_${poke.myPosition}`).style.display = "block"
+                document.getElementById(`com_log_name_${poke.myPosition}`).textContent = `${poke.myName}は `
                 // 「攻撃」か「交代」のボタン　を見せる
                 document.getElementById(`choise_${poke.myPosition}`).style.display = "block"
                 // 戻るボタンを見せる
@@ -851,16 +845,18 @@ function choiseMove(position){
     // 「攻撃」か「交代」のボタン　を隠す
     document.getElementById(`choise_${position}`).style.display = "none"
 
-    for ( const party of myParty ) {
-        if ( party.myPosition == position ) {
-            // 選択中のポケモン名を表示
-            document.getElementById(`com_log_${position}`).style.display = "block"
-            document.getElementById(`com_log_name_${position}`).textContent = `${party.myName}は `
+    for ( const poke of myParty ) {
+        if ( poke.myPosition == position ) {
             // 技を見せる
             for ( let i = 0; i < 4; i++ ) {
-                if ( party[`myMove_${i}`] != null ) {
-                    document.getElementById(`com_move_${party.myPosition}${i}`).style.display = "block"
-                    document.getElementById(`move_${party.myPosition}${i}`).textContent = party[`myMove_${i}`]
+                if ( poke[`myMove_${i}`] != null ) {
+                    document.getElementById(`com_move_${poke.myPosition}${i}`).style.display = "block"
+                    document.getElementById(`com_pp_${poke.myPosition}${i}`).style.display = "block"
+                    document.getElementById(`com_move_${poke.myPosition}${i}`).style.background = getColorCode(moveSearchByName(poke[`myMove_${i}`]).type)
+                    document.getElementById(`com_pp_${poke.myPosition}${i}`).style.background = getColorCode(moveSearchByName(poke[`myMove_${i}`]).type)
+                    document.getElementById(`move_${poke.myPosition}${i}`).textContent = poke[`myMove_${i}`]
+                    document.getElementById(`rest_pp_${poke.myPosition}${i}`).textContent = poke[`myRest_pp_${i}`]
+                    document.getElementById(`full_pp_${poke.myPosition}${i}`).textContent = poke[`myFull_pp_${i}`]
                 }
             }
         }
@@ -876,22 +872,26 @@ function decideMoveCommand(position, num){
         // 技を隠す
         for ( let i = 0; i < 4 ;i++ ) {
             document.getElementById(`com_move_${position}${i}`).style.display = "none"
+            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
             document.getElementById(`move_${position}${i}`).textContent = ""
+            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+            document.getElementById(`full_pp_${position}${i}`).textContent = ""
         }
         // 「攻撃対象」の文字をを見せる
         document.getElementById(`target_comment_${position}`).style.display = "block"
         // 攻撃対象を見せる(相手)
-        for ( const party of oppParty ) {
-            if ( party.myPosition != null ) {
-                document.getElementById(`com_tgt_${position}${party.myPosition}`).style.display = "block"
-                document.getElementById(`tgt_${position}${party.myPosition}`).textContent = party.myName
+        for ( const poke of oppParty ) {
+            if ( poke.myPosition != null ) {
+                document.getElementById(`com_tgt_${position}${poke.myPosition}`).style.display = "block"
+                document.getElementById(`tgt_${position}${poke.myPosition}`).textContent = poke.myName
             } 
         }
         // 攻撃対象を見せる(自分)
-        for ( const party of myParty ) {
-            if ( party.myPosition != null && party.myPosition != position ) {
-                document.getElementById(`com_tgt_${position}${party.myPosition + 2}`).style.display = "block"
-                document.getElementById(`tgt_${position}${party.myPosition + 2}`).textContent = party.myName
+        for ( const poke of myParty ) {
+            if ( poke.myPosition != null && poke.myPosition != position ) {
+                console.log(poke)
+                document.getElementById(`com_tgt_${position}${poke.myPosition + 2}`).style.display = "block"
+                document.getElementById(`tgt_${position}${poke.myPosition + 2}`).textContent = poke.myName
             } 
         }
     }
@@ -900,7 +900,10 @@ function decideMoveCommand(position, num){
         // 技を隠す
         for ( let i = 0; i < 4 ;i++ ) {
             document.getElementById(`com_move_${position}${i}`).style.display = "none"
+            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
             document.getElementById(`move_${position}${i}`).textContent = ""
+            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+            document.getElementById(`full_pp_${position}${i}`).textContent = ""
         }
         decideAction(position)
     }
@@ -909,7 +912,10 @@ function decideMoveCommand(position, num){
         // 技を隠す
         for ( let i = 0; i < 4 ;i++ ) {
             document.getElementById(`com_move_${position}${i}`).style.display = "none"
+            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
             document.getElementById(`move_${position}${i}`).textContent = ""
+            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+            document.getElementById(`full_pp_${position}${i}`).textContent = ""
         }
         decideAction(position)
     }
@@ -925,6 +931,7 @@ function choiseHand(position){
     for ( const poke of myParty ) {
         if ( poke.myPosition == position ) {
             // 選択中のポケモン名を表示
+            document.getElementById(`com_log_${position}`).style.display = "block"
             document.getElementById(`com_log_name_${position}`).textContent = `${poke.myName}は `
         }
         // 戦闘していなくて、ひんしでない
@@ -953,9 +960,6 @@ function decideAction(position){
         document.getElementById(`com_log_com_${position}`).textContent = `交代`
     }
 
-    // 〜の行動　を隠す
-    document.getElementById(`name_${position}`).textContent = ""
-    document.getElementById(`command_${position}`).style.display = "none"
     // 「攻撃対象」の文字をを隠す
     document.getElementById(`target_comment_${position}`).style.display = "none"
     // 「交代先」の文字をを隠す
@@ -972,22 +976,19 @@ function decideAction(position){
 
     // 0番目で　かつ　1番目がいる時
     if ( position == 0 ) {
-        for ( const party of myParty ) {
-            if ( party.myPosition == 1 ) {
-                // 1番目の　〜の行動　を見せる
-                document.getElementById("name_1").textContent = party.myName
-                document.getElementById(`command_1`).style.display = "block"
+        for ( const poke of myParty ) {
+            if ( poke.myPosition == 1 ) {
+                // 選択中のポケモン名を表示
+                document.getElementById(`com_log_${poke.myPosition}`).style.display = "block"
+                document.getElementById(`com_log_name_${poke.myPosition}`).textContent = `${poke.myName}は `
                 // 「攻撃」か「交代」のボタン　を見せる
-                document.getElementById(`choise_${party.myPosition}`).style.display = "block"
+                document.getElementById(`choise_${poke.myPosition}`).style.display = "block"
 
                 return
             }
         }
     }
     // それ以外なら終了
-    // 〜の行動　を隠す
-    document.getElementById(`name_${position}`).textContent = ""
-    document.getElementById(`command_${position}`).style.display = "none"
 
     // 最終決定ボタンを見せる
     document.getElementById(`emit_command`).style.display = "block"
@@ -1002,9 +1003,6 @@ function back(){
     document.getElementById('back_command').style.display = "block"
 
     for ( let i = 0; i < 2; i++ ) {
-        // 〜の行動　を隠す
-        document.getElementById(`name_${i}`).textContent = ""
-        document.getElementById(`command_${i}`).style.display = "none"
         // 「攻撃」か「交代」のボタン　を隠す
         document.getElementById(`choise_${i}`).style.display = "none"
         // 「攻撃対象」の文字をを隠す
@@ -1032,7 +1030,10 @@ function back(){
         for ( let j = 0; j < 4; j++ ) {
             // 技　を隠す
             document.getElementById(`com_move_${i}${j}`).style.display = "none"
+            document.getElementById(`com_pp_${i}${j}`).style.display = "none"
             document.getElementById(`move_${i}${j}`).textContent = ""
+            document.getElementById(`rest_pp_${i}${j}`).textContent = ""
+            document.getElementById(`full_pp_${i}${j}`).textContent = ""
             const radio_move = document.querySelectorAll(`input[name=move${i}]`)
             for ( const element of radio_move ) element.checked = false
             // 攻撃対象　を隠す
@@ -1060,7 +1061,6 @@ function back(){
 
 // 交代先を選ぶとき
 function showCommandToDecideNext() {
-    console.log(myParty)
     // 控えを見せる
     for ( const poke of myParty ) {
         // 戦闘していなくて、ひんしでない
@@ -1168,17 +1168,18 @@ function showNowCondition() {
 
 //
 function checkCondition(position) {
+    const poke = getPokeToCheck(position)
+    if ( !poke ) return
+
     let text = ""
 
-    const poke = getPokeToCheck(position)
-
     // ランク変化
-    text += `攻撃：${poke.myRank_atk}`
+    text += `攻撃：${poke.myRank_atk}\n`
     text += `防御：${poke.myRank_def}\n`
-    text += `特攻：${poke.myRank_sp_atk}`
-    text += `特防：${poke.myRank_sp_def}`
+    text += `特攻：${poke.myRank_sp_atk}\n`
+    text += `特防：${poke.myRank_sp_def}\n`
     text += `素早さ：${poke.myRank_speed}\n`
-    text += `回避率：${poke.myRank_evasion}`
+    text += `回避率：${poke.myRank_evasion}\n`
     text += `命中率：${poke.myRank_accuracy}\n`
     text += `\n`
 
@@ -1273,7 +1274,7 @@ function checkCondition(position) {
     ]
     for ( const w of weather ) {
         if ( fieldStatus[`my${w.en}`] ) {
-            const turn = ( myField.myWeather_long || fieldStatus[`my${w.en}`] )? 8 : 5
+            const turn = ( myField.myWeather_long || fieldStatus[`my${w.en}`] > 5 )? 8 : 5
             const rest = turn - fieldStatus[`my${w.en}`] + 1
             text += `${w.ja} ${rest}/${turn}\n`
         }
@@ -1287,9 +1288,9 @@ function checkCondition(position) {
     ]
     for ( const t of terrain ) {
         if ( fieldStatus[`my${t.en}`] ) {
-            const turn = ( myField.myExtender || fieldStatus[`my${t.en}`] )? 8 : 5
+            const turn = ( myField.myExtender || fieldStatus[`my${t.en}`] > 5 )? 8 : 5
             const rest = turn - fieldStatus[`my${t.en}`] + 1
-            text += `${t.ja} ${rest}/${turn}\n`
+            text += `${t.ja}フィールド ${rest}/${turn}\n`
         }
     }
     // その他
@@ -1311,4 +1312,6 @@ function getPokeToCheck(position) {
             return poke
         }
     }
+
+    return false
 }

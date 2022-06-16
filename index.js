@@ -358,7 +358,7 @@ $(function () {
             back()
             showCommandToDecideNext()
         } else if ( faintedJudge(oppParty) ) {
-
+            
         } else {
             back()
         }

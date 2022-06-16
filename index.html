@@ -276,239 +276,146 @@
 
     <hr>
 
-    <table align="center">
-        <tr>
-            <td>
-                <script type="text/javascript">
-                    document.write("<table align='center' height='100'>")
-                    for (let i = 0; i < 6; i++){
-                        document.write("<td><div id='"+i+"_team'><table border='1'>")
-                        // 名前・性別・レベル
-                        document.write("<tr align='center'><td><table><tr>")
-                        document.write("<td><span id='"+i+"_name'></span></td>")
-                        document.write("<td><span id='"+i+"_sex'></span></td>")
-                        document.write("<td>Lv.<span id='"+i+"_level'></span></td>")
-                        document.write("</tr></table></td></tr>")
-                        // 特性・持ち物・状態異常
-                        document.write("<tr align='center'><td><span id='"+i+"_type'></span></td></tr>")
-                        document.write("<tr><td>特性：<span id='"+i+"_ability'></span></td></tr>")
-                        document.write("<tr><td>持ち物：<span id='"+i+"_item'></span></td></tr>")
-                        document.write("<tr><td>状態異常：<span id='"+i+"_abnormal'></span></td></tr>")
-                        // 実数値
-                        document.write("<tr align='center'><td><table>")
-                        document.write("<tr><td align='left'>HP</td><td align='right'><font id='"+i+"_HP_color'><span id='"+i+"_last_HP'></span></font>/<span id='"+i+"_full_HP'></span></td><td align='left'>&nbsp;<font id='"+i+"_atk'>攻撃</font></td><td align='right'><span id='"+i+"_A_AV'></span><td></tr>")
-                        document.write("<tr><td align='left'><font id='"+i+"_def'>防御</font></td><td align='right'><span id='"+i+"_B_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_sp_atk'>特攻</font></td><td align='right'><span id='"+i+"_C_AV'></span><td></tr>")
-                        document.write("<tr><td align='left'><font id='"+i+"_sp_def'>特防</font></td><td align='right'><span id='"+i+"_D_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_speed'>素早</font></td><td align='right'><span id='"+i+"_S_AV'></span><td></tr>")
-                        document.write("</table></td></tr>")
-                        // 技
-                        document.write("<tr align='center'><td><table>")
-                        for (let j = 0; j < 4; j++){
-                            document.write("<tr id='"+i+"_move_"+j+"_color'><td align='left' width='140'><font color='white'><span id='"+i+"_move_"+j+"'></span></font></td>")
-                            document.write("<td align='right' width='60'><font color='white'><span id='"+i+"_last_"+j+"'></span>/<span id='"+i+"_PP_"+j+"'></span></font></td></tr>")
-                        }
-                        document.write("</table></td></tr>")
+    <script type="text/javascript">
+        document.write(`<table align="center"><tr><td>`)
+        // 自分のパーティの詳細
+        document.write("<table align='center' height='100'>")
+        for (let i = 0; i < 6; i++){
+            document.write("<td><div id='"+i+"_team'><table border='1'>")
+            // 名前・性別・レベル
+            document.write("<tr align='center'><td><table><tr>")
+            document.write("<td><span id='"+i+"_name'></span></td>")
+            document.write("<td><span id='"+i+"_sex'></span></td>")
+            document.write("<td>Lv.<span id='"+i+"_level'></span></td>")
+            document.write("</tr></table></td></tr>")
+            // 特性・持ち物・状態異常
+            document.write("<tr align='center'><td><span id='"+i+"_type'></span></td></tr>")
+            document.write("<tr><td>特性：<span id='"+i+"_ability'></span></td></tr>")
+            document.write("<tr><td>持ち物：<span id='"+i+"_item'></span></td></tr>")
+            document.write("<tr><td>状態異常：<span id='"+i+"_abnormal'></span></td></tr>")
+            // 実数値
+            document.write("<tr align='center'><td><table>")
+            document.write("<tr><td align='left'>HP</td><td align='right'><font id='"+i+"_HP_color'><span id='"+i+"_last_HP'></span></font>/<span id='"+i+"_full_HP'></span></td><td align='left'>&nbsp;<font id='"+i+"_atk'>攻撃</font></td><td align='right'><span id='"+i+"_A_AV'></span><td></tr>")
+            document.write("<tr><td align='left'><font id='"+i+"_def'>防御</font></td><td align='right'><span id='"+i+"_B_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_sp_atk'>特攻</font></td><td align='right'><span id='"+i+"_C_AV'></span><td></tr>")
+            document.write("<tr><td align='left'><font id='"+i+"_sp_def'>特防</font></td><td align='right'><span id='"+i+"_D_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_speed'>素早</font></td><td align='right'><span id='"+i+"_S_AV'></span><td></tr>")
+            document.write("</table></td></tr>")
+            // 技
+            document.write("<tr align='center'><td><table>")
+            for (let j = 0; j < 4; j++){
+                document.write("<tr id='"+i+"_move_"+j+"_color'><td align='left' width='140'><font color='white'><span id='"+i+"_move_"+j+"'></span></font></td>")
+                document.write("<td align='right' width='60'><font color='white'><span id='"+i+"_last_"+j+"'></span>/<span id='"+i+"_PP_"+j+"'></span></font></td></tr>")
+            }
+            document.write("</table></td></tr>")
 
-                        document.write("</table></div></td>")
-                    }
-                    document.write("</tr></table>")
-                </script>
-            </td>
-            <td><div id="each_party">
-                <table>
-                    <tr>
-                        <td colspan="2" align="center"><span id="my_TN"></span></td>
-                        <td colspan="2" align="center"><span id="opp_TN"></span></td>
-                    </tr>
-                    <tr>
-                        <td><img src="" id="me_0" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="me_1" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="opp_0"></td>
-                        <td><img src="" id="opp_1"></td>
-                    </tr>
-                    <tr>
-                        <td><div id="me_0_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_0_HP_bar"></meter></div></td>
-                        <td><div id="me_1_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_1_HP_bar"></meter></div></td>
-                        <td><div id="opp_0_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_0_HP_bar"></meter></div></td>
-                        <td><div id="opp_1_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_1_HP_bar"></meter></div></td>
-                    </tr>
-                    <tr>
-                        <td><img src="" id="me_2" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="me_3" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="opp_2"></td>
-                        <td><img src="" id="opp_3"></td>
-                    </tr>
-                    <tr>
-                        <td><div id="me_2_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_2_HP_bar"></meter></div></td>
-                        <td><div id="me_3_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_3_HP_bar"></meter></div></td>
-                        <td><div id="opp_2_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_2_HP_bar"></meter></div></td>
-                        <td><div id="opp_3_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_3_HP_bar"></meter></div></td>
-                    </tr>
-                    <tr>
-                        <td><img src="" id="me_4" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="me_5" style="transform: scale(-1, 1);"></td>
-                        <td><img src="" id="opp_4"></td>
-                        <td><img src="" id="opp_5"></td>
-                    </tr>
-                    <tr>
-                        <td><div id="me_4_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_4_HP_bar"></meter></div></td>
-                        <td><div id="me_5_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_5_HP_bar"></meter></div></td>
-                        <td><div id="opp_4_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_4_HP_bar"></meter></div></td>
-                        <td><div id="opp_5_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_5_HP_bar"></meter></div></td>
-                    </tr>
-                </table>
-            </div></td>
-        </tr>
-    </table>
-    
+            document.write("</table></div></td>")
+        }
+        document.write("</tr></table>")
+        document.write(`</td><td>`)
+        // お互いのパーティ
+        document.write(`<div id="each_party"><table>`)
+        // トレーナーネーム
+        document.write(`<tr><td colspan="2" align="center"><span id="my_TN"></span></td>`)
+        document.write(`<td colspan="2" align="center"><span id="opp_TN"></span></td></tr>`)
+        for ( let i = 0; i < 3; i++ ) {
+            // ポケモンの画像
+            document.write(`<tr>`)
+            document.write(`<td><img src="" id="me_${i*2}" style="transform: scale(-1, 1);"></td>`)
+            document.write(`<td><img src="" id="me_${i*2+1}" style="transform: scale(-1, 1);"></td>`)
+            document.write(`<td><img src="" id="opp_${i*2}"></td>`)
+            document.write(`<td><img src="" id="opp_${i*2+1}"></td>`)
+            document.write(`</tr>`)
+            // ポケモンのHPバー
+            document.write(`<tr>`)
+            document.write(`<td><div id="me_${i*2}_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_${i*2}_HP_bar"></meter></div></td>`)
+            document.write(`<td><div id="me_${i*2+1}_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_${i*2+1}_HP_bar"></meter></div></td>`)
+            document.write(`<td><div id="opp_${i*2}_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_${i*2}_HP_bar"></meter></div></td>`)
+            document.write(`<td><div id="opp_${i*2+1}_bar"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_${i*2+1}_HP_bar"></meter></div></td>`)
+            document.write(`</tr>`)
+        }
+        document.write(`</table></div>`)
+        document.write(`</td></tr></table>`)
+    </script>
 
     <hr>
         
-    <div id="battle_table">
-        <form id="battle" name="battle"><table align="center">
-            <tr>
-                <td>
-                    <table rules="all">
-                        <tr>
-                            <td>
-                                <div id="com_log_0"><span id="com_log_name_0"></span><span id="com_log_tgt_0"></span><span id="com_log_com_0"></span></div>
-                                <div id="com_log_1"><span id="com_log_name_1"></span><span id="com_log_tgt_1"></span><span id="com_log_com_1"></span></div>
-                                <div id="change_log_0"><span id="change_name_0"></span><span id="change_position_0"></span>繰り出す</div>
-                                <div id="change_log_1"><span id="change_name_1"></span><span id="change_position_1"></span>繰り出す</div>
-                            </td>  
-                        </tr>
+    
+    <script type="text/javascript">
+        document.write(`<div id="battle_table">`)
+        document.write(`<form id="battle" name="battle"><table align="center"><tr><td>`)
 
-                        <tr>
-                            <td>
-                                <!-- 0番目 -->
-                                <div id="command_0"><span id="name_0"></span>の行動</div>
-                                <div id="choise_0"><input type="button" value="戦う" onclick="choiseMove(0)"><input type="button" value="交代" onclick="choiseHand(0)"></div>
-                                <!-- 技選択 -->
-                                <div id="com_move_00"><input type="radio" name="move0" value="0" onclick="decideMoveCommand(0, 0)"><span id="move_00"></span></div>
-                                <div id="com_move_01"><input type="radio" name="move0" value="1" onclick="decideMoveCommand(0, 1)"><span id="move_01"></span></div>
-                                <div id="com_move_02"><input type="radio" name="move0" value="2" onclick="decideMoveCommand(0, 2)"><span id="move_02"></span></div>
-                                <div id="com_move_03"><input type="radio" name="move0" value="3" onclick="decideMoveCommand(0, 3)"><span id="move_03"></span></div>
-                                <!-- 攻撃対象選択 -->
-                                <div id="target_comment_0">攻撃対象</div>
-                                <div id="com_tgt_00"><input type="radio" name="tgt0" value="0" onclick="decideAction(0)"><span id="tgt_00"></span></div>
-                                <div id="com_tgt_01"><input type="radio" name="tgt0" value="1" onclick="decideAction(0)"><span id="tgt_01"></span></div>
-                                <div id="com_tgt_02"><input type="radio" name="tgt0" value="2" onclick="decideAction(0)"><span id="tgt_02"></span></div>
-                                <div id="com_tgt_03"><input type="radio" name="tgt0" value="3" onclick="decideAction(0)"><span id="tgt_03"></span></div>
-                                <!-- 手持ち選択 -->
-                                <div id="hand_comment_0">交代先</div>
-                                <div id="com_hand_00"><input type="radio" name="hand0" value="0" onclick="decideAction(0)"><span id="hand_00"></span></div>
-                                <div id="com_hand_01"><input type="radio" name="hand0" value="1" onclick="decideAction(0)"><span id="hand_01"></span></div>
-                                <div id="com_hand_02"><input type="radio" name="hand0" value="2" onclick="decideAction(0)"><span id="hand_02"></span></div>
-                                <div id="com_hand_03"><input type="radio" name="hand0" value="3" onclick="decideAction(0)"><span id="hand_03"></span></div>
-                                <!-- 決定ボタン -->
-                                <div id="decide_0"><input type="button" value="決定" onclick="decide(0)"></div>
-                                
-                                <!-- 1番目 -->
-                                <div id="command_1"><span id="name_1"></span>の行動</div>
-                                <div id="choise_1"><input type="button" value="戦う" onclick="choiseMove(1)"><input type="button" value="交代" onclick="choiseHand(1)"></div>
-                                <!-- 技選択 -->
-                                <div id="com_move_10"><input type="radio" name="move1" value="0" onclick="decideMoveCommand(1, 0)"><span id="move_10"></span></div>
-                                <div id="com_move_11"><input type="radio" name="move1" value="1" onclick="decideMoveCommand(1, 1)"><span id="move_11"></span></div>
-                                <div id="com_move_12"><input type="radio" name="move1" value="2" onclick="decideMoveCommand(1, 2)"><span id="move_12"></span></div>
-                                <div id="com_move_13"><input type="radio" name="move1" value="3" onclick="decideMoveCommand(1, 3)"><span id="move_13"></span></div>
-                                <!-- 攻撃対象選択 -->
-                                <div id="target_comment_1">攻撃対象</div>
-                                <div id="com_tgt_10"><input type="radio" name="tgt1" value="0" onclick="decideAction(1)"><span id="tgt_10"></span></div>
-                                <div id="com_tgt_11"><input type="radio" name="tgt1" value="1" onclick="decideAction(1)"><span id="tgt_11"></span></div>
-                                <div id="com_tgt_12"><input type="radio" name="tgt1" value="2" onclick="decideAction(1)"><span id="tgt_12"></span></div>
-                                <div id="com_tgt_13"><input type="radio" name="tgt1" value="3" onclick="decideAction(1)"><span id="tgt_13"></span></div>
-                                <!-- 手持ち選択 -->
-                                <div id="hand_comment_1">交代先</div>
-                                <div id="com_hand_10"><input type="radio" name="hand1" value="0" onclick="decideAction(1)"><span id="hand_10"></span></div>
-                                <div id="com_hand_11"><input type="radio" name="hand1" value="1" onclick="decideAction(1)"><span id="hand_11"></span></div>
-                                <div id="com_hand_12"><input type="radio" name="hand1" value="2" onclick="decideAction(1)"><span id="hand_12"></span></div>
-                                <div id="com_hand_13"><input type="radio" name="hand1" value="3" onclick="decideAction(1)"><span id="hand_13"></span></div>
-                                <!-- 決定ボタン -->
-                                <div id="decide_1"><input type="button" value="決定" onclick="decide(1)"></div>
+        // コマンド欄とログ欄の開始
+        document.write(`<table><tr><td>`)
+        for ( let i = 0; i < 2; i++ ) {
+            document.write(`<div id="com_log_${i}"><span id="com_log_name_${i}"></span><span id="com_log_tgt_${i}"></span><span id="com_log_com_${i}"></span></div>`)
+            document.write(`<div id="change_log_${i}"><span id="change_name_${i}"></span><span id="change_position_${i}"></span>繰り出す</div>`)
+        }
+        document.write(`</td></tr><tr><td>`)
+        for ( let i = 0; i < 2; i++ ) {
+            document.write(`<div id="choise_${i}"><input type="button" value="戦う" onclick="choiseMove(${i})"><input type="button" value="交代" onclick="choiseHand(${i})"></div>`)
+            // 技選択
+            document.write(`<table>`)
+            for ( let j = 0; j < 4; j++ ) {
+                document.write(`<tr><td align"left" width="160"><div id="com_move_${i}${j}"><input type="radio" name="move${i}" value="${j}" onclick="decideMoveCommand(${i}, ${j})"><font color="white"><span id="move_${i}${j}"></span></font></div></td>`)
+                document.write(`<td align="right" width="60"><div id="com_pp_${i}${j}"><font color="white"><span id="rest_pp_${i}${j}"></span>/<span id="full_pp_${i}${j}"></span></font></div></td></tr>`)
+            }
+            document.write(`</table>`)
+            // 攻撃対象選択
+            document.write(`<div id="target_comment_${i}">攻撃対象</div>`)
+            for ( let j = 0; j < 4; j++ ) {
+                document.write(`<div id="com_tgt_${i}${j}"><input type="radio" name="tgt${i}" value="${j}" onclick="decideAction(${i})"><span id="tgt_${i}${j}"></span></div>`)
+            }
+            // 手持ち選択
+            document.write(`<div id="hand_comment_${i}">交代先</div>`)
+            for ( let j = 0; j < 4; j++ ) {
+                document.write(`<div id="com_hand_${i}${j}"><input type="radio" name="hand${i}" value="${j}" onclick="decideAction(${i})"><span id="hand_${i}${j}"></span></div>`)
+            }
+            // 決定ボタン
+            document.write(`<div id="decide_${i}"><input type="button" value="決定" onclick="decide(${i})"></div>`)
+        }
+        document.write(`<div id="change_text">次に出すポケモン</div>`)
+        for ( let i = 0; i < 2; i++ ) {
+            for ( let j = 0; j < 4; j++ ) {
+                document.write(`<div id="com_change_${i}${j}"><input type="radio" name="change${i}" value="${j}" onclick="decideNext(${i})"><span id="change_${i}${j}"></span></div>`)
+            }
+            document.write(`<div id="change_above_${i}"><input type="radio" name="up_down_${i}" value="0" onclick="decidePosition(${i})">上に出す</div>`)
+            document.write(`<div id="change_below_${i}"><input type="radio" name="up_down_${i}" value="1" onclick="decidePosition(${i})">下に出す</div>`)
+        }
 
-                                <hr>
+        // 最終決定ボタン
+        document.write(`<div id="emit_command"><button type="submit" id="emit_com">決定</button></div>`)
+        document.write(`<div id="back_command"><input type="button" value="戻る" onclick="back()"></div>`)
+        document.write(`</td></tr></table>`)
 
-                                <div id="change_text">次に出すポケモン</div>
-                                <!-- 1匹目 -->
-                                <div id="com_change_00"><input type="radio" name="change0" value="0" onclick="decideNext(0)"><span id="change_00"></span></div>
-                                <div id="com_change_01"><input type="radio" name="change0" value="1" onclick="decideNext(0)"><span id="change_01"></span></div>
-                                <div id="com_change_02"><input type="radio" name="change0" value="2" onclick="decideNext(0)"><span id="change_02"></span></div>
-                                <div id="com_change_03"><input type="radio" name="change0" value="3" onclick="decideNext(0)"><span id="change_03"></span></div>
-                                <!-- 上下ボタン -->
-                                <div id="change_above_0"><input type="radio" name="up_down_0" value="0" onclick="decidePosition(0)">上に出す</div>
-                                <div id="change_below_0"><input type="radio" name="up_down_0" value="1" onclick="decidePosition(0)">下に出す</div>
-                                <!-- 2匹目 -->
-                                <div id="com_change_10"><input type="radio" name="change1" value="0" onclick="decideNext(1)"><span id="change_10"></span></div>
-                                <div id="com_change_11"><input type="radio" name="change1" value="1" onclick="decideNext(1)"><span id="change_11"></span></div>
-                                <div id="com_change_12"><input type="radio" name="change1" value="2" onclick="decideNext(1)"><span id="change_12"></span></div>
-                                <div id="com_change_13"><input type="radio" name="change1" value="3" onclick="decideNext(1)"><span id="change_13"></span></div>
-                                <!-- 上下ボタン -->
-                                <div id="change_above_1"><input type="radio" name="up_down_1" value="0" onclick="decidePosition(1)">上に出す</div>
-                                <div id="change_below_1"><input type="radio" name="up_down_1" value="1" onclick="decidePosition(1)">下に出す</div>
+        document.write(`対戦のログ<br><textarea id="log" cols="80" rows="15" readonly></textarea>`)
 
-                                <!-- 最終決定ボタン -->
-                                <div id="emit_command"><button type="submit" id="emit_com">決定</button></div>
-                                <div id="back_command"><input type="button" value="戻る" onclick="back()"></div>
-                            </td>
-                        </tr>
-                    </table>
-                    <hr>
-                    対戦のログ<br>
-                    <textarea id="log" cols="80" rows="15" readonly></textarea>
-                </td>
+        document.write(`</td>`) // コマンド欄とログ欄の終了
+        document.write(`<td>`)  // バトルフィールドの開始
 
-                <td>
-                    <table align="center">
-                        <tr>
-                            <td><table align="center">
-                                <!-- 自分1匹目 -->
-                                <tr><td><img src="" id="me_0_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
-                                <tr><td>
-                                    <table align="right"><tr>
-                                        <td><input type="button" value="状況確認" onclick="checkCondition(0)"></td>
-                                        <td><span id="ailment_0"></span></td>
-                                        <td><span id="rest_hp_0"></span>/<span id="full_hp_0"></span></td>
-                                    </tr></table>
-                                </td></tr>
-                                <tr><td><div id="me_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
-                                <!-- 自分2匹目 -->
-                                <tr><td><img src="" id="me_1_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>
-                                <tr><td>
-                                    <table align="right"><tr>
-                                        <td><input type="button" value="状況確認" onclick="checkCondition(1)"></td>
-                                        <td><span id="ailment_1"></span></td>
-                                        <td><span id="rest_hp_1"></span>/<span id="full_hp_1"></span></td>
-                                    </tr></table>
-                                </td></tr>
-                                <tr><td><div id="me_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
-                            </table></td>
-                            <td><img src="vs.png" width="150" height="120"></td>
-                            <td><table align="center">
-                                <!-- 相手1匹目 -->
-                                <tr><td><img src="" id="opp_0_in_battle" width="192" height="192"></td></tr>
-                                <tr><td>
-                                    <table align="right"><tr>
-                                        <td><input type="button" value="状況確認" onclick="checkCondition(2)"></td>
-                                        <td><span id="ailment_2"></span></td>
-                                    </tr></table>
-                                </td></tr>
-                                <tr><td><div id="opp_0_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_0_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
-                                <!-- 相手2匹目 -->
-                                <tr><td><img src="" id="opp_1_in_battle" width="192" height="192"></td></tr>
-                                <tr><td>
-                                    <table align="right"><tr>
-                                        <td><input type="button" value="状況確認" onclick="checkCondition(3)"></td>
-                                        <td><span id="ailment_3"></span></td>
-                                    </tr></table>
-                                </td></tr>
-                                <tr><td><div id="opp_1_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_1_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>
-                            </table></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table></form>
-    </div>
-    </div>
+        document.write(`<table align="center"><tr>`)
+        for ( let i = 0; i < 2; i++ ) {
+            document.write(`<td><table align="center">`)
+            for ( let j = 0; j < 2; j++ ) {
+                if ( i == 0 ) document.write(`<tr><td><img src="" id="me_${j}_in_battle" style="transform: scale(-1, 1);" width="192" height="192"></td></tr>`)
+                if ( i == 1 ) document.write(`<tr><td><img src="" id="opp_${j}_in_battle" width="192" height="192"></td></tr>`)
+                document.write(`<tr><td><table align="right"><tr>`)
+                document.write(`<td><input type="button" value="状況確認" onclick="checkCondition(${i*2+j})"></td>`)
+                document.write(`<td><span id="ailment_${i*2+j}"></span></td>`)
+                if ( i == 0 ) document.write(`<td><span id="rest_hp_${j}"></span>/<span id="full_hp_${j}"></span></td>`)
+                document.write(`</tr></table></td></tr>`)
+                if ( i == 0 ) document.write(`<tr><td><div id="me_${j}_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="me_${j}_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>`)
+                if ( i == 1 ) document.write(`<tr><td><div id="opp_${j}_bar_in_battle"><meter low="0.251" high="0.501" optimum="0.75" value="1" id="opp_${j}_HP_bar_in_battle" style="width: 192px;"></meter></div></td></tr>`)
+            }
+            document.write(`</table></td>`)
+            if ( i == 0 ) document.write(`<td><img src="vs.png" width="150" height="120"></td>`)
+        }
+        document.write(`</tr></table>`)
+
+        document.write(`</td>`) // バトルフィールドの終了
+
+        document.write(`</tr></table></form></div>`)
+    </script>
+
+    </div> <!-- main content の終わり-->
 
     <script>
         for (let i = 0; i < 6; i++){
@@ -523,7 +430,6 @@
         for (let i = 0; i < 2; i++){
             document.getElementById("com_log_" + i).style.display = "none"
             document.getElementById("change_log_" + i).style.display = "none"
-            document.getElementById("command_" + i).style.display = "none"
             document.getElementById("choise_" + i).style.display = "none"
             document.getElementById("target_comment_" + i).style.display = "none"
             document.getElementById("hand_comment_" + i).style.display = "none"
@@ -533,6 +439,7 @@
 
             for (let j = 0; j < 4; j++){
                 document.getElementById("com_move_" + i + j).style.display = "none"
+                document.getElementById("com_pp_" + i + j).style.display = "none"
                 document.getElementById("com_tgt_" + i + j).style.display = "none"
                 document.getElementById("com_hand_" + i + j).style.display = "none"
                 document.getElementById("com_change_" + i + j).style.display = "none"
