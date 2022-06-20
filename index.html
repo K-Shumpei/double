@@ -361,9 +361,12 @@
             document.write(`</table>`)
             // 攻撃対象選択
             document.write(`<div id="target_comment_${i}">攻撃対象</div>`)
-            for ( let j = 0; j < 4; j++ ) {
-                document.write(`<div id="com_tgt_${i}${j}"><input type="radio" name="tgt${i}" value="${j}" onclick="decideAction(${i})"><span id="tgt_${i}${j}"></span></div>`)
-            }
+            document.write(`<table>`)
+            document.write(`<tr><td><div id="com_tgt_${i}0"><input type="radio" name="tgt${i}" value="0" onclick="decideAction(${i})"><span id="tgt_${i}0"></span></div></td>`)
+            document.write(`<td><div id="com_tgt_${i}2"><input type="radio" name="tgt${i}" value="2" onclick="decideAction(${i})"><span id="tgt_${i}2"></span></div></td></tr>`)
+            document.write(`<tr><td><div id="com_tgt_${i}1"><input type="radio" name="tgt${i}" value="1" onclick="decideAction(${i})"><span id="tgt_${i}1"></span></div></td>`)
+            document.write(`<td><div id="com_tgt_${i}3"><input type="radio" name="tgt${i}" value="3" onclick="decideAction(${i})"><span id="tgt_${i}3"></span></div></td></tr>`)
+            document.write(`</table>`)
             // 手持ち選択
             document.write(`<div id="hand_comment_${i}">交代先</div>`)
             for ( let j = 0; j < 4; j++ ) {

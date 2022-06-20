@@ -245,13 +245,13 @@ $(function () {
 
         // ポケモンを交代する時
         if ( faintedJudge(myParty) ) {
-            const change0   = form.change0.value
-            const up_down_0 = form.up_down_0.value
-            const change1   = form.change1.value
-            const up_down_1 = form.up_down_1.value
+            const change0   = ( form.change0.value == ""   )? "" : Number(form.change0.value)
+            const up_down_0 = ( form.up_down_0.value == "" )? "" : Number(form.up_down_0.value)
+            const change1   = ( form.change1.value == ""   )? "" : Number(form.change1.value)
+            const up_down_1 = ( form.up_down_1.value == "" )? "" : Number(form.up_down_1.value)
 
             let command = []
-            if ( change1 != "" ) {
+            if ( change1 ) {
                 command.push({change: change0, up_down: up_down_0})
                 command.push({change: change1, up_down: up_down_1})
             } else {
@@ -270,12 +270,12 @@ $(function () {
             return false
         } else {
             // コマンド
-            const move0 = form.move0.value
-            const tgt0  = form.tgt0.value
-            const hand0 = form.hand0.value
-            const move1 = form.move1.value
-            const tgt1  = form.tgt1.value
-            const hand1 = form.hand1.value
+            const move0 = ( form.move0.value == "" )? "" : Number(form.move0.value)
+            const tgt0  = ( form.tgt0.value == ""  )? "" : Number(form.tgt0.value)
+            const hand0 = ( form.hand0.value == "" )? "" : Number(form.hand0.value)
+            const move1 = ( form.move1.value == "" )? "" : Number(form.move1.value)
+            const tgt1  = ( form.tgt1.value == ""  )? "" : Number(form.tgt1.value)
+            const hand1 = ( form.hand1.value == "" )? "" : Number(form.hand1.value)
             
             // チェックの解除
             for ( const name of ["move0", "tgt0", "hand0", "move1", "tgt1", "hand1"] ) {
@@ -354,47 +354,56 @@ $(function () {
         // 現在の状態を画面に表示
         showNowCondition()
         // コマンド欄を表示
-        if ( faintedJudge(myParty) ) {
-            back()
-            showCommandToDecideNext()
-        } else if ( faintedJudge(oppParty) ) {
-            
-        } else {
-            back()
-        }
+        back()
     })
 
     // ポケモンの交代
     socketio.on("change pokemon", function(myCommand, oppCommand, list) {
         // 乱数リストを記入
         randomList = list
+
+        // 自分のポケモン
+        for ( const cmd of myCommand ) {
+            for ( const poke of myParty ) {
+                if ( poke.myBench == cmd.change ) {
+                    summon(poke, cmd.up_down)
+                }
+            }
+        }
+        // 相手のポケモン
+        for ( const cmd of oppCommand ) {
+            for ( const poke of oppParty ) {
+                if ( poke.myBench == cmd.change ) {
+                    summon(poke, cmd.up_down)
+                }
+            }
+        }
+
+        resetSwitch()
+
+        // 場に出た時の処理
+        onField()
+        // 現在の状態を画面に表示
+        showNowCondition()
+
         // ターン終了後の交代
         if ( fieldStatus.myTurn_end ) {
-            // 自分のポケモン
-            for ( const cmd of myCommand ) {
-                for ( const poke of myParty ) {
-                    if ( poke.myBench == cmd.change ) {
-                        summon(poke, cmd.up_down)
-                    }
-                }
-            }
-            // 相手のポケモン
-            for ( const cmd of oppCommand ) {
-                for ( const poke of oppParty ) {
-                    if ( poke.myBench == cmd.change ) {
-                        summon(poke, cmd.up_down)
-                    }
-                }
-            }
-
-            // 場に出た時の処理
-            onField()
-            // 現在の状態を画面に表示
-            showNowCondition()
-            // 次のターン
             back()
         } else {
-
+            // 6.技の処理
+            moveUsedEachPokemon()
+            // 現在の状態を画面に表示
+            showNowCondition()
+            if ( fieldStatus.mySwitch_me || fieldStatus.mySwitch_opp ) {
+                back()
+                return
+            }
+            // 7. ターン終了
+            endProcess()
+            // 現在の状態を画面に表示
+            showNowCondition()
+            // コマンド欄を表示
+            back()
         }
     })
 

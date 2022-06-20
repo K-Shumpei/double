@@ -135,15 +135,15 @@ io.on("connection", function(socket){
             io.to(room.id_1).emit("run battle", room.command_1, room.command_0, randomList)
 
             // コマンドのチェックを外す
-            room.check_0 = false
-            room.check_1 = false
+            room.check_0   = false
+            room.check_1   = false
             room.command_0 = []
             room.command_1 = []
-            randomList = []
+            randomList     = []
         }
     })
 
-    // 交代先の受診
+    // 交代先の受信
     socket.on("send change", function(command, oppJudge) {
         let room = data[isRoom(socket.id)]
         for ( let i = 0; i < 2; i++ ) {
@@ -163,11 +163,11 @@ io.on("connection", function(socket){
             io.to(room.id_1).emit("change pokemon", room.change_1, room.change_0, randomList)
 
              // コマンドのチェックを外す
-            room.check_0 = false
-            room.check_1 = false
+            room.check_0  = false
+            room.check_1  = false
             room.change_0 = []
             room.change_1 = []
-            randomList = []
+            randomList    = []
         }
 
 

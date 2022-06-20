@@ -18,10 +18,10 @@ function runBattle() {
     preliminaryAction(secondOrder)
     // 6.技の処理
     moveUsedEachPokemon()
+    if ( fieldStatus.mySwitch_me ) return
+    if ( fieldStatus.mySwitch_opp ) return
     // 7.ターン終了
     endProcess()
-
-    return true
 }
 
 
@@ -153,6 +153,8 @@ function moveUsedEachPokemon() {
 
         if ( judge ) {
             moveEffect(poke)
+            if ( fieldStatus.mySwitch_me ) break
+            if ( fieldStatus.mySwitch_opp ) break
         }
 
 

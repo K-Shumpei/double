@@ -423,7 +423,7 @@ function statusMoveForOneOfThem(poke) {
         tgt.poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2 + num.second), tgt.poke.myFull_hp)
     }
     if ( poke.myMove.name == "いちゃもん" ) {
-        tgt.muCondition.myTorment = true
+        tgt.myCondition.myTorment = true
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は いちゃもんを受けた`)
     }
     if ( poke.myMove.name == "いやしのはどう" ) {

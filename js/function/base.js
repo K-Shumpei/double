@@ -105,8 +105,8 @@ function oppPokeInBattle(poke){
 
 // ひんし判定
 function faintedJudge( party ) {
-    const battle = party.filter( poke => poke.myPosition != null ).length // バトル場の数
-    const bench  = party.filter( poke => poke.myRest_hp > 0 && !isSwitch(poke) ).length  // 手持ちの数
+    const bench  = isBench(party[0]).length        // 手持ちの数
+    const battle = myPokeInBattle(party[0]).length // バトル場の数
 
     // 戦闘に出すポケモンの数を返す
     if ( battle == 2 ) return 0
@@ -118,13 +118,28 @@ function faintedJudge( party ) {
 
 
 function isSwitch(poke) {
-    if ( poke.myEject_button != false ) return true
-    if ( poke.myEject_pack   != false ) return true
-    if ( poke.myEmergency    != false ) return true
-    if ( poke.myRed_card     != false ) return true
-    if ( poke.mySwitch       != false ) return true
+    if ( poke.myEject_button !== false ) return true
+    if ( poke.myEject_pack   !== false ) return true
+    if ( poke.myEmergency    !== false ) return true
+    if ( poke.myRed_card     !== false ) return true
+    if ( poke.mySwitch       !== false ) return true
 
     return false
+}
+
+function resetSwitch() {
+    for ( const party of [myParty, oppParty] ) {
+        for ( const poke of party ) {
+            poke.myEject_button = false
+            poke.myEject_pack   = false
+            poke.myEmergency    = false
+            poke.myRed_card     = false
+            poke.mySwitch       = false
+        }
+    }
+
+    fieldStatus.mySwitch_me  = false
+    fieldStatus.mySwitch_opp = false
 }
 
 
@@ -451,10 +466,11 @@ function isPokeByID(ID){
 
 // 連続技の回数
 function getContinuous(poke) {
-    for ( const element of continuous ){
+    poke.myMove.continuous = 1
+    for ( const element of continuous ) {
         if ( poke.myMove.name == element.name ) poke.myMove.continuous = element.num
     }
-    if ( poke.myCondition.myContinuous == 5 ){
+    if ( poke.myMove.continuous == 5 ) {
         const random = getRandom()
         if ( random >= 0 )    poke.myMove.continuous = 2
         if ( random >= 0.35 ) poke.myMove.continuous = 3
@@ -462,9 +478,9 @@ function getContinuous(poke) {
         if ( random >= 0.85 ) poke.myMove.continuous = 5
         if ( poke.myAbility == "スキルリンク" && isAbility(poke) ) poke.myMove.continuous = 5
     }
-    if ( poke.myMove.name == "みずしゅりけん" && poke.myName == "ゲッコウガ(サトシゲッコウガ)") poke.myMove.continuous = 3
+    if ( poke.myMove.name == "みずしゅりけん" && poke.myName == "ゲッコウガ(サトシゲッコウガ)" ) poke.myMove.continuous = 3
 
-    if ( poke.myMove.name == "ふくろだたき" ){
+    if ( poke.myMove.name == "ふくろだたき" ) {
         let beatUp = 1
         for ( const _poke of myParty ) {
             if ( _poke.myID == poke.myID ) continue // 自分は状態異常でも可
@@ -551,18 +567,18 @@ function isTarget(poke){
     if (con.tgt != "") return
     */
 
-    if ( poke.myCmd_tgt == 0 || poke.myCmd_tgt == 1 ) {
+    if ( poke.myCmd_tgt == 2 || poke.myCmd_tgt == 3 ) {
         if ( oppPokeInBattle(poke).length == 2 ) {
-            for ( const _poke of oppPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt ) return [_poke]
+            for ( const _poke of oppPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt - 2 ) return [_poke]
         } else if ( oppPokeInBattle(poke).length == 1 ) {
             return oppPokeInBattle(poke)
         } else if ( oppPokeInBattle(poke).length == 0 ) {
             return []
         }
     }
-    if ( poke.myCmd_tgt == 2 || poke.myCmd_tgt == 3 ) {
+    if ( poke.myCmd_tgt == 0 || poke.myCmd_tgt == 1 ) {
         if ( myPokeInBattle(poke).length == 2 ) {
-            for ( const _poke of myPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt - 2 ) return [_poke]
+            for ( const _poke of myPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt ) return [_poke]
         } else {
             return []
         }

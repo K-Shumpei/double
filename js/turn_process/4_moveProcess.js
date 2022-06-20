@@ -64,6 +64,8 @@ function moveEffect(poke){
     // 1第六世代では道具の消費直後に発動する。
     // 29.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・交代
     returnBattle(poke)
+    if ( fieldStatus.mySwitch_me ) return
+    if ( fieldStatus.mySwitch_opp ) return
     // ドラゴンテール/ともえなげは発動直後に強制交代される
     // おどりこ
     // 次のポケモンの行動
@@ -940,32 +942,31 @@ function continuousMove(poke){
     }
         
     // 攻撃回数の記録
-    let count = new Array(poke.myTarget.length).fill(1)
+    let count = 1
+    console.log(`攻撃回数：${poke.myMove.continuous}`)
+    // 連続攻撃技は単体対象
+    const tgt = poke.myTarget[0]
 
     for ( let i = 1; i < poke.myMove.continuous; i++ ) {
         // 1.攻撃側と防御側のポケモンの回復のきのみ・HP1/4で発動するピンチきのみ・きのみジュースの発動判定
         eatBerryInPinch(poke)
-        for ( const tgt of poke.myTarget ) {
-            if ( !tgt.success ) continue // すでに失敗していないこと
-            eatBerryInPinch(tgt.poke)
-        }
+        if ( !tgt.success ) break // すでに失敗していないこと
+        eatBerryInPinch(tgt.poke)
         if ( poke.myMove.name == "トリプルアクセル" || poke.myMove.name == "トリプルキック" ) {
             if ( poke.myAbility == "スキルリンク" && isAbility(poke) ) {
                 accuracyFailure(poke)
             }
         }
-        if ( !poke.myTarget.includes(true) ) break
         // 2.攻撃側がひんし・ねむり状態になった場合、連続攻撃は中断する。状態をきのみで回復できるときは使用して攻撃を続行する。
         if ( poke.myRest_hp == 0 ) break
         if ( poke.myAilment == "ねむり" ) break
         // 3.防御側がひんし状態になった場合、連続攻撃は終了する。
-        for ( const tgt of poke.myTarget ) {
-            if ( !tgt.success ) continue // すでに失敗していないこと
-            if ( tgt.poke.myRest_hp == 0 ) tgt.success = false
-            // 対象の身代わりの有無をもう一度判定
-            tgt.substitute = isSubstitute(poke, tgt.poke)
+        if ( tgt.poke.myRest_hp == 0 ) {
+            tgt.success = false
+            break
         }
-        if ( !poke.myTarget.includes(true) ) break
+        // 対象の身代わりの有無をもう一度判定
+        tgt.substitute = isSubstitute(poke, tgt.poke)
         // 4.攻撃が続く場合は1.からの処理を繰り返す。終了する場合は相性と「○発当たった!」の表示後14.に進む。
         if ( poke.myMove.name == "トリプルキック" ) poke.myMove.power = 10 * (i + 2)
         if ( poke.myMove.name == "トリプルアクセル" ) poke.myMove.power = 20 * (i + 2)
@@ -993,16 +994,10 @@ function continuousMove(poke){
         // 10.ひんし判定
         dyingJudge(poke)
 
-        for ( let j = 0; j < poke.myTarget.length; j++ ) {
-            if ( !poke.myTarget[j].success ) continue // すでに失敗していないこと
-            count[j] += 1
-        }
+        count += 1
     }
 
-    for ( let i = 0; i < poke.myTarget.length; i++ ) {
-        if ( !poke.myTarget[i].success ) continue // すでに失敗していないこと
-        writeLog(`${poke.myTarget[i].poke.myTN} の ${poke.myTarget[i].poke.myName} に ${count[i]}発 当たった !`)
-    }
+    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${count}発 当たった !`)
 }
 
 // 14.技の効果
@@ -1367,7 +1362,6 @@ function defenseItemEffect(poke){
         }
         // だっしゅつボタン/レッドカードによって手持ちに戻るまで
         if ( tgt.poke.myItem == "だっしゅつボタン" && isBench(tgt.poke) ) {
-            continue
             itemDeclaration(tgt.poke)
             enableToRecycle(tgt.poke)
             tgt.poke.myEject_button = tgt.poke.myPosition
@@ -1375,7 +1369,6 @@ function defenseItemEffect(poke){
             toHand(tgt.poke)
         }
         if ( tgt.poke.myItem == "レッドカード" && isBench(poke) && !poke.myCondition.myDynamax ) {
-            continue
             itemDeclaration(tgt.poke)
             enableToRecycle(tgt.poke)
             poke.myRed_card = poke.myPosition
@@ -1474,8 +1467,7 @@ function emergencyExit(poke){
 function comeBackMove(poke){
     if ( !( poke.myMove.name == "とんぼがえり" || poke.myMove.name == "ボルトチェンジ" || poke.myMove.name == "クイックターン" ) ) return 
     if ( !isBench(poke) )                  return // 控えがいること
-    if ( isSwitch(poke.myTarget[0].poke) ) return
-    return
+    if ( isSwitch(poke.myTarget[0].poke) ) return 
     
     poke.mySwitch = poke.myPosition
     
@@ -1501,7 +1493,6 @@ function steelRoller(poke){
 
 // 24.レッドカードによる交代先の繰り出し
 function redCard(poke){
-    return
     if ( poke.myRed_card === false ) return
 
     const next = shuffle(isBench(poke))[0]
@@ -1597,8 +1588,7 @@ function someItemEffect(poke){
     }
     // だっしゅつパックによって手持ちに戻るまで
     // 自分用
-    return
-    if ( poke.myItem == "だっしゅつボタン" && isItem(poke) ) {
+    if ( poke.myItem == "だっしゅつパック" && isItem(poke) ) {
         if ( isBench(poke) && poke.myCondition.myRank_down ) {
             // だっしゅつボタンやききかいひが発動している場合、だっしゅつパックは発動しない
             let check = true
@@ -1619,7 +1609,7 @@ function someItemEffect(poke){
         if ( !isItem(tgt.poke) )                 continue // アイテムが有効であること
         if ( !isBench(tgt.poke) )                continue // 控えがいること
         if ( !tgt.poke.myCondition.myRank_down ) continue // ランクが下がったこと
-        if ( tgt.poke.myItem != "だっしゅつボタン" ) continue
+        if ( tgt.poke.myItem != "だっしゅつパック" ) continue
 
         let check = true
         for ( const _tgt of poke.myTarget ) {
@@ -1650,24 +1640,20 @@ function moldBreakStop(poke){
 
 // 23.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・交代
 function returnBattle(poke){
-    return
-    let check = false
     for ( const _poke of myParty ) {
         if ( isSwitch(_poke) ) {
             writeLog(`${_poke.myTN} は 戦闘に出すポケモンを選んでください`)
-            check = "me"
+            fieldStatus.mySwitch_me = true
             break
         }
     }
     for ( const _poke of oppParty ) {
         if ( isSwitch(_poke) ) {
             writeLog(`${_poke.myTN} は 戦闘に出すポケモンを選んでください`)
-            check = "opp"
+            fieldStatus.mySwitch_opp = true
             break
         }
     }
-
-    if ( check ) return check
 }
 
 // 25.おどりこ

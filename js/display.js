@@ -882,16 +882,17 @@ function decideMoveCommand(position, num){
         // 攻撃対象を見せる(相手)
         for ( const poke of oppParty ) {
             if ( poke.myPosition != null ) {
-                document.getElementById(`com_tgt_${position}${poke.myPosition}`).style.display = "block"
-                document.getElementById(`tgt_${position}${poke.myPosition}`).textContent = poke.myName
+                console.log(poke)
+                document.getElementById(`com_tgt_${position}${poke.myPosition + 2}`).style.display = "block"
+                document.getElementById(`tgt_${position}${poke.myPosition + 2}`).textContent = poke.myName
             } 
         }
         // 攻撃対象を見せる(自分)
         for ( const poke of myParty ) {
+            console.log(poke)
             if ( poke.myPosition != null && poke.myPosition != position ) {
-                console.log(poke)
-                document.getElementById(`com_tgt_${position}${poke.myPosition + 2}`).style.display = "block"
-                document.getElementById(`tgt_${position}${poke.myPosition + 2}`).textContent = poke.myName
+                document.getElementById(`com_tgt_${position}${poke.myPosition}`).style.display = "block"
+                document.getElementById(`tgt_${position}${poke.myPosition}`).textContent = poke.myName
             } 
         }
     }
@@ -1055,8 +1056,13 @@ function back(){
         }
     }
 
-    if ( faintedJudge(myParty) == 0 ) showCommand()
-    else showCommandToDecideNext()      
+    if ( faintedJudge(myParty) || fieldStatus.mySwitch_me ) {
+        showCommandToDecideNext() 
+    } else if ( faintedJudge(oppParty) || fieldStatus.mySwitch_opp ) {
+
+    } else {
+        showCommand()
+    } 
 }
 
 // 交代先を選ぶとき
@@ -1064,7 +1070,7 @@ function showCommandToDecideNext() {
     // 控えを見せる
     for ( const poke of myParty ) {
         // 戦闘していなくて、ひんしでない
-        if ( poke.myPosition == null && poke.myRest_hp > 0 ) {
+        if ( poke.myPosition == null && poke.myRest_hp > 0 && !isSwitch(poke) ) {
             document.getElementById(`com_change_0${poke.myBench}`).style.display = "block"
             document.getElementById(`change_0${poke.myBench}`).textContent = poke.myName
         }

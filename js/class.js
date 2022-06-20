@@ -736,6 +736,9 @@ class allField {
         this.turn_end      = false // ターン途中ならfalse、ターン終了したならtrue
         this.water_sport   = false // みずあそび経過ターン数
         this.wonder_room   = false // ワンダールーム経過ターン数
+        // 途中交代
+        this.switch_me     = false // 自分が途中交代する
+        this.switch_opp    = false // 相手が途中交代する
     }
 
     set myCrafty_shield( value ) { this.crafty_shield = value }
@@ -761,6 +764,9 @@ class allField {
     set myTurn_end( value )      { this.turn_end = value }
     set myWater_sport( value )   { this.water_sport = value }
     set myWonder_room( value )   { this.wonder_room = value }
+    // 途中応対
+    set mySwitch_me( value )     { this.switch_me = value }
+    set mySwitch_opp( value )    { this.switch_opp = value }
 
     get myCrafty_shield() { return this.crafty_shield }
     get myDrought()       { return this.drought }
@@ -785,4 +791,7 @@ class allField {
     get myTurn_end()      { return this.turn_end }
     get myWater_sport()   { return this.water_sport }
     get myWonder_room()   { return this.wonder_room }
+    // 途中交代
+    get mySwitch_me()     { return this.switch_me }
+    get mySwitch_opp()    { return this.switch_opp }
 }

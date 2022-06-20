@@ -322,6 +322,7 @@ function eatBerryInPinch(poke) {
     if ( !isItem(poke) )       return // 持ち物が有効
     // きのみジュースはきのみではない
     if ( poke.myRest_hp <= poke.myFull_hp / 2 && poke.myItem == "きのみジュース" ) {
+        itemDeclaration(poke)
         changeHP(poke, 20, "+")
         enableToRecycle(poke)
         return
