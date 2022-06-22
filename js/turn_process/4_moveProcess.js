@@ -1243,11 +1243,11 @@ function activateMoveEffect(poke){
         }
         // ぶきみなじゅもんによるPPの減少
         if ( poke.myMove.name == "ぶきみなじゅもん" ) {
-            if ( poke.myCondition.mySheer_force ) continue // ちからずくが無効であること
-            if ( tgt.poke.myHistory == [] ) continue // 技を使用していること
+            if ( poke.myCondition.mySheer_force )  continue // ちからずくが無効であること
+            if ( !tgt.poke.myCondition.myHistory ) continue // 技を使用していること
 
             for ( let j = 0; j < 4; j++ ) {
-                if ( tgt.poke[`myMove_${j}`] == tgt.poke.myHistory[0].name && tgt.poke[`myRest_pp_${i}`] > 0 ) {
+                if ( tgt.poke[`myMove_${j}`] == tgt.poke.myCondition.myHistory[0].name && tgt.poke[`myRest_pp_${i}`] > 0 ) {
                     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke[`myMove_${j}`]} の PPが${Math.min(3, tgt.poke[`myRest_pp_${j}`])}減った`)
                     tgt.poke[`myRest_pp_${j}`] = Math.max(tgt.poke[`myRest_pp_${j}`] - 3, 0)
                 }

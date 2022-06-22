@@ -321,6 +321,22 @@ function resetBind(poke) {
     poke.myCondition.myBind_strong = false // しめつけバンド
 }
 
+function resetFilling(poke) {
+    poke.myCondition.myFilling = false // ため技の名前
+    poke.myCondition.myDig     = false // あなをほる状態
+    poke.myCondition.myShadow  = false // シャドーダイブ状態
+    poke.myCondition.mySky     = false // そらをとぶ状態
+    poke.myCondition.myDive    = false // ダイビング状態
+}
+
+function isHide(poke) {
+    if ( poke.myCondition.myDig )    return true
+    if ( poke.myCondition.myShadow ) return true
+    if ( poke.myCondition.mySky )    return true
+    if ( poke.myCondition.myDive )   return true
+    return false
+}
+
 // ほおぶくろ
 function cheekPouch(poke) {
     if ( poke.myAbility == "ほおぶくろ" && isAbility(poke) ) {
@@ -534,15 +550,6 @@ function isTarget(poke){
         return target
     }
 
-    if ( poke.myMove.target == "ランダム1体" ) {
-        const num = oppPokeInBattle(poke).length
-        if ( num == 0 ) return []
-        if ( num == 1 ) return oppPokeInBattle(poke)
-        if ( num == 2 ) return [shuffle(oppPokeInBattle(poke))[0]]
-    }
-
-    // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択)
-
     // ちゅうもくのまと状態に対象が移動
     if ( oppPokeInBattle(poke).length > 0 ) {
         for ( const _poke of oppPokeInBattle(poke) ) {
@@ -553,6 +560,18 @@ function isTarget(poke){
             }
             return [_poke]
         }
+    }
+
+    if ( poke.myMove.target == "ランダム1体" ) {
+        const num = oppPokeInBattle(poke).length
+        if ( num == 0 ) return []
+        if ( num == 1 ) return oppPokeInBattle(poke)
+        if ( num == 2 ) return [shuffle(oppPokeInBattle(poke))[0]]
+    }
+
+    // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択)
+    if ( poke.myMove.name == "カウンター" || poke.myMove.name == "カウンター" || poke.myMove.name == "カウンター" ) {
+        return [isPokeByID(poke.myCondition.myDamage_ID)]
     }
 
     // ドラゴンアローのとき
@@ -589,12 +608,13 @@ function isTarget(poke){
 function checkMoveSuccess(poke) {   
     // 技が成功したとき
     if ( poke.myMove.target.includes("場") ) return false
-    if ( poke.myTarget == [] && poke.myCondition.myExplosion ) return false
+    if ( !poke.myTarget && poke.myCondition.myExplosion ) return false
     for ( const tgt of poke.myTarget ) if ( tgt.success ) return false
     // 技が失敗したとき
     if ( poke.myMove.name == "しぜんのめぐみ" ) enableToRecycle(poke)
     return true
 }
+
 
 
 

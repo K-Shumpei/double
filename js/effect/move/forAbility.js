@@ -117,8 +117,8 @@ var courtChange = [
     'Mist',         // しろいきり
     'Safeguard',    // しんぴのまもり
     'Fire_ocean',   // ひのうみ
-    'rainbow',      // にじ
-    'wetland',      // しつげん
+    'Rainbow',      // にじ
+    'Wetland',      // しつげん
     'Vine_lash',    // キョダイベンタツ
     'Wildfire',     // キョダイゴクエン
     'Cannonade',    // キョダイホウゲキ

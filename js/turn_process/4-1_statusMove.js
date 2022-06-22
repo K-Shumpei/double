@@ -102,22 +102,14 @@ function statusMoveToChangeAllField(poke) {
         writeLog(`あたりが くろいきりに 包まれた`)
     }
     if ( poke.myMove.name == "コートチェンジ" ) {
-        /*
-        let myCourt = []
-        let yourCourt = []
-        for (const text of courtChange) {
-            if (me.f_con.includes(text)) {
-                myCourt.push(searchText(me.f_con, text))
-                removeText(me.f_con, text)
-            }
-            if (you.f_con.includes(text)) {
-                yourCourt.push(searchText(you.f_con, text))
-                removeText(you.f_con, text)
-            }
+        for ( const element of courtChange ) {
+            const myElement = myField[`my${element}`]
+            const oppElement = oppField[`$my${element}`]
+            myField[`my${element}`] = oppElement
+            oppField[`my${element}`] = myElement
+
+            // 壁延長についての記述が未完成
         }
-        for (const text of myCourt) you.f_con += text + "\n"
-        for (const text of yourCourt) me.f_con += text + "\n"
-        */
     }
     if ( poke.myMove.name == "サイコフィールド" ) {
         activateTerrain(poke, "psychic")
@@ -142,8 +134,8 @@ function statusMoveToChangeAllField(poke) {
             fieldStatus.myTrick_room = 1
             writeLog(`空間が歪んだ`)
             for ( const _poke of allPokeInBattle() ) {
-                if ( _poke.myItem == "ルームサービス" && isItem(_poke) ) {
-                    writeLog(`${_poke.myTN} の ${_poke.myName} の ルームサービス !`)
+                if ( _poke.myItem == "ルームサービス" && isItem(_poke) && _poke.myRank_speed > -6 ) {
+                    itemDeclaration(_poke)
                     changeMyRank(_poke, "speed", -1)
                 }
             }
@@ -407,7 +399,7 @@ function statusMoveForOneOfThem(poke) {
     }
     if ( poke.myMove.name == "アンコール" ) {
         tgt.poke.myCondition.myEncore_turn = 1
-        tgt.poke.myCondition.myEncore_move = tgt.poke.myHistory[0].name
+        tgt.poke.myCondition.myEncore_move = tgt.poke.myCondition.myHistory[0].name
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は アンコールを受けた`)
     }
     if ( poke.myMove.name == "いえき" ) {
@@ -433,9 +425,9 @@ function statusMoveForOneOfThem(poke) {
         changeHP(tgt, damage, "+")
     }
     if ( poke.myMove.name == "うらみ" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myHistory[0].name}の PPを4減らした !`)
+        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myCondition.myHistory[0].name}の PPを4減らした !`)
         for ( let i = 0; i < 4; i++ ) {
-            if ( tgt.poke.myHistory[0].name == tgt[`myMove_${i}`] ) {
+            if ( tgt.poke.myCondition.myHistory[0].name == tgt[`myMove_${i}`] ) {
                 tgt[`myRest_pp_${i}`] = Math.max(tgt[`myRest_pp_${i}`] - 4, 0)
             }
         }
@@ -452,7 +444,7 @@ function statusMoveForOneOfThem(poke) {
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 正体を見破られた`)
     }
     if ( poke.myMove.name == "かなしばり" ) {
-        tgt.poke.myCondition.myDisable_move = tgt.poke.myHistory[0].name
+        tgt.poke.myCondition.myDisable_move = tgt.poke.myCondition.myHistory[0].name
         tgt.poke.myCondition.myDisable_turn = 1
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 金縛りを受けた`)
     }
@@ -619,7 +611,7 @@ function statusMoveForOneOfThem(poke) {
         activateAbility(tgt.poke)
     }
     if ( poke.myMove.name == "スケッチ" ) {
-        const s_move = moveSearchByName(tgt.poke.myHistory[0].name)
+        const s_move = moveSearchByName(tgt.poke.myCondition.myHistory[0].name)
         poke[`myMove_${poke.myCmd_move}`] = s_move.name
         poke[`myFull_pp_${poke.myCmd_move}`] = s_move.PP
         poke[`myRest_pp_${poke.myCmd_move}`] = s_move.PP

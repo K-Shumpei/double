@@ -14,6 +14,8 @@ function actionOrder(){
         // 技を選択していないときはスルー
         if ( poke.myCmd_move == "" ) continue
 
+        console.log(poke.myName)
+
         poke.myOrder_fast     = whetherFast(poke)
         poke.myOrder_late     = whetherLate(poke)
         poke.myOrder_priority = priorityDegree(poke)

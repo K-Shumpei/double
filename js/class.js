@@ -22,8 +22,6 @@ class Party {
         this.position = null
         // 選出していたら選出順(0~3)、していなければnull
         this.bench = null
-        // 使用した技の履歴
-        this.history = []
         // コマンド
         this.myCmd_hand = ""
         this.myCmd_move = ""
@@ -127,8 +125,6 @@ class Party {
     set myCmd_move( value )  { this.cmd_move = value }
     set myCmd_tgt( value )   { this.cmd_tgt = value }
     set myCmd_hand( value )  { this.cmd_hand = value }
-    // 使用した技の履歴
-    set myHistory( value )   { this.history = value }
     // 今使用した技
     set myMove( value )  { this.use_move = value }
     // 技の処理に関係するクラス
@@ -234,8 +230,6 @@ class Party {
     get myCmd_move()  { return this.cmd_move }
     get myCmd_tgt()   { return this.cmd_tgt }
     get myCmd_hand()  { return this.cmd_hand }
-    // 使用した技の履歴
-    get myHistory()   { return this.history }
     // 今使用した技
     get myMove()  { return this.use_move }
     // 技の処理に関係するクラス
@@ -324,6 +318,7 @@ class Condition {
         this.halloween     = false // ハロウィン状態ならtrue
         this.heal_block    = 0     // 回復封じ　経過ターン数(1~5)
         this.helping_hand  = 0     // てだすけされた回数
+        this.history       = []    // 使用した技の履歴
         this.hunger_switch = false // はらぺこスイッチ　はらぺこもようならtrue、まんぷくもようならfalse
         this.ice_ball      = 0     // アイスボール経過ターン数
         this.imprison      = false // ふういん状態ならtrue
@@ -348,6 +343,7 @@ class Condition {
         this.powder        = false // ふんじん状態ならtrue
         this.power_trick   = false // パワートリック状態ならtrue
         this.protect       = false // まもる状態ならその原因(まもる、トーチカ、ニードルガードなど)
+        this.protect_num   = 0     // まもる系統の技の連続成功回数
         this.quash         = false // さきおくり
         this.rage          = false // いかり いかり状態ならtrue、それ以外ならfalse
         this.rank_down     = false // ランクが下がったらtrue
@@ -438,6 +434,7 @@ class Condition {
     set myHalloween( value )     { this.halloween = value }
     set myHeal_lock( value )     { this.heal_block = value }
     set myHelping_hand( value )  { this.helping_hand = value }
+    set myHistory( value )       { this.history = value }
     set myHunger_switch( value ) { this.hunger_switch = value }
     set myIce_ball( value )      { this.ice_ball = value }
     set myImprison( value )      { this.imprison = value }
@@ -462,6 +459,7 @@ class Condition {
     set myPowder( value )        { this.powder = value }
     set myPower_trick( value )   { this.power_trick = value }
     set myProtect( value )       { this.protect = value }
+    set myProtect_num( value )   { this.protect_num = value }
     set myQuash( value )         { this.quash = value }
     set myRage( value )          { this.rage = value }
     set myRank_down( value )     { this.rank_down = value }
@@ -551,6 +549,7 @@ class Condition {
     get myHalf_berry()    { return this.half_berry }
     get myHeal_lock()     { return this.heal_block }
     get myHelping_hand()  { return this.helping_hand }
+    get myHistory()       { return this.history }
     get myHunger_switch() { return this.hunger_switch }
     get myIce_ball()      { return this.ice_ball }
     get myImprison()      { return this.imprison }
@@ -575,6 +574,7 @@ class Condition {
     get myPower_trick()   { return this.power_trick }
     get myPowder()        { return this.powder }
     get myProtect()       { return this.protect }
+    get myProtect_num()   { return this.protect_num }
     get myQuash()         { return this.quash }
     get myRage()          { return this.rage }
     get myRank_down()     { return this.rank_down }

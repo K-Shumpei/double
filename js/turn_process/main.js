@@ -138,6 +138,7 @@ function preliminaryAction(secondOrder) {
 
 // 6.技の処理
 function moveUsedEachPokemon() {
+    console.log(actionOrder())
     while ( actionOrder().length > 0 ) {
         const poke = actionOrder()[0]
 
@@ -147,15 +148,25 @@ function moveUsedEachPokemon() {
         const judge = moveSuccessJudge(poke)
 
         // コマンドの消去
-        poke.myCmd_hand = ""
-        poke.myCmd_move = ""
-        poke.myCmd_tgt = ""
+        if ( !poke.myCondition.myFilling ) {
+            poke.myCmd_hand = ""
+            poke.myCmd_move = ""
+            poke.myCmd_tgt = ""
+        }
 
         if ( judge ) {
+            poke.myMove.success = true
             moveEffect(poke)
+            console.log(fieldStatus)
             if ( fieldStatus.mySwitch_me ) break
             if ( fieldStatus.mySwitch_opp ) break
+        } else {
+            poke.myCondition.myProtect_num = 0
+            if ( !poke.myCondition.myFilling ) poke.myMove.success = false
         }
+
+        // 使用した技を履歴に残す
+        poke.myCondition.history.unshift(poke.myMove)
 
 
 
