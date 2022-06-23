@@ -577,78 +577,77 @@ function statusMoveForOneOfThem(poke) {
         case "クモのす" || "くろいまなざし" || "とおせんぼう":
             tgt.poke.myCondition.myCant_escape = poke.myID
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 逃げられなくなった`)
+        
+        case "こころのめ" || "ロックオン":
+            tgt.poke.myCondition.myLock_on = 1
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 狙いを定めた`)
+        
+        case "サイコシフト":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${poke.myAilment} を移した`)
+            tgt.poke.myAilment     = poke.myAilment     // 状態異常回復
+            tgt.poke.myAsleep      = poke.myAsleep      // ねむり経過ターン数
+            tgt.poke.myAsleep_turn = poke.myAsleep_turn // ねむりから覚めるターン数
+            tgt.poke.myRest        = poke.myRest        // ねむる経過ターン数
+            tgt.poke.myBad_poison  = poke.myBad_poison  // もうどく経過ターン数
+            resetAilment(poke)
+        
+        case "さいはい":
+            // const _move = moveSearchByName(tgt.used)
+            // moveEffect(user[0], user[1], tgt, _move)
+        
+        case "さきおくり":
+
+        case "さしおさえ":
+            tgt.poke.myCondition.myEmbargo = true
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 道具を差し押さえられた`)
+        
+        case "シンプルビーム":
+            tgt.poke.myAbility = "たんじゅん"
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性が『たんじゅん』になった !`)
+        
+        case "じこあんじ":
+            const psychUp = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
+            for ( const para of psychUp ) poke[`myRank_${para}`] = tgt[`myRank_${para}`] // ランク変化
+            poke.myCondition.myCritical = tgt.poke.myCondition.myCritical                  // きゅうしょアップ
+            poke.myCondition.myChi_strike = tgt.poke.myCondition.myChi_strike              // キョダイシンゲキ
+            if ( tgt.poke.myCondition.myLaser_focus ) poke.myCondition.myLaser_focus = 1   // とぎすます
+
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 能力変化を コピーした`)
+        
+        case "じょうか":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が なおった !`)
+            resetAilment(tgt)
+            changeHP(poke, fiveCut(poke.myFull_hp / 2), "+")
+        
+        case "スキルスワップ":
+            const save = poke.myAbility
+            poke.myAbility = tgt.poke.myAbility
+            tgt.poke.myAbility = save
+            writeLog(`${poke.myTN} の ${poke.myName} は　特性『${poke.myAbility}』 になった`)
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった`)
+            activateAbility(poke)
+            activateAbility(tgt.poke)
+        
+        case "スケッチ":
+            const s_move = moveSearchByName(tgt.poke.myCondition.myHistory[0].name)
+            poke[`myMove_${poke.myCmd_move}`] = s_move.name
+            poke[`myFull_pp_${poke.myCmd_move}`] = s_move.PP
+            poke[`myRest_pp_${poke.myCmd_move}`] = s_move.PP
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${s_move.name} を スケッチした`)
+        
+        case "すてゼリフ":
+            /*
+            if (isBench(me) && !con.p_con.includes("技『すてゼリフ』　A失敗" ) && !con.p_con.includes("技『すてゼリフ』　C失敗" )) toHand(me, you, con)
+            removeText(con.p_con, "技『すてゼリフ』　A失敗" )
+            removeText(con.p_con, "技『すてゼリフ』　C失敗" )
+            */
+        
+        case "スピードスワップ":
+            const atk_S = poke.mySpeed
+            poke.mySpeed = tgt.poke.mySpeed
+            tgt.poke.mySpeed = atk_S
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と 素早さを入れ替えた`)
         }
-    if ( poke.myMove.name == "こころのめ" || poke.myMove.name == "ロックオン" ) {
-        tgt.poke.myCondition.myLock_on = 1
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 狙いを定めた`)
-    }
-    if ( poke.myMove.name == "サイコシフト" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${poke.myAilment} を移した`)
-        tgt.poke.myAilment     = poke.myAilment     // 状態異常回復
-        tgt.poke.myAsleep      = poke.myAsleep      // ねむり経過ターン数
-        tgt.poke.myAsleep_turn = poke.myAsleep_turn // ねむりから覚めるターン数
-        tgt.poke.myRest        = poke.myRest        // ねむる経過ターン数
-        tgt.poke.myBad_poison  = poke.myBad_poison  // もうどく経過ターン数
-        resetAilment(poke)
-    }
-    if ( poke.myMove.name == "さいはい" ) {
-        // const _move = moveSearchByName(tgt.used)
-        // moveEffect(user[0], user[1], tgt, _move)
-    }
-    if ( poke.myMove.name == "さきおくり" ) {
-
-    }
-    if ( poke.myMove.name == "さしおさえ" ) {
-        tgt.poke.myCondition.myEmbargo = true
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 道具を差し押さえられた`)
-    }
-    if ( poke.myMove.name == "シンプルビーム" ) {
-        tgt.poke.myAbility = "たんじゅん"
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性が『たんじゅん』になった !`)
-    }
-    if ( poke.myMove.name == "じこあんじ" ) {
-        const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
-        for ( const para of parameter ) poke[`myRank_${para}`] = tgt[`myRank_${para}`] // ランク変化
-        poke.myCondition.myCritical = tgt.poke.myCondition.myCritical                  // きゅうしょアップ
-        poke.myCondition.myChi_strike = tgt.poke.myCondition.myChi_strike              // キョダイシンゲキ
-        if ( tgt.poke.myCondition.myLaser_focus ) poke.myCondition.myLaser_focus = 1   // とぎすます
-
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 能力変化を コピーした`)
-    }
-    if ( poke.myMove.name == "じょうか" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が なおった !`)
-        resetAilment(tgt)
-        changeHP(poke, fiveCut(poke.myFull_hp / 2), "+")
-    }
-    if ( poke.myMove.name == "スキルスワップ" ) {
-        const save = poke.myAbility
-        poke.myAbility = tgt.poke.myAbility
-        tgt.poke.myAbility = save
-        writeLog(`${poke.myTN} の ${poke.myName} は　特性『${poke.myAbility}』 になった`)
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった`)
-        activateAbility(poke)
-        activateAbility(tgt.poke)
-    }
-    if ( poke.myMove.name == "スケッチ" ) {
-        const s_move = moveSearchByName(tgt.poke.myCondition.myHistory[0].name)
-        poke[`myMove_${poke.myCmd_move}`] = s_move.name
-        poke[`myFull_pp_${poke.myCmd_move}`] = s_move.PP
-        poke[`myRest_pp_${poke.myCmd_move}`] = s_move.PP
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${s_move.name} を スケッチした`)
-    }
-    if ( poke.myMove.name == "すてゼリフ" ) {
-        /*
-        if (isBench(me) && !con.p_con.includes("技『すてゼリフ』　A失敗" ) && !con.p_con.includes("技『すてゼリフ』　C失敗" )) toHand(me, you, con)
-        removeText(con.p_con, "技『すてゼリフ』　A失敗" )
-        removeText(con.p_con, "技『すてゼリフ』　C失敗" )
-        */
-    }
-    if ( poke.myMove.name == "スピードスワップ" ) {
-        const atk_S = poke.mySpeed
-        poke.mySpeed = tgt.poke.mySpeed
-        tgt.poke.mySpeed = atk_S
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と 素早さを入れ替えた`)
-    }
     if ( poke.myMove.name == "スポットライト" ) {
         tgt.poke.myCondition.mySpotlight = "スポットライト"
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 注目の的になった`)
