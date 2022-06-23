@@ -1175,17 +1175,15 @@ function failureForMoveSpecification(poke) {
         return false
     }
     // まもる/こらえる系: ターンの最後の行動/連続使用による失敗判定
+    // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール・ワイドガード・ファストガード　が成功した次のターン
+    // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール　　　　　　　　　　　　　　　　の成功率は下がる。
     if ( protectMove.includes(poke.myMove.name) ) {
         // ターンの最後の行動
         if ( allPokeInBattle().filter( _poke => _poke.myCmd_move ).length === 1 ) return true
          // 連続使用による失敗判定
         const num = Math.min(poke.myCondition.myProtect_num, 6)
-        if ( getRandom() < 1 / Math.pow(3, num) ) {
-            poke.myCondition.myProtect_num += 1
-            return false
-        } else {
-            return true
-        }
+        if ( getRandom() < 1 / Math.pow(3, num) ) return false
+        return true
     }
     // みちづれ: 前回まで最後に成功した行動がみちづれである
     if ( poke.myMove.name == "みちづれ") {
@@ -1603,7 +1601,7 @@ function phschoFieldInvalidation(poke) {
     if ( poke.myMove.priority <= 0 ) return false // 技の優先度が1以上であること
 
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )     continue // すでに失敗していないこと
+        if ( !tgt.success )                     continue // すでに失敗していないこと
         if ( poke.myParty == tgt.poke.myParty ) continue // 対象が相手のポケモンであること
         if ( !onGround(tgt.poke) )              continue // 対象が接地していること
 
@@ -1706,7 +1704,7 @@ function protectInvalidation(poke) {
         if ( !tgt.success ) continue                      // すでに失敗していないこと
         if ( cannotProtectByDynaWall.includes(poke.myMove.name) ) continue // ダイウォールでも防げない技
         if ( !tgt.poke.myCondition.myMax_guard ) { // ダイウォール状態でない時
-            if ( poke.myMove.protect == "不能") continue
+            if ( poke.myMove.protect == "不能" ) continue
             if ( poke.myAbility == "ふかしのこぶし" && isAbility(poke) && poke.myMove.direct == "直接" ) continue
         }
        

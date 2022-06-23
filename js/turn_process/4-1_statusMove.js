@@ -19,157 +19,170 @@ function statusMoveEffect(poke) {
 
 // 対象が味方の場である技
 function statusMoveToChangeMyField(poke) {
-    if ( poke.myMove.name == "オーロラベール" ) {
-        isField(poke).myAurora_vail = 1
-        writeLog(`${poke.myTN} の場に オーロラベールが 現れた`)
-        if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myAurora_clay = true
-    }
-    if ( poke.myMove.name == "おいかぜ" ) {
-        isField(poke).myTailwind = 1
-        writeLog(`${poke.myTN} の場に 追い風が吹き始めた`)
-    }
-    if ( poke.myMove.name == "おまじない" ) {
-        isField(poke).myLucky_chant = 1
-        writeLog(`${poke.myTN} の場に おまじないがかかった`)
-    }
-    if ( poke.myMove.name == "しろいきり" ) {
-        isField(poke).myMist = 1
-        writeLog(`${poke.myTN} の場を しろいきりが包む`)
-    }
-    if ( poke.myMove.name == "しんぴのまもり" ) {
-        isField(poke).mySafeguard = 1
-        writeLog(`${poke.myTN} の場を しんぴのまもりが包む`)
-    }
-    if ( poke.myMove.name == "たたみがえし" ) {
-        isField(poke).myMat_block = true
-        writeLog(`${poke.myTN} の場は 守りの体制に入った`)
-    }
-    if ( poke.myMove.name == "トリックガード" ) {
-        isField(poke).myCrafty_shield = true
-        writeLog(`${poke.myTN} の場は 守りの体制に入った`)
-    }
-    if ( poke.myMove.name == "ひかりのかべ" ) {
-        isField(poke).myLight_screen = 1
-        writeLog(`${poke.myTN} の場に ひかりのかべが 現れた`)
-        if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myLight_clay = true
-    }
-    if ( poke.myMove.name == "リフレクター" ) {
-        isField(poke).myReflect = 1
-        writeLog(`${poke.myTN} の場に リフレクターが 現れた`)
-        if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myReflect_clay = true
+    switch ( poke.myMove.name ) {
+        case "オーロラベール":
+            isField(poke).myAurora_vail = 1
+            writeLog(`${poke.myTN} の場に オーロラベールが 現れた`)
+            if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myAurora_clay = true
+
+        case "おいかぜ":
+            isField(poke).myTailwind = 1
+            writeLog(`${poke.myTN} の場に 追い風が吹き始めた`)
+
+        case "おまじない":
+            isField(poke).myLucky_chant = 1
+            writeLog(`${poke.myTN} の場に おまじないがかかった`)
+
+        case "しろいきり":
+            isField(poke).myMist = 1
+            writeLog(`${poke.myTN} の場を しろいきりが包む`)
+
+        case "しんぴのまもり":
+            isField(poke).mySafeguard = 1
+            writeLog(`${poke.myTN} の場を しんぴのまもりが包む`)
+
+        case "たたみがえし":
+            isField(poke).myMat_block = true
+            writeLog(`${poke.myTN} の場は 守りの体制に入った`)
+
+        case "トリックガード":
+            isField(poke).myCrafty_shield = true
+            writeLog(`${poke.myTN} の場は 守りの体制に入った`)
+
+        case "ひかりのかべ":
+            isField(poke).myLight_screen = 1
+            writeLog(`${poke.myTN} の場に ひかりのかべが 現れた`)
+            if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myLight_clay = true
+
+        case "ファストガード":
+            poke.myCondition.myProtect_num += 1
+            isField(poke).myQuick_guard = true
+            writeLog(`${poke.myTN} の場は 守りの体制に入った`)
+
+        case "リフレクター":
+            isField(poke).myReflect = 1
+            writeLog(`${poke.myTN} の場に リフレクターが 現れた`)
+            if ( poke.myItem == "ひかりのねんど" && isItem(poke) ) isField(poke).myReflect_clay = true
+
+        case "ワイドガード":
+            poke.myCondition.myProtect_num += 1
+            isField(poke).myWide_guard = true
+            writeLog(`${poke.myTN} の場は 守りの体制に入った`)
     }
 }
 
 // 対象が相手の場である技
 function statusMoveToChangeYourField(poke) {
-    if ( poke.myMove.name == "ステルスロック" ) {
-        isOppField(poke).myStealth_rock = true
-        writeLog(`${isOppField(poke).myTN} の場に とがった岩がただよいはじめた`)
-    }
-    if ( poke.myMove.name == "ねばねばネット" ) {
-        isOppField(poke).mySticky_web = true
-        writeLog(`${isOppField(poke).myTN} の場に ねばねばネットが 撒き散らされた`)
-    }
-    if ( poke.myMove.name == "どくびし" ) {
-        isOppField(poke).myToxic_spikes += 1
-        writeLog(`${isOppField(poke).myTN} の場に どくびしが 散らばった`)
-    }
-    if ( poke.myMove.name == "まきびし" ) {
-        isOppField(poke).mySpikes += 1
-        writeLog(`${isOppField(poke).myTN} の場に まきびしが 散らばった`)
+    switch ( poke.myMove.name ) {
+        case "ステルスロック":
+            isOppField(poke).myStealth_rock = true
+            writeLog(`${isOppField(poke).myTN} の場に とがった岩がただよいはじめた`)
+
+        case "ねばねばネット":
+            isOppField(poke).mySticky_web = true
+            writeLog(`${isOppField(poke).myTN} の場に ねばねばネットが 撒き散らされた`)
+
+        case "どくびし":
+            isOppField(poke).myToxic_spikes += 1
+            writeLog(`${isOppField(poke).myTN} の場に どくびしが 散らばった`)
+
+        case "まきびし":
+            isOppField(poke).mySpikes += 1
+            writeLog(`${isOppField(poke).myTN} の場に まきびしが 散らばった`)
     }
 }
 
 // 対象が全体の場である技
 function statusMoveToChangeAllField(poke) {
-    if ( poke.myMove.name == "あまごい" ) {
-        activateWeather(poke, "rainy")
-    }
-    if ( poke.myMove.name == "あられ" ) {
-        activateWeather(poke, "graupel")
-    }
-    if ( poke.myMove.name == "エレキフィールド" ) {
-        activateTerrain(poke, "electric")
-    }
-    if ( poke.myMove.name == "グラスフィールド" ) {
-        activateTerrain(poke, "grassy")
-    }
-    if ( poke.myMove.name == "くろいきり" ) {
-        const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
-        for ( const _poke of allPokeInBattle() ) {
-            for ( const para of parameter ) _poke[`myRank_${para}`] = 0
-        }
-        writeLog(`あたりが くろいきりに 包まれた`)
-    }
-    if ( poke.myMove.name == "コートチェンジ" ) {
-        for ( const element of courtChange ) {
-            const myElement = myField[`my${element}`]
-            const oppElement = oppField[`$my${element}`]
-            myField[`my${element}`] = oppElement
-            oppField[`my${element}`] = myElement
-
-            // 壁延長についての記述が未完成
-        }
-    }
-    if ( poke.myMove.name == "サイコフィールド" ) {
-        activateTerrain(poke, "psychic")
-    }
-    if ( poke.myMove.name == "じゅうりょく" ) {
-        fieldStatus.myGravity = 1
-        writeLog(`重力が強くなった !`)
-        for ( const _poke of allPokeInBattle() ) {
-            if ( onGround(_poke) ) continue // 地面にいないこと
-            _poke.myCondition.myTelekinesis = false // テレキネシスの解除
-            writeLog(`${_poke.myTN} の ${_poke.myName} は じゅうりょくの 影響で 空中に いられなくなった !`)
-        }
-    }
-    if ( poke.myMove.name == "すなあらし" ) {
-        activateWeather(poke, "sandstorm")
-    }
-    if ( poke.myMove.name == "トリックルーム" ) {
-        if ( fieldStatus.myTrick_room ) {
-            fieldStatus.myTrick_room = false
-            writeLog(`歪んだ空間が元に戻った`)
-        } else {
-            fieldStatus.myTrick_room = 1
-            writeLog(`空間が歪んだ`)
+    switch ( poke.myMove.name ) {
+        case "あまごい":
+            activateWeather(poke, "rainy")
+        
+        case "あられ":
+            activateWeather(poke, "graupel")
+        
+        case "エレキフィールド":
+            activateTerrain(poke, "electric")
+    
+        case "グラスフィールド":
+            activateTerrain(poke, "grassy")
+        
+        case "くろいきり":
+            const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
             for ( const _poke of allPokeInBattle() ) {
-                if ( _poke.myItem == "ルームサービス" && isItem(_poke) && _poke.myRank_speed > -6 ) {
-                    itemDeclaration(_poke)
-                    changeMyRank(_poke, "speed", -1)
+                for ( const para of parameter ) _poke[`myRank_${para}`] = 0
+            }
+            writeLog(`あたりが くろいきりに 包まれた`)
+        
+        case "コートチェンジ":
+            for ( const element of courtChange ) {
+                const myElement = myField[`my${element}`]
+                const oppElement = oppField[`$my${element}`]
+                myField[`my${element}`] = oppElement
+                oppField[`my${element}`] = myElement
+
+                // 壁延長についての記述が未完成
+            }
+        
+        case "サイコフィールド":
+            activateTerrain(poke, "psychic")
+        
+        case "じゅうりょく":
+            fieldStatus.myGravity = 1
+            writeLog(`重力が強くなった !`)
+            for ( const _poke of allPokeInBattle() ) {
+                if ( onGround(_poke) ) continue // 地面にいないこと
+                _poke.myCondition.myTelekinesis = false // テレキネシスの解除
+                writeLog(`${_poke.myTN} の ${_poke.myName} は じゅうりょくの 影響で 空中に いられなくなった !`)
+            }
+        
+        case "すなあらし":
+            activateWeather(poke, "sandstorm")
+        
+        case "トリックルーム":
+            if ( fieldStatus.myTrick_room ) {
+                fieldStatus.myTrick_room = false
+                writeLog(`歪んだ空間が元に戻った`)
+            } else {
+                fieldStatus.myTrick_room = 1
+                writeLog(`空間が歪んだ`)
+                for ( const _poke of allPokeInBattle() ) {
+                    if ( _poke.myItem == "ルームサービス" && isItem(_poke) && _poke.myRank_speed > -6 ) {
+                        itemDeclaration(_poke)
+                        changeMyRank(_poke, "speed", -1)
+                    }
                 }
             }
-        }
-    }
-    if ( poke.myMove.name == "どろあそび" ) {
-        fieldStatus.myMud_sport = 1
-        writeLog(`電気の力が弱まった`)
-    }
-    if ( poke.myMove.name == "にほんばれ" ) {
-        activateWeather(poke, "sunny")
-    }
-    if ( poke.myMove.name == "フェアリーロック" ) {
-        fieldStatus.myFairy_lock = 1
-        writeLog(`次のターン お互いのポケモンは 逃げられなくなった !`)
-    }
-    if ( poke.myMove.name == "プラズマシャワー" ) {
-        fieldStatus.myIon_deluge = true
-        writeLog(`電気の シャワーが 降り注いだ !`)
-    }
-    if ( poke.myMove.name == "マジックルーム" ) {
-        fieldStatus.myMagic_room = true
-        writeLog(`道具の効果が なくなった !`)
-    }
-    if ( poke.myMove.name == "ミストフィールド" ) {
-        activateTerrain(poke, "misty")
-    }
-    if ( poke.myMove.name == "みずあそび" ) {
-        fieldStatus.myWater_sport = 1
-        writeLog(`炎の力が弱まった`)
-    }
-    if ( poke.myMove.name == "ワンダールーム" ) {
-        fieldStatus.myWonder_room = 1
-        writeLog(`防御と特防が入れ替わった !`)
+        
+        case "どろあそび":
+            fieldStatus.myMud_sport = 1
+            writeLog(`電気の力が弱まった`)
+        
+        case "にほんばれ":
+            activateWeather(poke, "sunny")
+        
+        case "フェアリーロック":
+            fieldStatus.myFairy_lock = 1
+            writeLog(`次のターン お互いのポケモンは 逃げられなくなった !`)
+        
+        case "プラズマシャワー":
+            fieldStatus.myIon_deluge = true
+            writeLog(`電気の シャワーが 降り注いだ !`)
+        
+        case "マジックルーム":
+            fieldStatus.myMagic_room = true
+            writeLog(`道具の効果が なくなった !`)
+        
+        case "ミストフィールド":
+            activateTerrain(poke, "misty")
+        
+        case "みずあそび":
+            fieldStatus.myWater_sport = 1
+            writeLog(`炎の力が弱まった`)
+        
+        case "ワンダールーム":
+            fieldStatus.myWonder_room = 1
+            writeLog(`防御と特防が入れ替わった !`)
     }
 }
 
@@ -178,44 +191,45 @@ function statusMoveForAllOfUs(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( poke.myMove.name == "アシストギア" ) {
-            changeMyRank(tgt.poke, "atk", 1)
-            changeMyRank(tgt.poke, "sp_atk", 1)
-        }
-        if ( poke.myMove.name == "アロマセラピー" ) {
-            // writeLog(`心地よい 香りが 広がった !`)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
-            resetAilment(tgt.poke)
-        }
-        if ( poke.myMove.name == "いのちのしずく" ) {
-            const damage = Math.floor(tgt.poke.myFull_HP / 4 * isDynamax(tgt.poke))
-            changeHP(tgt.poke, damage, "+" )
-        }
-        if ( poke.myMove.name == "いやしのすず" ) {
-            // writeLog(`鈴の音が響き渡った !`)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
-            resetAilment(poke)
-        }
-        if ( poke.myMove.name == "コーチング" ) {
-            changeMyRank(tgt.poke, "atk", 1)
-            changeMyRank(tgt.poke, "def", 1)
-        }
-        if ( poke.myMove.name == "じばそうさ" ) {
-            changeMyRank(tgt.poke, "def", 1)
-            changeMyRank(tgt.poke, "sp_def", 1)
-        }
-        if ( poke.myMove.name == "ジャングルヒール" ) {
-            if ( tgt.poke.myRest_hp < tgt.poke.myFull_hp ) {
+        switch( poke.myMove.name ) {
+            case "アシストギア":
+                changeMyRank(tgt.poke, "atk", 1)
+                changeMyRank(tgt.poke, "sp_atk", 1)
+            
+            case "アロマセラピー":
+                // writeLog(`心地よい 香りが 広がった !`)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
+                resetAilment(tgt.poke)
+            
+            case "いのちのしずく":
                 const damage = Math.floor(tgt.poke.myFull_HP / 4 * isDynamax(tgt.poke))
-                changeHP(tgt.poke, damage, "+")
-            }
-            if ( !tgt.poke.myAilment ) {
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ${tgt.poke.myAilment}が 治った !`)
-                tgt.poke.myAilment = false
-            }
-        }
-        if ( poke.myMove.name == "とおぼえ" ) {
-            changeMyRank(tgt.poke, "atk", 1)
+                changeHP(tgt.poke, damage, "+" )
+            
+            case "いやしのすず":
+                // writeLog(`鈴の音が響き渡った !`)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myAilment}が 治った !`)
+                resetAilment(poke)
+            
+            case "コーチング":
+                changeMyRank(tgt.poke, "atk", 1)
+                changeMyRank(tgt.poke, "def", 1)
+            
+            case "じばそうさ":
+                changeMyRank(tgt.poke, "def", 1)
+                changeMyRank(tgt.poke, "sp_def", 1)
+            
+            case "ジャングルヒール":
+                if ( tgt.poke.myRest_hp < tgt.poke.myFull_hp ) {
+                    const damage = Math.floor(tgt.poke.myFull_HP / 4 * isDynamax(tgt.poke))
+                    changeHP(tgt.poke, damage, "+")
+                }
+                if ( !tgt.poke.myAilment ) {
+                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ${tgt.poke.myAilment}が 治った !`)
+                    tgt.poke.myAilment = false
+                }
+            
+            case "とおぼえ":
+                changeMyRank(tgt.poke, "atk", 1)
         }
     }
 }
@@ -225,40 +239,42 @@ function statusMoveForAllOfYou(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( poke.myMove.name == "あまいかおり" ) {
-            changeRank(tgt.poke, "evation", -2, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "いとをはく" ) {
-            changeRank(tgt.poke, "speed", -2, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "かいふくふうじ" ) {
-            tgt.poke.myCondition.myHeal_block = 1
-        }
-        if ( poke.myMove.name == "しっぽをふる" ) {
-            changeRank(tgt.poke, "def", -1, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "ダークホール" ) {
-            getAbnormal(tgt.poke, "ねむり")
-        }
-        if ( poke.myMove.name == "どくガス" ) {
-            getAbnormal(tgt.poke, "どく")
-        }
-        if ( poke.myMove.name == "なきごえ" ) {
-            changeRank(tgt.poke, "atk", -1, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "にらみつける" ) {
-            changeRank(tgt.poke, "def", -1, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "ベノムトラップ" ) {
-            changeRank(tgt.poke, "atk", -1, isSpirit(poke, tgt.poke))
-            changeRank(tgt.poke, "sp_atk", -1, isSpirit(poke, tgt.poke))
-            changeRank(tgt.poke, "speed", -1, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "ゆうわく" ) {
-            changeRank(tgt.poke, "sp_atk", -2, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "わたほうし" ) {
-            changeRank(tgt.poke, "speed", -2, isSpirit(poke, tgt.poke))
+        switch ( poke.myMove.name ) {
+            case "あまいかおり":
+                changeRank(tgt.poke, "evation", -2, isSpirit(poke, tgt.poke))
+            
+            case "いとをはく":
+                changeRank(tgt.poke, "speed", -2, isSpirit(poke, tgt.poke))
+            
+            case "かいふくふうじ":
+                tgt.poke.myCondition.myHeal_block = 1
+                writeLog(`${tgt.myTN} の ${tgt.myName} は 回復できなくなった`)
+            
+            case "しっぽをふる":
+                changeRank(tgt.poke, "def", -1, isSpirit(poke, tgt.poke))
+            
+            case "ダークホール":
+                getAbnormal(tgt.poke, "ねむり")
+            
+            case "どくガス":
+                getAbnormal(tgt.poke, "どく")
+            
+            case "なきごえ":
+                changeRank(tgt.poke, "atk", -1, isSpirit(poke, tgt.poke))
+            
+            case "にらみつける":
+                changeRank(tgt.poke, "def", -1, isSpirit(poke, tgt.poke))
+            
+            case "ベノムトラップ":
+                changeRank(tgt.poke, "atk", -1, isSpirit(poke, tgt.poke))
+                changeRank(tgt.poke, "sp_atk", -1, isSpirit(poke, tgt.poke))
+                changeRank(tgt.poke, "speed", -1, isSpirit(poke, tgt.poke))
+            
+            case "ゆうわく":
+                changeRank(tgt.poke, "sp_atk", -2, isSpirit(poke, tgt.poke))
+            
+            case "わたほうし":
+                changeRank(tgt.poke, "speed", -2, isSpirit(poke, tgt.poke))
         }
     }
 }
@@ -268,15 +284,16 @@ function statusMoveForOneOfUs(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( poke.myMove.name == "アロマミスト" ) {
-            changeMyRank(tgt.poke, "sp_def", 1)
-        }
-        if ( poke.myMove.name == "てだすけ" ) {
-            tgt.poke.myCondition.myHelping_hand += 1
-            writeLog(`${tgt.poke.myName} を 手助けする 体勢に入った !`)
-        }
-        if ( poke.myMove.name == "てをつなぐ" ) {
-            writeLog(`${tgt.poke.myName} と 手を繋いだ`)   
+        switch ( poke.myMove.name ) {
+            case "アロマミスト":
+                changeMyRank(tgt.poke, "sp_def", 1)
+            
+            case "てだすけ":
+                tgt.poke.myCondition.myHelping_hand += 1
+                writeLog(`${tgt.poke.myName} を 手助けする 体勢に入った !`)
+            
+            case "てをつなぐ":
+                writeLog(`${tgt.poke.myName} と 手を繋いだ`)   
         }
     }
 }
@@ -286,45 +303,46 @@ function statusMoveForAll(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( poke.myMove.name == "おちゃかい" ) {
-            eatBerryImmediately(tgt.poke)
-        }
-        if ( poke.myMove.name == "たがやす" ) {
-            changeRank(tgt.poke, "atk", 1, isSpirit(poke, tgt.poke))
-            changeRank(tgt.poke, "sp_atk", 1, isSpirit(poke, tgt.poke))
-        }
-        if ( poke.myMove.name == "フラワーガード" ) {
+        switch ( poke.myMove.name ) {
+            case "おちゃかい":
+                eatBerryImmediately(tgt.poke)
             
-        }
-        if ( poke.myMove.name == "ほろびのうた" ) {
-            tgt.poke.myCondition.myPerish_song = 4
+            case "たがやす":
+                changeRank(tgt.poke, "atk", 1, isSpirit(poke, tgt.poke))
+                changeRank(tgt.poke, "sp_atk", 1, isSpirit(poke, tgt.poke))
+            
+            case "フラワーガード":
+
+            case "ほろびのうた":
+                tgt.poke.myCondition.myPerish_song = 4
         }
     }
 }
 
 // 対象が不定の技
 function statusMoveForSomeone(poke) {
-    if ( poke.myMove.name ==  "さきどり" ) {
-        // ここまで到達することはない
-    }
-    if ( poke.myMove.name == "のろい" ) {
+    switch ( poke.myMove.name ) {
+        case "さきどり":
+
+        case "のろい":
 
     }
 }
 
 // 対象が自分か味方の技
 function statusMoveForEitherOfUs(poke) {
-    if ( poke.myMove.name == "つぼをつく" ) {
+    switch ( poke.myMove.name ) {
+        case  "つぼをつく":
 
     }
 }
 
 // 対象が自分以外の技
 function statusMoveForExceptForMe(poke) {
-    if ( poke.myMove.name == "ふしょくガス" ) {
+    switch ( poke.myMove.name ) {
+        case "ふしょくガス":
 
-    }
-    if ( poke.myMove.name == "フラフラダンス" ) {
+        case "フラフラダンス":
 
     }
 }
@@ -365,11 +383,6 @@ function statusMoveForExceptForMe(poke) {
 function statusMoveForOneOfThem(poke) {
     const tgt = poke.myTarget[0]
 
-    if ( poke.myMove.name == "いばる" || poke.myMove.name == "おだてる" ) {
-        // if (user[0].f_con.includes("しんぴのまもり" ) && con.ability != "すりぬけ" ) return
-        // if (user[0].f_con.includes("しんぴのまもり" ) && isAbility(me, con) && (tgt.parent == con.parent)) return
-    }
-
     // ランクを変化させる技
     for ( const move of statusMoveToChangeRankForOneOfThem ) {
         if ( poke.myMove.name == move.name ) {
@@ -388,177 +401,183 @@ function statusMoveForOneOfThem(poke) {
         }
     }
 
-    // その他の効果
-    if ( poke.myMove.name == "あくび" ) {
-        tgt.poke.myCondition.myYawn = 1
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 眠気に襲われた`)
-    }
-    if ( poke.myMove.name == "あくむ" ) {
-        tgt.poke.myCondition.myNightmare = true
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 悪夢に襲われた`)
-    }
-    if ( poke.myMove.name == "アンコール" ) {
-        tgt.poke.myCondition.myEncore_turn = 1
-        tgt.poke.myCondition.myEncore_move = tgt.poke.myCondition.myHistory[0].name
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は アンコールを受けた`)
-    }
-    if ( poke.myMove.name == "いえき" ) {
-        tgt.poke.myCondition.No_ability = true
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性が 無効になった !`)
-    }
-    if ( poke.myMove.name == "いたみわけ" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いのHPを 分け合った`)
-        const atk_HP = poke.myRest_hp
-        const def_HP = tgt.poke.myRest_hp
-        const num = ( tgt.poke.myCondition.myDynamax )? {first: 2, second: def_HP / 2} : {first: 1, second: 0}
-        poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2), poke.myFull_hp)
-        tgt.poke.myRest_hp = Math.min(Math.floor((atk_HP + def_HP / num.first) / 2 + num.second), tgt.poke.myFull_hp)
-    }
-    if ( poke.myMove.name == "いちゃもん" ) {
-        tgt.myCondition.myTorment = true
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は いちゃもんを受けた`)
-    }
-    if ( poke.myMove.name == "いやしのはどう" ) {
-        const damage = ( poke.myAbility == "メガランチャー" && isAbility(poke) )? 
-            Math.fiveCut(tgt.poke.myFull_HP * 3 / 4 * isDynamax(tgt.poke)) :
-            Math.ceil(tgt.poke.myFull_HP / 2 * isDamage(tgt.poke))
-        changeHP(tgt, damage, "+")
-    }
-    if ( poke.myMove.name == "うらみ" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myCondition.myHistory[0].name}の PPを4減らした !`)
-        for ( let i = 0; i < 4; i++ ) {
-            if ( tgt.poke.myCondition.myHistory[0].name == tgt[`myMove_${i}`] ) {
-                tgt[`myRest_pp_${i}`] = Math.max(tgt[`myRest_pp_${i}`] - 4, 0)
-            }
-        }
-    }
-    if ( poke.myMove.name == "おきみやげ" ) {
-        poke.myRest_hp = 0
-        toHand(poke)
-    }
-    if ( poke.myMove.name == "おさきにどうぞ" ) {
+    const my_Rest_ho     = poke.myRest_ho
+    const tg_Rest_hp     = tgt.poke.myRest_ho
+    const my_Def         = poke.myDef
+    const tg_Def         = tgt.poke.myDef
+    const my_Sp_def      = poke.mySp_def
+    const tg_Sp_def      = tgt.poke.mySp_def
+    const my_Rank_def    = poke.myRank_def
+    const tg_Rank_def    = tgt.poke.myRank_def
+    const my_Rank_sp_def = poke.myRank_sp_def
+    const tg_Rank_sp_def = tgt.poke.myRank_sp_def
 
-    }
-    if ( poke.myMove.name == "かぎわける" || poke.myMove.name == "みやぶる" ) {
-        tgt.poke.myCondition.myForesight = true
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 正体を見破られた`)
-    }
-    if ( poke.myMove.name == "かなしばり" ) {
-        tgt.poke.myCondition.myDisable_move = tgt.poke.myCondition.myHistory[0].name
-        tgt.poke.myCondition.myDisable_turn = 1
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 金縛りを受けた`)
-    }
-    if ( poke.myMove.name == "ガードシェア" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いの 防御と 特防を 共有した`)
-        const atk_B = poke.myDef
-        const atk_D = poke.mySp_def
-        const def_B = tgt.poke.myDef
-        const def_D = tgt.poke.mySp_def
-        poke.myDef        = Math.floor((atk_B + def_B) / 2)
-        tgt.poke.myDef    = Math.floor((atk_B + def_B) / 2)
-        poke.mySp_def     = Math.floor((atk_D + def_D) / 2)
-        tgt.poke.mySp_def = Math.floor((atk_D + def_D) / 2)
-    }
-    if ( poke.myMove.name == "ガードスワップ" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いの 防御ランクと 特防ランクを 入れ替えた`)
-        const atk_B = poke.myRank_def
-        const atk_D = poke.myRank_sp_def
-        const def_B = tgt.poke.myRank_def
-        const def_D = tgt.poke.myRank_sp_def
-        poke.myRank_def         = def_B
-        poke.myRank_sp_def      = def_D
-        tgt.poke.myRank_def     = atk_B
-        tgt.poke.myRank_sp_def  = atk_D
-    }
-    if ( poke.myMove.name == "きりばらい" ) {
-        // 回避率低下が防がれた後にしろいきりが解除される
+    switch ( poke.myMove.name ) {
+        case  "いばる":
+            
+        case "おだてる":
+        // if (user[0].f_con.includes("しんぴのまもり" ) && con.ability != "すりぬけ" ) return
+        // if (user[0].f_con.includes("しんぴのまもり" ) && isAbility(me, con) && (tgt.parent == con.parent)) return
 
-        // 対象の場だけ解除
-        if ( isField(tgt.poke).myReflect ) {
-            isField(tgt.poke).myRecycle = false
-            isField(tgt.poke).myReflect_clay = false
-            writeLog(`${tgt.poke.myTN} の場の リフレクターが消え去った`)
-        }
-        if ( isField(tgt.poke).myLight_screen ) {
-            isField(tgt.poke).myLight_screen = false
-            isField(tgt.poke).myLight_clay = false
-            writeLog(`${tgt.poke.myTN} の場の ひかりのかべが消え去った`)
-        }
-        if ( isField(tgt.poke).myAurora_vail ) {
-            isField(tgt.poke).myAurora_vail = false
-            isField(tgt.poke).myAurora_clay = false
-            writeLog(`${tgt.poke.myTN} の場の オーロラベールが消え去った`)
-        }
-        if ( isField(tgt.poke).mySafeguard ) {
-            isField(tgt.poke).mySafeguard = false
-            writeLog(`${tgt.poke.myTN} の場の しんぴのまもりが消え去った`)
-        }
-        if ( isField(tgt.poke).myMist ) {
-            isField(tgt.poke).myMist = false
-            writeLog(`${tgt.poke.myTN} の場の しろいきりが消え去った`)
-        }
-        // お互いの場で解除
-        for ( const field of [myField, oppField] ) {
-            if ( field.mySpikes ) {
-                field.mySpikes = false
-                writeLog(`${field.myTN} の場の まきびしが消え去った`)
+        case "あくび":
+            tgt.poke.myCondition.myYawn = 1
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 眠気に襲われた`)
+        
+        case "あくむ":
+            tgt.poke.myCondition.myNightmare = true
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 悪夢に襲われた`)
+        
+        case "アンコール":
+            tgt.poke.myCondition.myEncore_turn = 1
+            tgt.poke.myCondition.myEncore_move = tgt.poke.myCondition.myHistory[0].name
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は アンコールを受けた`)
+        
+        case "いえき":
+            tgt.poke.myCondition.No_ability = true
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性が 無効になった !`)
+        
+        case "いたみわけ":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いのHPを 分け合った`)
+            const painSplit = ( tgt.poke.myCondition.myDynamax )? {first: 2, second: tgt_Rest_hp / 2} : {first: 1, second: 0}
+            poke.myRest_hp = Math.min(Math.floor((my_Rest_ho + tg_Rest_hp / painSplit.first) / 2), poke.myFull_hp)
+            tgt.poke.myRest_hp = Math.min(Math.floor((my_Rest_ho + tg_Rest_hp / painSplit.first) / 2 + painSplit.second), tgt.poke.myFull_hp)
+        
+        case "いちゃもん":
+            tgt.myCondition.myTorment = true
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は いちゃもんを受けた`)
+        
+        case "いやしのはどう":
+            const healPulse = ( poke.myAbility == "メガランチャー" && isAbility(poke) )? 
+                Math.fiveCut(tgt.poke.myFull_HP * 3 / 4 * isDynamax(tgt.poke)) :
+                Math.ceil(tgt.poke.myFull_HP / 2 * isDamage(tgt.poke))
+            changeHP(tgt, healPulse, "+")
+        
+        case "うらみ":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myCondition.myHistory[0].name}の PPを4減らした !`)
+            for ( let i = 0; i < 4; i++ ) {
+                if ( tgt.poke.myCondition.myHistory[0].name == tgt[`myMove_${i}`] ) {
+                    tgt[`myRest_pp_${i}`] = Math.max(tgt[`myRest_pp_${i}`] - 4, 0)
+                }
             }
-            if ( field.myToxic_spikes ) {
-                field.myToxic_spikes = false
-                writeLog(`${field.myTN} の場の どくびしが消え去った`)
-            }
-            if ( field.myStealth_rock ) {
-                field.myStealth_rock = false
-                writeLog(`${field.myTN} の場の ステルスロックが消え去った`)
-            }
-            if ( field.mySticky_web ) {
-                field.mySticky_web = false
-                writeLog(`${field.myTN} の場の ねばねばネットが消え去った`)
-            }
-            if ( field.mySteelSurge ) {
-                field.mySteelSurge = false
-                writeLog(`${field.myTN} の場の キョダイコウジンが消え去った`)
-            }
-        }
+        
+        case "おきみやげ":
+            poke.myRest_hp = 0
+            toHand(poke)
+        
+        case "おさきにどうぞ":
 
-        const terrain = [
-            {en: "Electric", ja: "エレキ"}, 
-            {en: "Grassy",   ja: "グラス"}, 
-            {en: "Misty",    ja: "ミスト"}, 
-            {en: "Psychic",  ja: "サイコ"}
-        ]
-        for ( const t of terrain ) {
-            if ( fieldStatus[`my${t.en}`] ) {
-                fieldStatus[`my${t.en}`] = false
-                myField.myExtender = false
-                oppField.myExtender = false
-                writeLog(`${t.ja}フィールドが 消え去った`)
+        case "かぎわける" || "みやぶる":
+            tgt.poke.myCondition.myForesight = true
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 正体を見破られた`)
+        
+        case "かなしばり":
+            tgt.poke.myCondition.myDisable_move = tgt.poke.myCondition.myHistory[0].name
+            tgt.poke.myCondition.myDisable_turn = 1
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 金縛りを受けた`)
+        
+        case "ガードシェア":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いの 防御と 特防を 共有した`)
+            poke.myDef        = Math.floor((my_Def + tg_Def) / 2)
+            tgt.poke.myDef    = Math.floor((my_Def + tg_Def) / 2)
+            poke.mySp_def     = Math.floor((my_Sp_def + tg_Sp_def) / 2)
+            tgt.poke.mySp_def = Math.floor((my_Sp_def + tg_Sp_def) / 2)
+        
+        case "ガードスワップ":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} と お互いの 防御ランクと 特防ランクを 入れ替えた`)
+            poke.myRank_def        = tg_Rank_def
+            poke.myRank_sp_def     = tg_Rank_sp_def
+            tgt.poke.myRank_def    = my_Rank_def
+            tgt.poke.myRank_sp_def = my_Rank_sp_def
+        
+        case "きりばらい":
+            // 回避率低下が防がれた後にしろいきりが解除される
+
+            // 対象の場だけ解除
+            if ( isField(tgt.poke).myReflect ) {
+                isField(tgt.poke).myRecycle = false
+                isField(tgt.poke).myReflect_clay = false
+                writeLog(`${tgt.poke.myTN} の場の リフレクターが消え去った`)
             }
-        }
-        /*
-        if (!tgt.p_con.includes("状態変化『みがわり』" ) || con.ability == "すりぬけ" ) {
-            if (tgt.ability == "ミラーアーマー" ) {
-                writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　ミラーアーマーが　発動した!" + "\n" )
-                changeRank(me, you, con, "Y", -1, 100, move, true)
-                bfn.whiteHerb(atk, def)
-            } else {
-                changeRank(user[0], user[1], tgt, "Y", -1, 100, move, true)
-                bfn.whiteHerb(def, atk)
+            if ( isField(tgt.poke).myLight_screen ) {
+                isField(tgt.poke).myLight_screen = false
+                isField(tgt.poke).myLight_clay = false
+                writeLog(`${tgt.poke.myTN} の場の ひかりのかべが消え去った`)
             }
+            if ( isField(tgt.poke).myAurora_vail ) {
+                isField(tgt.poke).myAurora_vail = false
+                isField(tgt.poke).myAurora_clay = false
+                writeLog(`${tgt.poke.myTN} の場の オーロラベールが消え去った`)
+            }
+            if ( isField(tgt.poke).mySafeguard ) {
+                isField(tgt.poke).mySafeguard = false
+                writeLog(`${tgt.poke.myTN} の場の しんぴのまもりが消え去った`)
+            }
+            if ( isField(tgt.poke).myMist ) {
+                isField(tgt.poke).myMist = false
+                writeLog(`${tgt.poke.myTN} の場の しろいきりが消え去った`)
+            }
+            // お互いの場で解除
+            for ( const field of [myField, oppField] ) {
+                if ( field.mySpikes ) {
+                    field.mySpikes = false
+                    writeLog(`${field.myTN} の場の まきびしが消え去った`)
+                }
+                if ( field.myToxic_spikes ) {
+                    field.myToxic_spikes = false
+                    writeLog(`${field.myTN} の場の どくびしが消え去った`)
+                }
+                if ( field.myStealth_rock ) {
+                    field.myStealth_rock = false
+                    writeLog(`${field.myTN} の場の ステルスロックが消え去った`)
+                }
+                if ( field.mySticky_web ) {
+                    field.mySticky_web = false
+                    writeLog(`${field.myTN} の場の ねばねばネットが消え去った`)
+                }
+                if ( field.mySteelSurge ) {
+                    field.mySteelSurge = false
+                    writeLog(`${field.myTN} の場の キョダイコウジンが消え去った`)
+                }
+            }
+
+            const terrain = [
+                {en: "Electric", ja: "エレキ"}, 
+                {en: "Grassy",   ja: "グラス"}, 
+                {en: "Misty",    ja: "ミスト"}, 
+                {en: "Psychic",  ja: "サイコ"}
+            ]
+            for ( const t of terrain ) {
+                if ( fieldStatus[`my${t.en}`] ) {
+                    fieldStatus[`my${t.en}`] = false
+                    myField.myExtender = false
+                    oppField.myExtender = false
+                    writeLog(`${t.ja}フィールドが 消え去った`)
+                }
+            }
+            /*
+            if (!tgt.p_con.includes("状態変化『みがわり』" ) || con.ability == "すりぬけ" ) {
+                if (tgt.ability == "ミラーアーマー" ) {
+                    writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　ミラーアーマーが　発動した!" + "\n" )
+                    changeRank(me, you, con, "Y", -1, 100, move, true)
+                    bfn.whiteHerb(atk, def)
+                } else {
+                    changeRank(user[0], user[1], tgt, "Y", -1, 100, move, true)
+                    bfn.whiteHerb(def, atk)
+                }
+            }
+            */
+        
+        case "ギフトパス":
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${poke.myItem}を プレゼントした`)
+            tgt.poke.myItem = poke.myItem
+            poke.myItem = ""
+            eatBerryInPinch(tgt)
+            eatBerryInAbnormal(tgt)
+        
+        case "クモのす" || "くろいまなざし" || "とおせんぼう":
+            tgt.poke.myCondition.myCant_escape = poke.myID
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 逃げられなくなった`)
         }
-        */
-    }
-    if ( poke.myMove.name == "ギフトパス" ) {
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${poke.myItem}を プレゼントした`)
-        tgt.poke.myItem = poke.myItem
-        poke.myItem = ""
-        eatBerryInPinch(tgt)
-        eatBerryInAbnormal(tgt)
-    }
-    if ( poke.myMove.name == "クモのす" || poke.myMove.name == "くろいまなざし" || poke.myMove.name == "とおせんぼう" ) {
-        tgt.poke.myCondition.myCant_escape = poke.myID
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 逃げられなくなった`)
-    }
     if ( poke.myMove.name == "こころのめ" || poke.myMove.name == "ロックオン" ) {
         tgt.poke.myCondition.myLock_on = 1
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 狙いを定めた`)
@@ -876,6 +895,7 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は 張り切っている`)
     }
     if ( poke.myMove.name == "キングシールド" ) {
+        poke.myCondition.myProtect_num += 1
         poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
@@ -945,7 +965,8 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は 宙に浮かんだ`)
     }
     if ( poke.myMove.name == "トーチカ" ) {
-        poke.myCondition.myProtect = "トーチカ"
+        poke.myCondition.myProtect_num += 1
+        poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
     if ( poke.myMove.name == "とぎすます" ) {
@@ -953,7 +974,8 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は 集中している`)
     }
     if ( poke.myMove.name == "ニードルガード" ) {
-        poke.myCondition.myProtect = "ニードルガード"
+        poke.myCondition.myProtect_num += 1
+        poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
     if ( poke.myMove.name == "ねがいごと" ) {
@@ -1053,7 +1075,8 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は 自分の技を封印した`)
     }
     if ( poke.myMove.name == "ブロッキング" ) {
-        poke.myCondition.myProtect = "ブロッキング"
+        poke.myCondition.myProtect_num += 1
+        poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
     if ( poke.myMove.name == "ほおばる" ) {
@@ -1079,7 +1102,8 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} は マジックコートに包まれた`)
     }
     if ( poke.myMove.name == "まもる" ) {
-        poke.myCondition.myProtect = "まもる"
+        poke.myCondition.myProtect_num += 1
+        poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
     if ( poke.myMove.name == "まるくなる" ) {
@@ -1101,7 +1125,8 @@ function statusMoveForMe(poke) {
         writeLog(`${poke.myTN} の ${poke.myName} の 身代わりが 現れた`)
     }
     if ( poke.myMove.name == "みきり" ) {
-        poke.myCondition.myProtect = "みきり"
+        poke.myCondition.myProtect_num += 1
+        poke.myCondition.myProtect = poke.myMove.name
         writeLog(`${poke.myTN} の ${poke.myName} は 守りの体勢に入った`)
     }
     if ( poke.myMove.name == "みちづれ" ) {
