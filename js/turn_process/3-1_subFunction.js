@@ -138,46 +138,41 @@ function invalidationForOtherAbility3rd(poke, tgt) {
 
 // 特性に関する無効化
 function invalidationForAbility3rd(poke, tgt) {
-    // なかまづくり: 対象がダイマックスしている/対象が自身と同じ特性である/自身がコピーできない特性である/対象が上書きできない特性である
-    if ( poke.myMove.name == "なかまづくり" ) {
-        if ( poke.myAbility == tgt.poke.myAbility )         return true // 対象が自身と同じ特性である
-        if ( yourEntrainment.includes(tgt.poke.myAbility) ) return true // 対象が上書きできない特性である
-        if ( myEntrainment.includes(poke.myAbility) )       return true // 自身がコピーできない特性である
-        if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
-        if ( tgt.substitute )                               return true // 対象がみがわり状態である
-        return false
-    }
-    // いえき: 対象がすでにとくせいなし状態である/とくせいなしにできない特性である
-    if ( poke.myMove.name == "いえき" ) {
-        if ( tgt.poke.myCondition.myNo_ability )            return true // 対象がすでにとくせいなし状態である
-        if ( gastro.includes(tgt.poke.myAbility) )          return true // とくせいなしにできない特性である
-        return false
-    }
-    // なりきり: 自身が対象と同じ特性である/対象がコピーできない特性である
-    if ( poke.myMove.name == "なりきり" ) {
-        if ( poke.myAbility == tgt.poke.myAbility )         return true // 自身が対象と同じ特性である
-        if ( yourRolePlay.includes(tgt.poke.myAbility) )    return true // 対象がコピーできない特性である
-        if ( myRolePlay.includes(poke.myAbility) )          return true // 自身がコピーできない特性である
-        return false
-    }
-    // シンプルビーム: 対象がすでにたんじゅんである/上書きできない特性である
-    if ( poke.myMove.name == "シンプルビーム" ) {
-        if ( tgt.poke.myAbility == "たんじゅん" )             return true // 対象がすでにたんじゅんである
-        if ( simpleBeam.includes(tgt.poke.myAbility) )      return true // 上書きできない特性である
-        return false
-    }
-    // なやみのタネ: 対象が上書きできない特性である
-    if ( poke.myMove.name == "なやみのタネ" ) {
-        if ( tgt.poke.myAbility == "ふみん" )                return true // 対象がすでにふみんである
-        if ( worrySeed.includes(tgt.poke.myAbility) )       return true // 対象が上書きできない特性である
-        return false
-    }
-    // スキルスワップ: 自身や対象が交換できない特性である/対象がダイマックスしている
-    if ( poke.myMove.name == "スキルスワップ" ) {
-        if ( cannotSkillSwap.includes(poke.myAbility) )     return true // 自身が交換できない特性である
-        if ( cannotSkillSwap.includes(tgt.poke.myAbility) ) return true // 対象が交換できない特性である
-        if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
-        return false
+    switch ( poke.myMove.name ) {
+        case "なかまづくり":
+            if ( poke.myAbility == tgt.poke.myAbility )         return true // 対象が自身と同じ特性である
+            if ( yourEntrainment.includes(tgt.poke.myAbility) ) return true // 対象が上書きできない特性である
+            if ( myEntrainment.includes(poke.myAbility) )       return true // 自身がコピーできない特性である
+            if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
+            if ( tgt.substitute )                               return true // 対象がみがわり状態である
+            return false
+        
+        case "いえき":
+            if ( tgt.poke.myCondition.myNo_ability )            return true // 対象がすでにとくせいなし状態である
+            if ( gastro.includes(tgt.poke.myAbility) )          return true // とくせいなしにできない特性である
+            return false
+        
+        case "なりきり":
+            if ( poke.myAbility == tgt.poke.myAbility )         return true // 自身が対象と同じ特性である
+            if ( yourRolePlay.includes(tgt.poke.myAbility) )    return true // 対象がコピーできない特性である
+            if ( myRolePlay.includes(poke.myAbility) )          return true // 自身がコピーできない特性である
+            return false
+        
+        case "シンプルビーム":
+            if ( tgt.poke.myAbility == "たんじゅん" )             return true // 対象がすでにたんじゅんである
+            if ( simpleBeam.includes(tgt.poke.myAbility) )      return true // 上書きできない特性である
+            return false
+        
+        case "なやみのタネ":
+            if ( tgt.poke.myAbility == "ふみん" )                return true // 対象がすでにふみんである
+            if ( worrySeed.includes(tgt.poke.myAbility) )       return true // 対象が上書きできない特性である
+            return false
+        
+        case "スキルスワップ":
+            if ( cannotSkillSwap.includes(poke.myAbility) )     return true // 自身が交換できない特性である
+            if ( cannotSkillSwap.includes(tgt.poke.myAbility) ) return true // 対象が交換できない特性である
+            if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
+            return false
     }
 }
 
@@ -215,46 +210,51 @@ function invalidationForFullHP3rd(poke, tgt) {
 
 // ステータスに関する無効化
 function invalidationForStatus3rd(poke, tgt) {
-    // はらだいこ: 自身がHP半分以下である/すでにランク+6である
-    if ( poke.myMove.name == "はらだいこ" ) {
-        if ( tgt.poke.myRest_hp < Math.floor(tgt.poke.myFull_hp / 2) ) return true
-        if ( tgt.poke.myRank_atk == 6 ) return true
-        return false
-    }
-    // フラワーガード/たがやす: 対象がくさタイプでない（たがやすの時は地面にいる必要がある）
-    if ( poke.myMove.name == "フラワーガード" ) {
-        if ( !tgt.poke.myType.includes("くさ") ) return true
-        return false
-    }
-    if ( poke.myMove.name == "たがやす" ) {
-        if ( !tgt.poke.myType.includes("くさ") ) return true
-        if ( !onGround(tgt.poke) ) return true
-        return false
-    }
-    // じばそうさ/アシストギア: 対象の特性がプラスかマイナスでない
-    if ( poke.myMove.name == "じばそうさ" || poke.myMove.name == "アシストギア" ) {
-        if ( !isAbility(tgt.poke) ) return true
-        if ( tgt.poke.myAbility != "プラス" && tgt.poke.myAbility != "マイナス" ) return true
-        return false
-    }
-    // ちからをすいとる: 対象のこうげきが-6である
-    if ( poke.myMove.name == "ちからをすいとる" ) {
-        if ( tgt.poke.myRank_atk == -6 ) return true
-        return false
-    }
-    // いばる/おだてる: 対象のランクが+6でありこんらんしている
-    if ( poke.myMove.name == "いばる" ) {
-        if ( tgt.poke.myRank_atk == 6 && tgt.poke.myCondition.myConfusion ) return true
-        return false
-    }
-    if ( poke.myMove.name == "おだてる" ) {
-        if ( tgt.poke.myRank_sp_atk == 6 && tgt.poke.myCondition.myConfusion ) return true
-        return false
-    }
-    // ひっくりかえす: 対象のランクが変化していない
-    if ( poke.myMove.name == "ひっくりかえす" ) {
-        if ( tgt.poke.myRank_atk == 0 && tgt.poke.myRank_def == 0 && tgt.poke.myRank_sp_atk == 0 && tgt.poke.myRank_sp_def == 0 && tgt.poke.myRank_speed == 0 && tgt.poke.myRank_accuracy == 0 && tgt.poke.myRank_evasion == 0 ) return true
-        return false
+    switch ( poke.myMove.name ) {
+        case "はらだいこ":
+            if ( tgt.poke.myRest_hp < Math.floor(tgt.poke.myFull_hp / 2) ) return true // 自身がHP半分以下である
+            if ( tgt.poke.myRank_atk == 6 ) return true // すでにランク+6である
+            return false
+        
+        case "フラワーガード":
+            if ( !tgt.poke.myType.includes("くさ") ) return true // 対象がくさタイプでない
+            return false
+        
+        case "たがやす":
+            if ( !tgt.poke.myType.includes("くさ") ) return true // 対象がくさタイプでない
+            if ( !onGround(tgt.poke) ) return true // 地面にいる必要がある
+            return false
+        
+        case "じばそうさ":
+        case "アシストギア":
+            if ( !isAbility(tgt.poke) ) return true
+            if ( tgt.poke.myAbility == "プラス" ) return false
+            if ( tgt.poke.myAbility == "マイナス" ) return false
+            return true // 対象の特性がプラスかマイナスでない
+        
+        case "ちからをすいとる":
+            if ( tgt.poke.myRank_atk == -6 ) return true // 対象のこうげきが-6である
+            return false
+        
+        case "いばる":
+            if ( tgt.poke.myRank_atk < 6 ) return false
+            if ( !tgt.poke.myCondition.myConfusion ) return false
+            return true // 対象のランクが+6でありこんらんしている
+        
+        case "おだてる":
+            if ( tgt.poke.myRank_sp_atk < 6 ) return false
+            if ( !tgt.poke.myCondition.myConfusion ) return false
+            return true  // 対象のランクが+6でありこんらんしている
+        
+        case "ひっくりかえす":
+            if ( tgt.poke.myRank_atk      != 0 ) return false
+            if ( tgt.poke.myRank_def      != 0 ) return false
+            if ( tgt.poke.myRank_sp_atk   != 0 ) return false
+            if ( tgt.poke.myRank_sp_def   != 0 ) return false
+            if ( tgt.poke.myRank_speed    != 0 ) return false
+            if ( tgt.poke.myRank_accuracy != 0 ) return false
+            if ( tgt.poke.myRank_evasion  != 0 ) return false
+            return true // 対象のランクが変化していない
     }
 }
 
@@ -390,7 +390,7 @@ function invalidationForDuplicate3rd(poke, tgt) {
     }
     // ねがいごと: 前のターンのねがいごとの効果が残っている
     if ( poke.myMove.name == "ねがいごと" ) {
-        if ( isField(poke).myWish_heal ) return true
+        if ( isField(poke).myWish_data[poke.myPosition].heal ) return true
         return false
     }
     // のろい(呪い): 対象がすでにのろい状態である
@@ -466,134 +466,132 @@ function invalidationOfMoveForField3rd(poke) {
 }
 
 function invalidationForOthers3rd(poke, tgt) {
-    // アンコール: 対象が技を使用していない/技のPPが残っていない/アンコールできない技/相手がダイマックス/すでにアンコール状態
-    /*
-    if ( poke.myMove.name == "アンコール" ) {
-        let now_PP = 0
-        for (let j = 0; j < 4; j++) {
-            if (tgt["move_" + j] == tgt.used) now_PP = tgt["last_" + j]
-        }
-        if (now_PP == 0) tgt.result = "失敗"
-        if (tgt.used == "") tgt.result = "失敗"
-        if (cannotEncore.includes(tgt.used)) tgt.result = "失敗"
-        if (tgt.p_con.includes("状態変化『アンコール』")) tgt.result = "失敗"  || def.data.dynaTxt.includes("3") || def.data.gigaTxt.includes("3")
-    }
-    */
-    
-    // かなしばり: 対象が技を使用していない/最後のわざがわるあがき/ダイマックスわざ/すでにかなしばり状態
-    if ( poke.myMove.name == "かなしばり") {
-        if ( !tgt.poke.myCondition.myHistory ) return true
-        if ( tgt.poke.myCondition.myHistory[0].name == "わるあがき" ) return true
-        if ( tgt.poke.myCondition.myDisable_move ) return true
-        /*
-        const dyna = moveEff.dyna()
-        for (let j = 0; j < dyna.length; j++) {
-            if (dyna[j][1] == tgt.used) tgt.result = "失敗"
-        }
-        const giga = moveEff.gigadyna()
-        for (let j = 0; j < giga.length; j++) {
-            if (giga[j][1] == tgt.used) tgt.result = "失敗"
-        }
-        */
-    }
-    // ものまね: 対象が技を使用していない/ものまねできない技
-    if ( poke.myMove.name == "ものまね" ) {
-        if ( !tgt.poke.myCondition.myHistory ) return true // 対象が技を使用していない
-        if ( mimicMove.includes(tgt.poke.myCondition.myHistory[0].name) ) return true // ものまねできない技
-        for ( let i = 0; i < 4; i++ ) {
-            if ( poke[`myMove_${i}`] == tgt.poke.myCondition.myHistory[0].name ) return true // 同じ技を覚えている
-        }
-        return false
-    }
-    // スケッチ: 対象が技を使用していない/スケッチできない技
-    if ( poke.myMove.name == "スケッチ" ) {
-        if ( !tgt.poke.myCondition.myHistory ) return true // 対象が技を使用していない
-        if ( poke.myCondition.myTransform ) return true // 自身がへんしん状態である
-        if ( cannotSketch.incense(tgt.poke.myCondition.myHistory[0].name) ) return true // スケッチできない技
-        for ( let i = 0; i < 4; i++ ) {
-            if ( poke[`myMove_${i}`] == tgt.poke.myCondition.myHistory[0].name ) return true // 同じ技を覚えている
-        }
-        return false
-    }
-    // リサイクル：持ち物を持っている、リサイクルできる道具がない(wikiにない)
-    if ( poke.myMove.name == "リサイクル" ) {
-        if ( tgt.poke.myIitem ) return true
-        if ( !tgt.poke.myRecycle ) return true
-        return false
-    }
-    // さいはい: さいはいできない技、PPがない技
-    if ( poke.myMove.name == "さいはい" ) {
-        if ( !tgt.poke.myCondition.myHistory ) return true
-        // if ( tgt.poke.myCondition.myFree_fall ) tgt.success = false
-        if ( cannotInstruct.includes(tgt.poke.myCondition.myHistory[0].name)) return true
-        if ( cannotMoveByRecoil.includes(tgt.poke.myCondition.myHistory[0].name)) return true
-        if ( accumulationMove.includes(tgt.poke.myCondition.myHistory[0].name)) return true
-        return false
-    }
-    // おさきにどうぞ: 対象がすでに行動している、行動順に変化がない場合（wikiにない）
-    if ( poke.myMove.name == "おさきにどうぞ" ) {
-        if ( tgt.poke.myCmd_move ) return true
-        return false
-    }
-    // さきおくり/そうでん/てだすけ: 対象がすでに行動している、
-    if ( poke.myMove.name == "さきおくり" || poke.myMove.name == "そうでん" ) {
-        if ( tgt.poke.myCmd_move ) return true
-        return false
-    }
-    // バトンタッチ/いやしのねがい/みかづきのまい: 交代できる味方がいない
-    if ( poke.myMove.name == "バトンタッチ" || poke.myMove.name == "いやしのねがい" || poke.myMove.name == "みかづきのまい" || poke.myMove.name == "テレポート" ) {
-        if ( !isBench(poke) ) return true
-        return false
-    }
-    // ほえる/ふきとばし: 交代できる相手がいない
-    if ( poke.myMove.name == "ほえる" || poke.myMove.name == "ふきとばし" ) {
-        if ( !isBench(tgt.poke) ) return true
-        return false
-    }
-    // てだすけ/サイドチェンジ/アロマミスト/てをつなぐ: 味方がいない
-    if ( poke.myMove.name == "てだすけ" || poke.myMove.name == "サイドチェンジ" || poke.myMove.name == "アロマミスト" || poke.myMove.name == "てをつなぐ" ) {
-        if ( myPokeInBattle(poke).length == 1 ) return true
-        return false
-    }
-    // サイコシフト
-    if ( poke.myMove.name == "サイコシフト" ) {
-        // 1.自身が状態異常でない/対象がすでに状態異常である
-        if ( !poke.myAilment ) return true
-        if ( !tgt.poke.myAilment ) return true
-        // 2.対象が状態異常に耐性を持っている
-        if ( psychoShift(tgt.poke, poke.myAilment) ) return true
-        return false
-    }
-    // じょうか: 対象が状態異常でない
-    if ( poke.myMove.name == "じょうか" ) {
-        if ( !tgt.poke.myAilment ) return true
-        return false
-    }
-    // みがわり
-    if ( poke.myMove.name == "みがわり" ) {
-        // 1.自身がすでにみがわり状態である
-        if ( tgt.poke.myCondition.mySubstitute ) return true
-        // 2.自身に技を使う体力が残っていない
-        if ( tgt.poke.myRest_hp <= Math.floor(tgt.poke.myFull_hp / 4) ) return true
-        return false
-    }
-    // へんしん: 自身/対象がすでにへんしん状態である
-    if ( poke.myMove.name == "へんしん" ) {
-        if ( poke.myCondition.myTransform ) return true
-        if ( tgt.poke.myCondition.myTransform ) return true
-        return false
-    }
-    // トリック/すりかえ: どちらも道具を持っていない/どちらかの道具が交換できない
-    if ( poke.myMove.name == "トリック" || poke.myMove.name == "すりかえ" ) {
-        if ( !poke.myItem ) return true
-        if ( !tgt.poke.myItem ) return true
-        if ( cannotChangeItem(poke) ) return true
-        if ( cannotChangeItem(tgt.poke) ) return true
-        return false
-    }
-    // ふしょくガス: 溶かせない道具がある
-    if ( poke.myMove.name == "ふしょくガス" ) {
-        if ( cannotChangeItem(tgt.poke) ) return true
-        return false
+    switch ( poke.myMove.name ) {
+        // アンコール: 対象が技を使用していない/技のPPが残っていない/アンコールできない技/相手がダイマックス/すでにアンコール状態
+        case  "アンコール":
+            return false
+            let now_PP = 0
+            for (let j = 0; j < 4; j++) {
+                if (tgt["move_" + j] == tgt.used) now_PP = tgt["last_" + j]
+            }
+            if (now_PP == 0) tgt.result = "失敗"
+            if (tgt.used == "") tgt.result = "失敗"
+            if (cannotEncore.includes(tgt.used)) tgt.result = "失敗"
+            if (tgt.p_con.includes("状態変化『アンコール』")) tgt.result = "失敗"  || def.data.dynaTxt.includes("3") || def.data.gigaTxt.includes("3")
+        
+        // かなしばり: 対象が技を使用していない/最後のわざがわるあがき/ダイマックスわざ/すでにかなしばり状態
+        case "かなしばり":
+            if ( !tgt.poke.myCondition.myHistory ) return true
+            if ( tgt.poke.myCondition.myHistory[0].name == "わるあがき" ) return true
+            if ( tgt.poke.myCondition.myDisable_move ) return true
+            /*
+            const dyna = moveEff.dyna()
+            for (let j = 0; j < dyna.length; j++) {
+                if (dyna[j][1] == tgt.used) tgt.result = "失敗"
+            }
+            const giga = moveEff.gigadyna()
+            for (let j = 0; j < giga.length; j++) {
+                if (giga[j][1] == tgt.used) tgt.result = "失敗"
+            }
+            */
+            break
+
+        // ものまね: 対象が技を使用していない/ものまねできない技
+        case "ものまね":
+            if ( !tgt.poke.myCondition.myHistory ) return true // 対象が技を使用していない
+            if ( mimicMove.includes(tgt.poke.myCondition.myHistory[0].name) ) return true // ものまねできない技
+            for ( let i = 0; i < 4; i++ ) {
+                if ( poke[`myMove_${i}`] == tgt.poke.myCondition.myHistory[0].name ) return true // 同じ技を覚えている
+            }
+            return false
+
+        // スケッチ: 対象が技を使用していない/スケッチできない技
+        case "スケッチ":
+            if ( !tgt.poke.myCondition.myHistory ) return true // 対象が技を使用していない
+            if ( poke.myCondition.myTransform ) return true // 自身がへんしん状態である
+            if ( cannotSketch.incense(tgt.poke.myCondition.myHistory[0].name) ) return true // スケッチできない技
+            for ( let i = 0; i < 4; i++ ) {
+                if ( poke[`myMove_${i}`] == tgt.poke.myCondition.myHistory[0].name ) return true // 同じ技を覚えている
+            }
+            return false
+        
+        // リサイクル：持ち物を持っている、リサイクルできる道具がない(wikiにない)
+        case "リサイクル":
+            if ( tgt.poke.myIitem ) return true
+            if ( !tgt.poke.myRecycle ) return true
+            return false
+        
+        // さいはい: さいはいできない技、PPがない技
+        case "さいはい":
+            if ( !tgt.poke.myCondition.myHistory ) return true
+            // if ( tgt.poke.myCondition.myFree_fall ) tgt.success = false
+            if ( cannotInstruct.includes(tgt.poke.myCondition.myHistory[0].name)) return true
+            if ( cannotMoveByRecoil.includes(tgt.poke.myCondition.myHistory[0].name)) return true
+            if ( accumulationMove.includes(tgt.poke.myCondition.myHistory[0].name)) return true
+            return false
+        
+        case "おさきにどうぞ":
+            if ( tgt.poke.myCmd_move ) return true // 対象がすでに行動している、行動順に変化がない場合（wikiにない）
+            return false
+        
+        case "さきおくり":
+        case "そうでん":
+            if ( tgt.poke.myCmd_move ) return true // 対象がすでに行動している、
+            return false
+        
+        case "バトンタッチ":
+        case "いやしのねがい":
+        case "みかづきのまい":
+        case "テレポート":
+            if ( !isBench(poke) ) return true // 交代できる味方がいない
+            return false
+        
+        case "ほえる":
+        case "ふきとばし":
+            if ( !isBench(tgt.poke) ) return true // 交代できる相手がいない
+            return false
+        
+        case "てだすけ":
+        case "サイドチェンジ":
+        case "アロマミスト":
+        case "てをつなぐ":
+            if ( myPokeInBattle(poke).length == 1 ) return true // 味方がいない
+            return false
+        
+        case "サイコシフト":
+            // 1.自身が状態異常でない/対象がすでに状態異常である
+            if ( !poke.myAilment )     return true
+            if ( !tgt.poke.myAilment ) return true
+            // 2.対象が状態異常に耐性を持っている
+            if ( psychoShift(tgt.poke, poke.myAilment) ) return true
+            return false
+        
+        case "じょうか":
+            if ( !tgt.poke.myAilment ) return true // 対象が状態異常でない
+            return false
+        
+        case "みがわり":
+            // 1.自身がすでにみがわり状態である
+            if ( tgt.poke.myCondition.mySubstitute ) return true
+            // 2.自身に技を使う体力が残っていない
+            if ( tgt.poke.myRest_hp <= Math.floor(tgt.poke.myFull_hp / 4) ) return true
+            return false
+        
+        case "へんしん":
+            if ( poke.myCondition.myTransform )     return true // 自身がすでにへんしん状態である
+            if ( tgt.poke.myCondition.myTransform ) return true // 対象がすでにへんしん状態である
+            return false
+        
+        case "トリック":
+        case "すりかえ":
+            if ( !poke.myItem && !tgt.poke.myItem ) return true // どちらも道具を持っていない
+            if ( cannotChangeItem(poke) )           return true // どちらかの道具が交換できない
+            if ( cannotChangeItem(tgt.poke) )       return true // どちらかの道具が交換できない
+            return false
+        
+        // ふしょくガス: 溶かせない道具がある
+        case "ふしょくガス":
+            if ( cannotChangeItem(tgt.poke) ) return true
+            return false
     }
 }

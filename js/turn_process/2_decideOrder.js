@@ -12,9 +12,7 @@ function actionOrder(){
     let pokeList = []
     for ( const poke of allPokeInBattle() ){
         // 技を選択していないときはスルー
-        if ( poke.myCmd_move == "" ) continue
-
-        console.log(poke.myName)
+        if ( poke.myCmd_move === "" ) continue
 
         poke.myOrder_fast     = whetherFast(poke)
         poke.myOrder_late     = whetherLate(poke)

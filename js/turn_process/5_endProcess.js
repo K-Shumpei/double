@@ -333,18 +333,19 @@ function futureAttack(){
 
 // 3.ねがいごと
 function wishRecover(){
-    return
-    for (const tgt of order){
-        const user = isMe(me, you, tgt)
-        if (user[0].f_con.includes("ねがいごと：" + tgt.child)){
-            const text = searchText(user[0].f_con, "ねがいごと：" + tgt.child)
-            const recover = Number(text.split("：")[2])
-            const now = text.split("：")[3]
-            if (now == "宣言ターン") rewriteText(user[0].f_con, text, text.replace("宣言ターン", "回復ターン"))
-            else if (now == "回復ターン"){
-                writeLog(me, you, tgt.TN + "　の場の　願い事が　叶った!" + "\n")
-                changeHP(user[0], user[1], tgt, recover, "+")
-                removeText(user[0].f_con, text)
+    for ( const field of [myField, oppField] ) {
+        for ( const wish of field.myWish_data ) {
+            if ( wish.turn == 1 ) {
+                wish.turn = 2
+                continue
+            }
+            if ( wish.turn == 2 ) {
+                const poke = isPokeByPosition(field.myParty, wish.position)
+                if ( !poke ) continue
+                writeLog(`${field.myTN} の場の 願い事が叶った !`)
+                changeHP(poke, wish.heal, "+")
+                wish.heal = 0
+                wish.turn = 0
             }
         }
     }

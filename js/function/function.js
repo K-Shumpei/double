@@ -650,6 +650,10 @@ function selectedMove(poke) {
     if ( poke.myAbility == "えんかく" && move.nature != "変化") move.direct = "間接"
     if ( move.name == "ワイドフォース" && fieldStatus.myPsychic ) move.target = "相手全体"
     if ( move.name == "みずしゅりけん" && poke.myName == "ゲッコウガ(サトシゲッコウガ)") move.power = 20
+    if ( move.name == "のろい" ) {
+        if ( poke.myType.includes("ゴースト") ) move.target = "1体選択"
+        else move.target = "自分"
+    }
 
     poke.myMove = move
 }

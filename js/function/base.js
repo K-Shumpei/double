@@ -480,6 +480,16 @@ function isPokeByID(ID){
     for ( const poke of oppParty ) if ( poke.myID == ID ) return poke
 }
 
+// ポジションによるポケモン検索
+function isPokeByPosition(party, position) {
+    for ( const poke of allPokeInBattle() ) {
+        if ( poke.myParty == party && poke.myPosition == position ) {
+            return poke
+        }
+    }
+    return false
+}
+
 // 連続技の回数
 function getContinuous(poke) {
     poke.myMove.continuous = 1

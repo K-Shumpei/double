@@ -156,8 +156,11 @@ function skyDropFailure(poke) {
     // フリーフォールで行動順を飛ばされたときも、反動で動けないターンは消費される
     if ( poke.myCondition.mySky_drop ) {
         writeLog(`${poke.myTN} の ${poke.myName} は 空中で身動きが取れない !`)
+        if ( !poke.myCondition.myCant_move ) return true
+        else return false
     }
-    if ( !poke.myCondition.myCant_move ) return true
+
+    return false
 }
 
 // 2.(自身のおんねん/いかり状態の解除)
@@ -1047,194 +1050,185 @@ function commitmentRock(poke) {
 
 // 13.技の仕様による失敗
 function failureForMoveSpecification(poke) {
-    // アイアンローラー: フィールドが無い
-    if ( poke.myMove.name == "アイアンローラー" ) {
-        if ( myField.myElectric ) return false
-        if ( myField.myGrassy )   return false
-        if ( myField.myMisty )    return false
-        if ( myField.myPsychic )  return false
+    const target = isTarget(poke)
+    const history = poke.myCondition.myHistory
+    const moveList = [poke.myMove_0, poke.myMove_1, poke.myMove_2, poke.myMove_3]
 
-        return true
-    }
-    // いじげんラッシュ/ダークホール/オーラぐるま: 使用者のポケモンの姿が適格でない
-    if ( poke.myMove.name == "いじげんラッシュ" ) {
-        if ( poke.myName == "フーパ(ときはなたれしフーパ)" ) return false
-        return true
-    }
-    if ( poke.myMove.name == "ダークホール" ) {
-        if ( poke.myName == "ダークライ" ) return false
-        return true
-    }
-    if ( poke.myMove.name == "オーラぐるま" ) {
-        if ( poke.myName == "モルペコ" ) return false
-        return true
-    }
-    // がまん: 解き放つダメージが無い
-    if ( poke.myMove.name == "がまん" && !poke.myCondition.myBide_damage ) {
-        poke.myCondition.myBide_turn = false
-        return true
-    }
+    switch ( poke.myMove.name ) {
+        case "アイアンローラー":
+            if ( myField.myElectric ) return false
+            if ( myField.myGrassy )   return false
+            if ( myField.myMisty )    return false
+            if ( myField.myPsychic )  return false
 
-    // カウンター/ミラーコート/メタルバースト: 適格なダメージをそのターンは受けていない、味方からのダメージ
-    if ( poke.myMove.name == "カウンター" ) {
-        if ( poke.myDamage_nature != "物理" ) return true
-        if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true
-        return false
-    }
-    if ( poke.myMove.name == "ミラーコート" ) {
-        if ( poke.myDamage_nature != "特殊" ) return true
-        if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true
-        return false
-    }
-    if ( poke.myMove.name == "メタルバースト" ) {
-        if ( !poke.myDamage_nature ) return true
-        if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true
-        return false
-    }
-    // くちばしキャノン：加熱していない（アンコールで強制された場合など）(wikiにない)
-    if ( poke.myMove.name == "くちばしキャノン" ) {
-        if ( !poke.myCondition.myBeak_blast ) return true
-        return false
-    }
-    // ソウルビート: 使用者のHPが足りない
-    if ( poke.myMove.name == "ソウルビート" ) {
-        if ( poke.myRest_hp < Math.floor(poke.myFull_HP / 3) ) return true
-        return false
-    }
-    // たくわえる: たくわえるカウントがすでに3である
-    if ( poke.myMove.name == "たくわえる" ) {
-        if ( poke.myCondition.myStockpile == 3 ) return true
-        return false
-    }
-    // はきだす/のみこむ: たくわえるカウントが0である
-    if ( poke.myMove.name == "はきだす" || poke.myMove.name == "のみこむ" ) {
-        if ( poke.myCondition.myStockpile == 0 ) return true
-        return false
-    }
-    // とっておき: 覚えているわざにとっておきがない/とっておき以外の技を覚えていない/使用されてない技がある
-    if ( poke.myMove.name == "とっておき") {
-        const moveList = [poke.myMove_0, poke.myMove_1, poke.myMove_2, poke.myMove_3]
-        if ( !moveList.includes("とっておき") ) return true // 覚えているわざにとっておきがない
-        if ( moveList.filter( move => !move ).length === 1 ) return true // とっておき以外の技を覚えていない
-        // 使用されてない技がある　がまだ
-        return false
-    }
-    // ほおばる: きのみを持っていない
-    if ( poke.myMove.name == "ほおばる" ) {
-        if ( !berryList.includes(poke.myItem) ) return true
-        else return false
-    }
-    // なげつける/しぜんのめぐみ: 持ち物が無い/特性ぶきよう/さしおさえ/マジックルーム状態である/不適格な持ち物である
-    if ( poke.myMove.name == "なげつける" || poke.myMove.name == "しぜんのめぐみ" ) {
-        if ( !poke.myItem ) return true
-        if ( !isItem(poke) ) return true
-        if ( poke.myMove.name == "なげつける" && poke.myItem.includes("ジュエル") ) return true
-        return false
-    }
-    // ねこだまし/であいがしら/たたみがえし: すでに行動をした
-    if ( poke.myMove.name == "たたみがえし" || poke.myMove.name == "であいがしら" || poke.myMove.name == "ねこだまし" ) {
-        const history = poke.myCondition.myHistory
-        if ( !history ) return false // 行動していない
-        if ( history.length == 1 && activateOtherMove.includes(history[0].name) && history[0].success ) return false // 他の技が出る技で出た
-        return true
-    }
-    // はいすいのじん: すでにはいすいのじんによりにげられない状態になっている
-    if ( poke.myMove.name == "はいすいのじん" ) {
-        if ( poke.myCondition.myNo_retreat ) return true
-        return false
-    }
-    // うらみ: 対象が技を使っていない（wikiには載っていない）
-    if ( poke.myMove.name == "うらみ" ) {
-        const target = isTarget(poke)
-        if ( !target ) return false
-        if ( !target[0].myCondition.myHistory ) return true
-        return false
-    }
-    // ギフトパス: 自分が持ち物を持っていない、対象が持ち物を持っている（wikiには載っていない）
-    if ( poke.myMove.name == "ギフトパス" ) {
-        const target = isTarget(poke)
-        if ( !target ) return false
-        if ( !poke.myItem ) return true
-        if ( !target[0].myItem ) return true
-        if ( cannotChangeItem(poke) ) return true
-        return false
-    }
-    // ふいうち: 対象がすでに行動済み/変化技を選択している
-    if ( poke.myMove.name == "ふいうち" ) {
-        const target = isTarget(poke)
-        if ( !target ) return false
-        if ( !target[0].myCmd_move ) return true
-        if ( moveSearchByName(target[0][`myMove_${target[0].myCmd_move}`]).nature == "変化" ) return true
-        return false
-    }
-    // ポルターガイスト: 対象が持ち物を持っていない
-    if ( poke.myMove.name == "ポルターガイスト" ) {
-        const target = isTarget(poke)
-        if ( !target ) return false
-        if ( !target[0].nyItem ) return true
-        return false
-    }
-    // まもる/こらえる系: ターンの最後の行動/連続使用による失敗判定
-    // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール・ワイドガード・ファストガード　が成功した次のターン
-    // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール　　　　　　　　　　　　　　　　の成功率は下がる。
-    if ( protectMove.includes(poke.myMove.name) ) {
-        // ターンの最後の行動
-        if ( allPokeInBattle().filter( _poke => _poke.myCmd_move ).length === 1 ) return true
-         // 連続使用による失敗判定
-        const num = Math.min(poke.myCondition.myProtect_num, 6)
-        if ( getRandom() < 1 / Math.pow(3, num) ) return false
-        return true
-    }
-    // みちづれ: 前回まで最後に成功した行動がみちづれである
-    if ( poke.myMove.name == "みちづれ") {
-        const history = poke.myCondition.myHistory
-        if ( !history ) return false // 行動していない
-        if ( history[0].name == "みちづれ" && history[0].success ) return true
-        return false
-    }
-    // みらいよち/はめつのねがい: 対象の場がすでにみらいにこうげき状態になっている
-    if ( poke.myMove.name == "みらいよち" || poke.myMove.name == "はめつのねがい" ) {
-        /*
-        const tgt = con.tgt[0]
-        const user = isMe(me, you, tgt)
-        if (user[0].f_con.includes("状態変化『みらいにこうげき』")) {
-            const text = searchText(user[0].f_con, "状態変化『みらいにこうげき』")
-            const tgt_parent = Number(text.split("　")[4].split(",")[0])
-            const tgt_child = Number(text.split("　")[4].split(",")[1])
-            if (tgt_parent == tgt.parent && tgt_child == tgt.child) tgt.success = false
-        }
-        */
-    }
-    // もえつきる: 使用者がほのおタイプではない
-    if ( poke.myMove.name == "もえつきる" ) {
-        if ( !poke.myType.includes("ほのお") ) return true
-        return false
-    }
-    // いびき/ねごと: 使用者がねむり状態でない
-    if ( poke.myMove.name == "いびき" || poke.myMove.name == "ねごと" ) {
-        if ( poke.myAilment == "ねむり" ) return false
-        if ( poke.myAbility == "ぜったいねむり" && isAbility(poke) ) return false
-        return true
-    }
-    // ねむる
-    if ( poke.myMove.name == "ねむる" ) {
-        // 1.HPが満タンである/ねごとで出たためすでにねむり状態にある
-        if ( poke.myFull_HP == poke.myRest_HP ) return true
-        if ( poke.myAilment == "ねむり" ) return true
-        // 2.使用者がふみん/やるきである
-        if ( poke.myAbility == "ふみん" && isAbility(poke) ) return true
-        if ( poke.myAbility == "やるき" && isAbility(poke) ) return true
-        // 3.エレキ/ミストフィールド状態である（以下、wikiにない）
-        if ( myField.myElectric && onGround(poke) ) return true
-        if ( myField.myMisty && onGround(poke) ) return true
-        // 4.さわぐ状態のポケモンがいる（以下wikiにない）
-        if ( isUproar() ) return true
-        // 5.スイートベール
-        if ( isSweetVeil(poke) ) return true
-        // 6.リーフガード
-        if ( poke.myAbility == "リーフガード" && isSunny(poke) ) return true
+            return true
 
-        return false
+        case "いじげんラッシュ":
+            if ( poke.myName == "フーパ(ときはなたれしフーパ)" ) return false // 使用者のポケモンの姿が適格でない
+            return true
+        
+        case "ダークホール":
+            if ( poke.myName == "ダークライ" ) return false // 使用者のポケモンの姿が適格でない
+            return true
+        
+        case "オーラぐるま":
+            if ( poke.myName == "モルペコ" ) return false // 使用者のポケモンの姿が適格でない
+            return true
+        
+        case "がまん":
+            if ( poke.myCondition.myBide_damage ) return false // 解き放つダメージが無い
+            poke.myCondition.myBide_turn = false
+            return true
+
+        case "カウンター":
+            if ( poke.myDamage_nature != "物理" ) return true // 適格なダメージをそのターンは受けていない
+            if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true // 味方からのダメージ
+            return false
+        
+        case "ミラーコート":
+            if ( poke.myDamage_nature != "特殊" ) return true // 適格なダメージをそのターンは受けていない
+            if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true // 味方からのダメージ
+            return false
+        
+        case "メタルバースト":
+            if ( !poke.myDamage_nature ) return true // 適格なダメージをそのターンは受けていない
+            if ( !oppJudgeByID(poke.myID, poke.myDamage_ID) ) return true // 味方からのダメージ
+            return false
+        
+        case "くちばしキャノン":
+            if ( !poke.myCondition.myBeak_blast ) return true // 加熱していない（アンコールで強制された場合など）(wikiにない)
+            return false
+        
+        case "ソウルビート":
+            if ( poke.myRest_hp < Math.floor(poke.myFull_HP / 3) ) return true // 使用者のHPが足りない
+            return false
+        
+        case "たくわえる":
+            if ( poke.myCondition.myStockpile == 3 ) return true // たくわえるカウントがすでに3である
+            return false
+        
+        case "はきだす":
+        case "のみこむ":
+            if ( poke.myCondition.myStockpile == 0 ) return true // たくわえるカウントが0である
+            return false
+        
+        case "とっておき":
+            if ( !moveList.includes("とっておき") ) return true // 覚えているわざにとっておきがない
+            if ( moveList.filter( move => !move ).length === 1 ) return true // とっておき以外の技を覚えていない
+            // 使用されてない技がある　がまだ
+            return false
+
+        case "ほおばる":
+            if ( !berryList.includes(poke.myItem) ) return true // きのみを持っていない
+            else return false
+        
+        case "なげつける":
+        case "しぜんのめぐみ":
+            if ( !poke.myItem ) return true // 持ち物が無い
+            if ( !isItem(poke) ) return true // 特性ぶきよう/さしおさえ/マジックルーム状態である
+            if ( poke.myMove.name == "なげつける" && poke.myItem.includes("ジュエル") ) return true // 不適格な持ち物である
+            return false
+        
+        case "たたみがえし":
+        case "であいがしら":
+        case "ねこだまし":
+            if ( !history ) return false // 行動していない
+            if ( history.length == 1 && activateOtherMove.includes(history[0].name) && history[0].success ) return false // 他の技が出る技で出た
+            return true
+        
+        case "はいすいのじん":
+            if ( poke.myCondition.myNo_retreat ) return true // すでにはいすいのじんによりにげられない状態になっている
+            return false
+        
+        case "うらみ":
+            if ( !target ) return false
+            if ( !target[0].myCondition.myHistory ) return true // 対象が技を使っていない（wikiには載っていない）
+            return false
+        
+        case "ギフトパス":
+            if ( !target ) return false
+            if ( !poke.myItem ) return true // 自分が持ち物を持っていない
+            if ( target[0].myItem ) return true // 対象が持ち物を持っている
+            if ( cannotChangeItem(poke) ) return true
+            return false
+        
+        case "ふいうち":
+            if ( !target ) return false
+            if ( target[0].myCmd_move === "" ) return true // 対象がすでに行動済み
+            if ( moveSearchByName(target[0][`myMove_${target[0].myCmd_move}`]).nature == "変化" ) return true // 変化技を選択している
+            return false
+        
+        case "ポルターガイスト":
+            if ( !target ) return false
+            if ( !target[0].nyItem ) return true // 対象が持ち物を持っていない
+            return false
+        
+        case "まもる":
+        case "みきり":
+        case "こらえる":
+        case "キングシールド":
+        case "ニードルガード":
+        case "トーチカ":
+        case "ブロッキング":
+        case "ダイウォール":
+            // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール・ワイドガード・ファストガード　が成功した次のターン
+            // まもる・みきり・こらえる・キングシールド・ニードルガード・トーチカ・ブロッキング・ダイウォール　　　　　　　　　　　　　　　　の成功率は下がる。
+            if ( allPokeInBattle().filter( _poke => _poke.myCmd_move !== "" ).length === 1 ) return true // ターンの最後の行動
+            const protectTurn = Math.min(poke.myCondition.myProtect_num, 6)
+            if ( getRandom() < 1 / Math.pow(3, protectTurn) ) return false // 連続使用による失敗判定
+            return true
+        
+        // みちづれ: 前回まで最後に成功した行動がみちづれである
+        case "みちづれ":
+            if ( !history ) return false // 行動していない
+            if ( history[0].name == "みちづれ" && history[0].success ) return true
+            return false
+        
+        // みらいよち/はめつのねがい: 対象の場がすでにみらいにこうげき状態になっている
+        case "みらいよち":
+        case "はめつのねがい":
+            /*
+            const tgt = con.tgt[0]
+            const user = isMe(me, you, tgt)
+            if (user[0].f_con.includes("状態変化『みらいにこうげき』")) {
+                const text = searchText(user[0].f_con, "状態変化『みらいにこうげき』")
+                const tgt_parent = Number(text.split("　")[4].split(",")[0])
+                const tgt_child = Number(text.split("　")[4].split(",")[1])
+                if (tgt_parent == tgt.parent && tgt_child == tgt.child) tgt.success = false
+            }
+            */
+        
+        // もえつきる: 使用者がほのおタイプではない
+        case "もえつきる":
+            if ( !poke.myType.includes("ほのお") ) return true
+            return false
+        
+        // いびき/ねごと: 使用者がねむり状態でない
+        case "いびき":
+        case "ねごと":
+            if ( poke.myAilment == "ねむり" ) return false
+            if ( poke.myAbility == "ぜったいねむり" && isAbility(poke) ) return false
+            return true
+        
+        // ねむる
+        case "ねむる":
+            // 1.HPが満タンである/ねごとで出たためすでにねむり状態にある
+            if ( poke.myFull_HP == poke.myRest_HP ) return true
+            if ( poke.myAilment == "ねむり" ) return true
+            // 2.使用者がふみん/やるきである
+            if ( poke.myAbility == "ふみん" && isAbility(poke) ) return true
+            if ( poke.myAbility == "やるき" && isAbility(poke) ) return true
+            // 3.エレキ/ミストフィールド状態である（以下、wikiにない）
+            if ( myField.myElectric && onGround(poke) ) return true
+            if ( myField.myMisty && onGround(poke) ) return true
+            // 4.さわぐ状態のポケモンがいる（以下wikiにない）
+            if ( isUproar() ) return true
+            // 5.スイートベール
+            if ( isSweetVeil(poke) ) return true
+            // 6.リーフガード
+            if ( poke.myAbility == "リーフガード" && isAbility(poke) && isSunny(poke) ) return true
+
+            return false
     }
 }
 
@@ -1415,27 +1409,34 @@ function accumulateOperation(poke) {
     poke.myCondition.myFilling = poke.myMove.name
 
     // 姿を隠すため技
-    if ( poke.myMove.name == "あなをほる" ) {
-        poke.myCondition.myDig = true
-        writeLog(`${poke.myName} は 地中に潜った !`)
-    }
-    if ( poke.myMove.name == "ゴーストダイブ" || poke.myMove.name == "シャドーダイブ" ) {
-        poke.myCondition.myShadow = true
-        writeLog(`${poke.myName} は 闇に潜んだ !`)
-    }
-    if ( poke.myMove.name == "そらをとぶ" || poke.myMove.name == "とびはねる") {
-        poke.myCondition.mySky = true
-        writeLog(`${poke.myName} は 空へ飛び立った !`)
-    }
-    if ( poke.myMove.name == "ダイビング") {
-        poke.myCondition.myDive = true
-        // ダイビング: うのミサイルでフォルムチェンジする
-        if ( poke.myAbility == "うのミサイル" && isAbility(poke) && !poke.myCondition.myGulp_missile ) {
-            abilityDeclaration(poke)
-            poke.myCondition.myGulp_missile = ( poke.myRest_hp > poke.myFull_hp / 2 )? "うのみのすがた" : "まるのみのすがた"
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myCondition.myGulp_missile} に 姿を変えた !`)
-        }
-        writeLog(`${poke.myName} は 海に潜った !`)
+    switch ( poke.myMove.name ) {
+        case "あなをほる":
+            poke.myCondition.myDig = true
+            writeLog(`${poke.myName} は 地中に潜った !`)
+            break
+        
+        case "ゴーストダイブ":
+        case "シャドーダイブ":
+            poke.myCondition.myShadow = true
+            writeLog(`${poke.myName} は 闇に潜んだ !`)
+            break
+        
+        case "そらをとぶ":
+        case "とびはねる":
+            poke.myCondition.mySky = true
+            writeLog(`${poke.myName} は 空へ飛び立った !`)
+            break
+        
+        case "ダイビング":
+            poke.myCondition.myDive = true
+            // ダイビング: うのミサイルでフォルムチェンジする
+            if ( poke.myAbility == "うのミサイル" && isAbility(poke) && !poke.myCondition.myGulp_missile ) {
+                abilityDeclaration(poke)
+                poke.myCondition.myGulp_missile = ( poke.myRest_hp > poke.myFull_hp / 2 )? "うのみのすがた" : "まるのみのすがた"
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myCondition.myGulp_missile} に 姿を変えた !`)
+            }
+            writeLog(`${poke.myName} は 海に潜った !`)
+            break
     }
 
     // 姿を隠さないため技
@@ -1486,9 +1487,13 @@ function accumulateOperation(poke) {
 
 // 24.だいばくはつ/じばく/ミストバーストによるHP消費が確約される
 function promiseToChangeHP(poke) {
-    if ( poke.myMove.name == "じばく" ) poke.myCondition.myExplosion = true
-    if ( poke.myMove.name == "だいばくはつ" ) poke.myCondition.myExplosion = true
-    if ( poke.myMove.name == "ミストバースト" ) poke.myCondition.myExplosion = true
+    switch ( poke.myMove.name ) {
+        case "じばく":
+        case "だいばくはつ":
+        case "ミストバースト":
+            poke.myCondition.myExplosion = true
+            break
+    }
 }
 
 // 25.対象のポケモンが全員すでにひんしになっていて場にいないことによる失敗
@@ -1563,6 +1568,8 @@ function hideInvalidation(poke) {
         if ( poke.myMove.name == "いやしのすず" ) continue
         if ( poke.myMove.name == "てだすけ" ) continue
 
+        if ( !isHide(tgt.poke) ) continue
+
         // 以下の状況では当たらない
         if ( tgt.poke.myCondition.myDig ) {
             if ( poke.myMove.name == "じしん" ) continue
@@ -1581,7 +1588,6 @@ function hideInvalidation(poke) {
             if ( poke.myMove.name == "なみのり" ) continue
             if ( poke.myMove.name == "うずしお" ) continue
         }
-        if ( tgt.poke.myCondition.myShadow ) continue
 
         tgt.success = false
         writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 当たらなかった !`)
@@ -1713,19 +1719,26 @@ function protectInvalidation(poke) {
             tgt.success = false
 
             // 直接攻撃　かつ　ぼうごパットを持っていない　なら追加効果を受ける
-            if ( poke.myMove.direct == "間接" || ( poke.myItem == "ぼうごパット" && isItem(poke) ) ) continue
+            if ( poke.myMove.direct == "間接" ) continue
+            if ( poke.myItem == "ぼうごパット" && isItem(poke) ) continue
 
-            if ( tgt.poke.myCondition.myProtect == "ニードルガード" ) {
-                // changeHP(poke, Math.max(Math.floor(poke.myFull_hp / 8), 1), "-")
-            }
-            if ( tgt.poke.myCondition.myProtect == "トーチカ" ) {
-                // getAbnormalWithMsg(poke, "どく", tgt)
-            }
-            if ( tgt.poke.myCondition.myProtect == "キングシールド" ) {
-                // changeRankWithMsg(me, you, con, "A", -1, true)
-            }
-            if ( tgt.poke.myCondition.myProtect == "ブロッキング" ) {
-                // changeRankWithMsg(me, you, con, "B", -2, true)
+            switch ( tgt.poke.myCondition.myProtect ) {
+                case "キングシールド":
+                    changeRank(poke, "atk", -1, isSpirit(poke, tgt.poke))
+                    break
+
+                case "ニードルガード":
+                    const damage = Math.max(Math.floor(poke.myFull_hp / 8), 1)
+                    changeHP(poke, damage, "-")
+                    break
+
+                case "トーチカ":
+                    getAbnormal(poke, "どく")
+                    break
+                
+                case "ブロッキング":
+                    changeRank(poke, "def", -2, isSpirit(poke, tgt.poke))
+                    break
             }
         }
     }
@@ -1788,78 +1801,91 @@ function abilityInvalidation1(poke) {
         if ( !isAbility(tgt.poke) )         continue // 対象の特性が有効であること
         if ( poke.myID == tgt.poke.myID )   continue // 対象が自分でないこと
 
-        // かちき　まけんき　の発動条件
-        ( poke.myParty == tgt.poke.myParty )? spirit = false : spirit = true
+        const damage = Math.floor(tgt.poke.myFull_hp / 4 * isDynamax(tgt.poke))
+        switch ( tgt.poke.myAbility ) {
+            case "そうしょく":
+                if ( poke.myMove.type != "くさ" ) break
+                abilityDeclaration(tgt.poke)
+                changeRank(tgt.poke, "atk", 1, isSpirit(poke, tgt.poke))
+                tgt.success = false
+                break
+            
+            case "もらいび":
+                if ( poke.myMove.type != "ほのお" ) break
+                abilityDeclaration(tgt.poke)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ほのおの威力が上がった !`)
+                tgt.poke.myCondition.myFlash_fire = true
+                tgt.success = false
+                break
+            
+            case "かんそうはだ":
+            case "ちょすい":
+                if ( poke.myMove.type != "みず" ) break
+                abilityDeclaration(tgt.poke)
+                changeHP(tgt.poke, damage, "+")
+                tgt.success = false
+                break
+            
+            case "よびみず":
+                if ( poke.myMove.type != "みず" ) break
+                abilityDeclaration(tgt.poke)
+                changeRank(tgt.poke, "sp_atk", 1, isSpirit(poke, tgt.poke))
+                tgt.success = false
+                break
+            
+            case "ひらいしん":
+                if ( poke.myMOve.type != "でんき" ) break
+                if ( poke.myMove.name == "じばそうさ" ) break
+                abilityDeclaration(tgt.poke)
+                changeRank(tgt.poke, "sp_atk", 1, isSpirit(poke, tgt.poke))
+                tgt.success = false
+                break
+            
+            case "でんきエンジン":
+                if ( poke.myMOve.type != "でんき" ) break
+                if ( poke.myMove.name == "じばそうさ" ) break
+                abilityDeclaration(tgt.poke)
+                changeRank(tgt.poke, "speed", 1, isSpirit(poke, tgt.poke))
+                tgt.success = false
+                break
+            
+            case "ちくでん":
+                if ( poke.myMOve.type != "でんき" ) break
+                if ( poke.myMove.name == "じばそうさ" ) break
+                abilityDeclaration(tgt.poke)
+                changeHP(tgt.poke, damage, "+")
+                tgt.success = false
+                break
+            
+            case "ぼうおん":
+                if ( !musicMove.includes(poke.myMove.name) ) break
+                abilityDeclaration(tgt.poke)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+                tgt.success = false
+                break
+            
+            case "テレパシー":
+                if ( poke.myMove.nature == "変化" ) break
+                if ( isSpirit(poke, tgt.poke) ) break
+                abilityDeclaration(tgt.poke)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 味方からの 攻撃を 受けない !`)
+                tgt.success = false
+                break
 
-        // そうしょく: くさタイプ
-        if ( tgt.poke.myAbility == "そうしょく" && poke.myMove.type == "くさ" ) {
-            abilityDeclaration(tgt.poke)
-            changeRank(tgt.poke, "atk", 1, spirit)
-            tgt.success = false
-        }
-        // もらいび: ほのおタイプ
-        if ( tgt.poke.myAbility == "もらいび" && poke.myMove.type == "ほのお" ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ほのおの威力が上がった !`)
-            tgt.poke.myCondition.myFlash_fire = true
-            tgt.success = false
-        }
-        // かんそうはだ/よびみず/ちょすい: みずタイプ
-        if ( poke.myMove.type == "みず" ) {
-            if ( tgt.poke.myAbility == "かんそうはだ" || tgt.poke.myAbility == "ちょすい" ) {
+            case "ふしぎなまもり":
+                if ( compatibilityCheck(poke, tgt.poke) > 1 ) break
+                if ( poke.myMove.nature == "変化" ) break
                 abilityDeclaration(tgt.poke)
-                const damage = Math.floor(tgt.poke.myFull_hp / 4 * isDynamax(tgt.poke))
-                changeHP(tgt.poke, damage, "+")
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
                 tgt.success = false
-            }
-            if ( tgt.poke.ability == "よびみず") {
+                break
+            
+            case "ぼうじん":
+                if ( !powderMove.includes(poke.myMove.name) ) break
                 abilityDeclaration(tgt.poke)
-                changeRank(tgt.poke, "sp_atk", 1, spirit)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
                 tgt.success = false
-            }
-        }
-        // ひらいしん/でんきエンジン/ちくでん: でんきタイプ
-        if ( poke.myMove.type == "でんき" && poke.myMove.name != "じばそうさ" ) {
-            if ( tgt.poke.myAbility == "ひらいしん" ) {
-                abilityDeclaration(tgt.poke)
-                changeRank(tgt.poke, "sp_atk", 1, spirit)
-                tgt.success = false
-            }
-            if ( tgt.poke.myAbility == "でんきエンジン" ) {
-                abilityDeclaration(tgt.poke)
-                changeRank(tgt.poke, "speed", 1, spirit)
-                tgt.success = false
-            }
-            if ( tgt.poke.myAbility == "ちくでん" ) {
-                abilityDeclaration(tgt.poke)
-                const damage = Math.floor(tgt.poke.myFull_hp / 4 * isDynamax(tgt.poke))
-                changeHP(tgt.poke, damage, "+")
-                tgt.success = false
-            }
-        }
-        // ぼうおん: 音技
-        if ( tgt.poke.myAbility == "ぼうおん" && musicMove.includes(poke.myMove.name) ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
-        }
-        // テレパシー:　味方による攻撃技
-        if ( tgt.poke.myAbility == "テレパシー" && poke.myMove.nature != "変化" && !spirit ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 味方からの 攻撃を 受けない !`)
-            tgt.success = false
-        }
-        // ふしぎなまもり: 効果抜群でない技
-        if ( tgt.poke.myAbility == "ふしぎなまもり" && compatibilityCheck(poke, tgt.poke) <= 1 && poke.myMove.nature != "変化" ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
-        }
-        // ぼうじん: 粉技
-        if ( tgt.poke.myAbility == "ぼうじん" && powderMove.includes(poke.myMove.name) ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
+                break
         }
     }
 
@@ -1927,17 +1953,21 @@ function abilityInvalidation2(poke) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( !isAbility(poke) )  continue // 対象の特性が有効であること
 
-        // ぼうだん: 弾の技
-        if ( tgt.poke.myAbility == "ぼうだん" && ballMove.includes(poke.myMove.name) ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
-        }
-        // ねんちゃく: トリック/すりかえ/ふしょくガス
-        if ( tgt.poke.myAbility == "ねんちゃく" && ( poke.myMove.name == "トリック" || poke.myMove.name == "すりかえ" || poke.myMove.name == "ふしょくガス") ) {
-            abilityDeclaration(tgt.poke)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
+        switch( tgt.poke.myAbility ) {
+            case "ぼうだん":
+                if ( !ballMove.includes(poke.myMove.name) ) break
+                abilityDeclaration(tgt.poke)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+                tgt.success = false
+                break
+            
+            case "ねんちゃく":
+                if ( poke.myMove.name == "トリック" || poke.myMove.name == "すりかえ" || poke.myMove.name == "ふしょくガス" ) {
+                    abilityDeclaration(tgt.poke)
+                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+                    tgt.success = false
+                }
+                break
         }
     }
 
@@ -1980,29 +2010,28 @@ function moveSpecificationsInvalidation1(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        // メロメロ: 対象と性別が同じ/対象が性別不明
-        if ( poke.myMove.name == "メロメロ" ) {
-            if ( poke.myGender == "-" || tgt.poke.myGender == "-" || poke.myGender == tgt.poke.myGender ) {
+        switch ( poke.mymove.name ) {
+            case "メロメロ":
+                if ( poke.myGender == "-" ) tgt.success = false
+                if ( tgt.poke.myGender == "-" ) tgt.success = false
+                if ( poke.myGender == tgt.poke.myGender ) tgt.success = false
+                break
+
+            case "ゆうわく": // (wikiにない)
+                if ( poke.myGender == "♂" && tgt.poke.myGender == "♀" ) break
+                if ( poke.myGender == "♀" && tgt.poke.myGender == "♂" ) break
                 tgt.success = false
-            }
-        }
-        // ゆうわく（wikiには書いていなかったが、勝手に入れた）
-        if ( poke.myMove.name == "ゆうわく" ) {
-            if ( !( poke.myGender == "♂" && tgt.poke.myGender == "♀" ) && !( poke.myGender == "♀" && tgt.poke.myGender == "♂" ) ) {
+                break
+
+            case "いちゃもん":
+                if ( !tgt.poke.myCondition.myDynamax ) break
                 tgt.success = false
-            }
-        }
-        // いちゃもん: 対象がダイマックスしている
-        if ( poke.myMove.name == "いちゃもん" ) {
-            if ( tgt.poke.myCondition.myDynamax ) {
+                break
+
+            case "ベノムトラップ":
+                if ( tgt.poke.myAilment == "どく" ) break
                 tgt.success = false
-            }
-        }
-        // ベノムトラップ: 対象がどく/もうどく状態でない
-        if ( poke.myMove.name == "ベノムトラップ" ) {
-            if ( tgt.poke.myAilment != "どく" ) {
-                tgt.success = false
-            }
+                break
         }
 
         if ( !tgt.success ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)

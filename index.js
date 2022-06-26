@@ -330,8 +330,6 @@ $(function () {
 
     // 各ターンの行動
     socketio.on("run battle", function(myCommand, oppCommand, list) {
-        console.log(myCommand)
-        console.log(oppCommand)
         // 乱数リストを記入
         randomList = list
         // 自分のコマンドを記入

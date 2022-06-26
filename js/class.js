@@ -644,8 +644,7 @@ class Field {
         this.weather_long  = false // 天候持続系アイテムならtrue
         this.wide_guard    = false // ワイドガード状態ならtrue
         this.wildfire      = false // キョダイゴクエン経過ターン数
-        this.wish_heal     = false // ねがいごと回復量
-        this.wish_turn     = false // ねがいごと経過ターン数
+        this.wish_data     = [{heal: 0, position: 0, turn: 0}, {heal: 0, position:1, turn: 0}] // ねがいごと回復量、場所、経過ターン数
     }
 
     set myAurora_clay( value )   { this.aurora_clay = value }
@@ -675,8 +674,7 @@ class Field {
     set myWeather_long( value )  { this.weather_long = value }
     set myWildfire( value )      { this.wildfire = value }
     set myWide_guard( value )    { this.wide_guard = value }
-    set myWish_heal( value )     { this.wish_heal = value }
-    set myWish_turn( value )     { this.wifh_turn = value }
+    set myWish_data( value )     { this.wish_data = value }
 
     get myAurora_clay()   { return this.aurora_clay }
     get myAurora_veil()   { return this.aurora_veil }
@@ -705,8 +703,7 @@ class Field {
     get myWeather_long()  { return this.weather_long }
     get myWide_guard()    { return this.wide_guard }
     get myWildfire()      { return this.wildfire }
-    get myWish_heal()     { return this.wish_heal }
-    get myWish_turn()     { return this.wish_turn }
+    get myWish_data()     { return this.wish_data }
 
     get myTN() { return this.trainer_name }
 }

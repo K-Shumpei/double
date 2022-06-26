@@ -138,9 +138,9 @@ function preliminaryAction(secondOrder) {
 
 // 6.技の処理
 function moveUsedEachPokemon() {
-    console.log(actionOrder())
     while ( actionOrder().length > 0 ) {
         const poke = actionOrder()[0]
+        console.log("DD")
 
         // クロスサンダー・クロスフレイム
         // crossDragon(me, you)
@@ -157,7 +157,6 @@ function moveUsedEachPokemon() {
         if ( judge ) {
             poke.myMove.success = true
             moveEffect(poke)
-            console.log(fieldStatus)
             if ( fieldStatus.mySwitch_me ) break
             if ( fieldStatus.mySwitch_opp ) break
         } else {

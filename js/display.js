@@ -825,7 +825,7 @@ function change_giga_move(){
 function showCommand() {
     for ( let i = 0; i < 2; i++ ) {
         for ( const poke of myParty ) {
-            if ( poke.myPosition == i ) {
+            if ( poke.myPosition === i ) {
                 // 選択中のポケモン名を表示
                 document.getElementById(`com_log_${poke.myPosition}`).style.display = "block"
                 document.getElementById(`com_log_name_${poke.myPosition}`).textContent = `${poke.myName}は `
@@ -846,7 +846,7 @@ function choiseMove(position){
     document.getElementById(`choise_${position}`).style.display = "none"
 
     for ( const poke of myParty ) {
-        if ( poke.myPosition == position ) {
+        if ( poke.myPosition === position ) {
             // 技を見せる
             for ( let i = 0; i < 4; i++ ) {
                 if ( poke[`myMove_${i}`] != null ) {
@@ -865,60 +865,77 @@ function choiseMove(position){
 
 // 技を選んだ時
 function decideMoveCommand(position, num){
-    const move_name = document.getElementById(`move_${position}${num}`).textContent
-    const move = moveSearchByName(move_name)
-    document.getElementById(`com_log_com_${position}`).textContent = move_name
-    if ( move.target == "1体選択" ) {
-        // 技を隠す
-        for ( let i = 0; i < 4 ;i++ ) {
-            document.getElementById(`com_move_${position}${i}`).style.display = "none"
-            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-            document.getElementById(`move_${position}${i}`).textContent = ""
-            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-            document.getElementById(`full_pp_${position}${i}`).textContent = ""
-        }
-        // 「攻撃対象」の文字をを見せる
-        document.getElementById(`target_comment_${position}`).style.display = "block"
-        // 攻撃対象を見せる(相手)
-        for ( const poke of oppParty ) {
-            if ( poke.myPosition != null ) {
-                console.log(poke)
-                document.getElementById(`com_tgt_${position}${poke.myPosition + 2}`).style.display = "block"
-                document.getElementById(`tgt_${position}${poke.myPosition + 2}`).textContent = poke.myName
-            } 
-        }
-        // 攻撃対象を見せる(自分)
-        for ( const poke of myParty ) {
-            console.log(poke)
-            if ( poke.myPosition != null && poke.myPosition != position ) {
-                document.getElementById(`com_tgt_${position}${poke.myPosition}`).style.display = "block"
-                document.getElementById(`tgt_${position}${poke.myPosition}`).textContent = poke.myName
-            } 
-        }
+    const moveName = document.getElementById(`move_${position}${num}`).textContent
+    const move = moveSearchByName(moveName)
+    let moveTarget = moveSearchByName(moveName).target
+    const pokeType = myParty.filter( poke => poke.myPosition == position )[0].myType
+
+    if ( moveName == "のろい" ) {
+        if ( pokeType.includes("ゴースト") ) moveTarget = "1体選択"
+        else moveTarget = "自分"
     }
-    if ( move.target == "自分" || move.target == "味方全体" || move.target == "相手全体" || move.target == "全体" || move.target == "自分以外" || move.target.includes("場") ) {
-        document.getElementById(`com_log_tgt_${position}`).textContent = `${move.target}に `
-        // 技を隠す
-        for ( let i = 0; i < 4 ;i++ ) {
-            document.getElementById(`com_move_${position}${i}`).style.display = "none"
-            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-            document.getElementById(`move_${position}${i}`).textContent = ""
-            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-            document.getElementById(`full_pp_${position}${i}`).textContent = ""
-        }
-        decideAction(position)
-    }
-    if ( move.target == "ランダム1体" ) {
-        document.getElementById(`com_log_tgt_${position}`).textContent = `ランダムな相手に `
-        // 技を隠す
-        for ( let i = 0; i < 4 ;i++ ) {
-            document.getElementById(`com_move_${position}${i}`).style.display = "none"
-            document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-            document.getElementById(`move_${position}${i}`).textContent = ""
-            document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-            document.getElementById(`full_pp_${position}${i}`).textContent = ""
-        }
-        decideAction(position)
+    document.getElementById(`com_log_com_${position}`).textContent = moveName
+
+    switch ( moveTarget ) {
+        case "1体選択":
+            // 技を隠す
+            for ( let i = 0; i < 4 ;i++ ) {
+                document.getElementById(`com_move_${position}${i}`).style.display = "none"
+                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
+                document.getElementById(`move_${position}${i}`).textContent = ""
+                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+                document.getElementById(`full_pp_${position}${i}`).textContent = ""
+            }
+            // 「攻撃対象」の文字をを見せる
+            document.getElementById(`target_comment_${position}`).style.display = "block"
+            // 攻撃対象を見せる(相手)
+            for ( const poke of oppParty ) {
+                if ( poke.myPosition != null ) {
+                    document.getElementById(`com_tgt_${position}${poke.myPosition + 2}`).style.display = "block"
+                    document.getElementById(`tgt_${position}${poke.myPosition + 2}`).textContent = poke.myName
+                } 
+            }
+            // 攻撃対象を見せる(自分)
+            for ( const poke of myParty ) {
+                if ( poke.myPosition != null && poke.myPosition != position ) {
+                    document.getElementById(`com_tgt_${position}${poke.myPosition}`).style.display = "block"
+                    document.getElementById(`tgt_${position}${poke.myPosition}`).textContent = poke.myName
+                } 
+            }
+            break
+
+        case "自分":
+        case "味方全体":
+        case "相手全体":
+        case "全体":
+        case "自分以外":
+        case "味方の場":
+        case "相手の場":
+        case "全体の場":
+            document.getElementById(`com_log_tgt_${position}`).textContent = `${move.target}に `
+            // 技を隠す
+            for ( let i = 0; i < 4 ;i++ ) {
+                document.getElementById(`com_move_${position}${i}`).style.display = "none"
+                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
+                document.getElementById(`move_${position}${i}`).textContent = ""
+                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+                document.getElementById(`full_pp_${position}${i}`).textContent = ""
+            }
+            decideAction(position)
+            break
+
+        case "ランダム1体":
+            document.getElementById(`com_log_tgt_${position}`).textContent = `ランダムな相手に `
+            // 技を隠す
+            for ( let i = 0; i < 4 ;i++ ) {
+                document.getElementById(`com_move_${position}${i}`).style.display = "none"
+                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
+                document.getElementById(`move_${position}${i}`).textContent = ""
+                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+                document.getElementById(`full_pp_${position}${i}`).textContent = ""
+            }
+            decideAction(position)
+            break
     }
 }
 
@@ -1162,7 +1179,8 @@ function showNowCondition() {
             document.getElementById(`${num}_type`).innerHTML += "<font color='white'><span style='background-color:"+getColorCode(type)+"'>"+type+"</span></font>&nbsp;"
         }
         // 技
-        for (let i = 0; i < 4; i++){
+        for (let i = 0; i < 4; i++ ) {
+            if ( !poke[`myMove_${i}`] ) continue
             document.getElementById(`${num}_move_${i}`).textContent            = poke[`myMove_${i}`]
             document.getElementById(`${num}_PP_${i}`).textContent              = poke[`myFull_pp_${i}`]
             document.getElementById(`${num}_last_${i}`).textContent            = poke[`myRest_pp_${i}`]

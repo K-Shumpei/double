@@ -943,7 +943,7 @@ function continuousMove(poke){
         
     // 攻撃回数の記録
     let count = 1
-    console.log(`攻撃回数：${poke.myMove.continuous}`)
+    
     // 連続攻撃技は単体対象
     const tgt = poke.myTarget[0]
 
