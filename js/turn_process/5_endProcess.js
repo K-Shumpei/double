@@ -284,49 +284,21 @@ function weatherEffect(){
 
 // 2.みらいよち/はめつのねがい: 技が使用された順に発動
 function futureAttack(){
-    return
-    for (const tgt of order){
-        const user = isMe(me, you, tgt)
-        if (!user[0].f_con.includes("状態変化『みらいにこうげき』")) continue
-        const text = searchText(user[0].f_con, "状態変化『みらいにこうげき』")
-        const def_parent = Number(text.split("　")[4].split(",")[0])
-        const def_child = Number(text.split("　")[4].split(",")[1])
-        if (def_parent != tgt.parent || def_child != tgt.child) continue
-        const turn = text.split("　")[1]
-        const now = Number(turn.split("/")[0])
-        if (now > 1) rewriteText(user[0].f_con, text, text.replace(turn, (now - 1) + "/3"))
-        else {
-            removeText(user[0].f_con, text)
-            if (user[0].f_con.includes("ひんし" + tgt.child)) continue
-            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　未来の攻撃を受けた!" + "\n")
-            const move = moveSearchByName(text.split("　")[2])
-            const atk_parent = Number(text.split("　")[3].split(",")[0])
-            const atk_child = Number(text.split("　")[3].split(",")[0])
-            const atk_num = Number(text.split("　")[3].split(",")[0])
+    for ( const futureSight of fieldStatus.myFuture_sight ) {
+        futureSight.turn += 1
+        if ( futureSight.turn == 4 ) {
+            const poke = isPokeByID(futureSight.ID)                                // 使用ポケモン
+            const tgt  = isPokeByPosition(futureSight.party, futureSight.position) // 対象ポケモン
+            if ( !tgt )                  break // 対象の場にポケモンがいなければ失敗
+            if ( poke.myID == tgt.myID ) break // 自分自身への攻撃なら失敗
+            writeLog(`${tgt.myTN} の ${tgt.myName} は 未来の攻撃を受けた !`)
+        }
+    }
 
-            const _user = isMe(me, you, isCon(me, you, atk_parent, atk_child))
-
-            let con = ""
-            for (let i = 0; i < 2; i++){
-                if (isCon(me, you, atk_parent, i).num == atk_num) con = isCon(me, you, atk_parent, i)
-            }
-            if (con == ""){
-                for (const parameter of ["name", "sex", "level", "type", "ability", "item", "abnormal", "nature", "num", "full_HP", "last_HP", "A_AV", "B_AV", "C_AV", "D_AV", "S_AV", 
-                    "move_0", "move_1", "move_2", "move_3", "PP_0", "PP_1", "PP_2", "PP_3", "last_0", "last_1", "last_2", "last_3"]){
-                        con[parameter] = _user[0]["poke" + atk_num][parameter]
-                    }
-                for (const parameter of ["A_rank", "B_rank", "C_rank", "D_rank", "S_rank", "X_rank", "Y_rank"]){
-                    con[parameter] = 0
-                }
-            }
-            
-            if (accuracyFailure(_user[0], _user[1], con, move)){
-                writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　には当たらなかった" + "\n")
-            } else if (compatibilityCheck(me, you, con, tgt, move) == 0){
-                writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　には効果がないようだ" + "\n")
-            } else {
-                moveEffect(_user[0], _user[1], con, move)
-            }
+    // 処理の終わった要素を削除
+    for ( let i = fieldStatus.myFuture_sight.length - 1; i >= 0; i-- ) {
+        if ( fieldStatus.myFuture_sight[i].turn == 4 ) {
+            fieldStatus.myFuture_sight.splice(i, 1)
         }
     }
 }

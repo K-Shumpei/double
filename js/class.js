@@ -716,6 +716,7 @@ class allField {
         this.echoed_voice  = 0     // エコーボイスが連続したターン数
         this.electric      = false // エレキフィールド経過ターン数
         this.fairy_lock    = false // フェアリーロック　使用ターンは1　効果のあるターンは2
+        this.future_sight  = []    // みらいよち/はめつのねがい　id:使用者のID、party:対象のチーム、position:対象の場所、turn:経過ターン数
         this.heavy_rain    = false // 大雨ならtrue
         this.grassy        = false // グラスフィールド経過ターン数
         this.graupel       = false // あられ経過ターン数
@@ -744,6 +745,7 @@ class allField {
     set myEchoed_voice( value )  { this.echoed_voice = value }
     set myElectric( value )      { this.electric = value }
     set myFairy_lock( value )    { this.fairy_lock = value }
+    set myFuture_sight( value )  { this.future_sight = value }
     set myHeavy_rain( value )    { this.heavy_rain = value }
     set myGrassy( value )        { this.grassy = value }
     set myGraupel( value )       { this.graupel = value }
@@ -771,6 +773,7 @@ class allField {
     get myEchoed_voice()  { return this.echoed_voice}
     get myElectric()      { return this.electric }
     get myFairy_lock()    { return this.fairy_lock }
+    get myFuture_sight()  { return this.future_sight }
     get myHeavy_rain()    { return this.heavy_rain }
     get myGrassy()        { return this.grassy }
     get myGraupel()       { return this.graupel }

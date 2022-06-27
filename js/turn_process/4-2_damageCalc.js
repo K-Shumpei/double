@@ -760,47 +760,62 @@ function finalDamage(poke, tgt, power, attack, defense){
             damage = Math.round(damage * 2048 / 4096)
         }
     }
-    // ブレインフォース補正
-    if ( poke.myAbility == "ブレインフォース" && isAbility(poke) ) {
-        if ( tgt.effective > 1 ) damage = Math.round(damage * 5120 / 4096)
+
+    // 自分の特性による補正
+    if ( isAbility(poke) ) {
+        switch ( poke.myAbility ) {
+            case "ブレインフォース":
+                if ( tgt.effective > 1 ) damage = Math.round(damage * 5120 / 4096)
+                break
+
+            case "スナイパー":
+                if ( tgt.critical ) damage = Math.round(damage * 6144 / 4096)
+                break
+
+            case "いろめがね":
+                if ( tgt.effective < 1 ) damage = Math.round(damage * 8192 / 4096)
+                break
+        }
     }
-    // スナイパー補正
-    if ( poke.myAbility == "スナイパー" && isAbility(poke) ) {
-        if ( tgt.critical ) damage = Math.round(damage * 6144 / 4096)
-    }
-    // いろめがね補正
-    if ( poke.myAbility == "いろめがね" && isAbility(poke) ) {
-        if ( tgt.effective < 1 ) damage = Math.round(damage * 8192 / 4096)
-    }
-    // もふもふほのお補正
-    if ( tgt.poke.myAbility == "もふもふ" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.type == "ほのお" ) damage = Math.round(damage * 8192 / 4096)
-    }
-    // ダメージ半減特性補正
-    if ( tgt.poke.myAbility == "こおりのりんぷん" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.nature == "特殊" ) damage = Math.round(damage * 2048 / 4096)
-    }
-    if ( tgt.poke.myAbility == "パンクロック" && isAbility(tgt.poke) ) {
-        if ( musicMove.includes(poke.myMove.name) ) damage = Math.round(damage * 2048 / 4096)
-    } 
-    if ( tgt.poke.myAbility == "ファントムガード" && isAbility(tgt.poke) ) {
-        if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
-    }
-    if  ( tgt.poke.myAbility == "マルチスケイル" && isAbility(tgt.poke) ) {
-        if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
-    } 
-    if ( tgt.poke.myAbility == "もふもふ" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.direct == "直接" ) damage = Math.round(damage * 2048 / 4096)
-    }
-    // 効果抜群ダメージ軽減特性補正
-    if ( tgt.poke.myAbility == "ハードロック" && isAbility(tgt.poke) ) {
-        if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
-    }
-    if ( tgt.poke.myAbility == "フィルター" && isAbility(tgt.poke) ) {
-        if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
-    }
-    if ( tgt.poke.myAbility == "プリズムアーマー" && isAbility(tgt.poke) ) {
-        if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
+    // 相手の特性による補正
+    if ( isAbility(tgt.poke) ) {
+        switch ( tgt.poke.myAbility ) {
+            case "もふもふ":
+                if ( poke.myMove.type == "ほのお" ) damage = Math.round(damage * 8192 / 4096)
+                break
+
+            case "こおりのりんぷん":
+                if ( poke.myMove.nature == "特殊" ) damage = Math.round(damage * 2048 / 4096)
+                break
+
+            case "パンクロック":
+                if ( musicMove.includes(poke.myMove.name) ) damage = Math.round(damage * 2048 / 4096)
+                break
+
+            case "ファントムガード":
+                if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
+                break
+
+            case "マルチスケイル":
+                if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
+                break
+
+            case "もふもふ":
+                if ( poke.myMove.direct == "直接" ) damage = Math.round(damage * 2048 / 4096)
+                break
+
+            case "ハードロック":
+                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
+                break
+
+            case "フィルター":
+                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
+                break
+
+            case "プリズムアーマー":
+                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
+                break
+        }
     }
     // フレンドガード補正
     // たつじんのおび補正

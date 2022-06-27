@@ -643,6 +643,7 @@ function selectedMove(poke) {
         */
     }
 
+    // ディープコピー
     const move = Object.assign({}, move_org)
 
     move.continuous = 1 // 攻撃回数
