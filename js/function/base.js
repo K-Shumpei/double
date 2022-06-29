@@ -625,7 +625,27 @@ function checkMoveSuccess(poke) {
     return true
 }
 
+// Zワザ、ダイマックス技判定
+function isNormalMove(name) {
+    // Zワザ
+    for ( const Zmove of moveList_Z ) {
+        if ( Zmove.name == name ) return false
+    }
+    // 専用Zワザ
+    for ( const Zmove of moveList_dedicated_Z ) {
+        if ( Zmove.name == name ) return false
+    }
+    // ダイマックス技
+    for ( const Zmove of moveList_dynamax ) {
+        if ( Zmove.name == name ) return false
+    }
+    // キョダイマックス技
+    for ( const Zmove of moveList_gigantamax ) {
+        if ( Zmove.name == name ) return false
+    }
 
+    return true
+}
 
 
 

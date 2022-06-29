@@ -646,6 +646,11 @@ function selectedMove(poke) {
     // ディープコピー
     const move = Object.assign({}, move_org)
 
+    poke.myMove = moveConfig(poke, move)
+}
+
+// 技の初期設定
+function moveConfig(poke, move) {
     move.continuous = 1 // 攻撃回数
 
     if ( poke.myAbility == "えんかく" && move.nature != "変化") move.direct = "間接"
@@ -656,7 +661,7 @@ function selectedMove(poke) {
         else move.target = "自分"
     }
 
-    poke.myMove = move
+    return move
 }
 
 // ダイマックス技の効果

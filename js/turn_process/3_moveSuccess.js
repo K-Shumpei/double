@@ -16,7 +16,7 @@ function moveSuccessJudge(poke) {
     // 5a.ダイマックス技に変更
     dynamaxMove(poke)
     // 6.他の技が出る技により技を置き換え、(3-8~10)の行程を繰り返す
-    moveReplace(poke)
+    if ( moveReplace(poke) ) return false
     // 7.特性バトルスイッチによるフォルムチェンジ
     battleSwitch(poke)
     // 8.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
@@ -521,6 +521,37 @@ function dynamaxMove(poke) {
     // オウムがえし/さきどりのコピーできない技だった場合は失敗
 function moveReplace(poke) {
     const moveName = getNextMove(poke)
+    if ( moveName === null )  return false // 他の技が出る技ではない時
+
+    writeLog(`${poke.myTN} の ${poke.myName} の ${poke.myMove.name} !`)
+
+    // 他の技が出る技で、失敗した時
+    if ( moveName === false ) {
+        writeLog(`しかし うまく決まらなかった....`)
+        return true
+    }
+
+    // 他の技が出る時
+    poke.myMove.success = true
+    poke.myCondition.history.unshift(poke.myMove)
+    const move = moveConfig(poke, moveSearchByName(moveName))
+    poke.myMove = Object.assign({}, move)
+
+    // 3-9.かいふくふうじで技が出せない (Zワザを除く)
+    if ( poke.myCondition.myHeal_block && moveToRecoverHP.includes(poke.myMove.name) ) { //  && !atk.data.Z
+        writeLog(`${poke.myTN} の ${poke.myName} は かいふくふうじで 技が出せなかった !`)
+        return true
+    }
+    // 3-10.じごくづきで音技が出せない (Zワザを除く)
+    if ( poke.myCondition.myThroat_chop && musicMove.includes(poke.myMove.name) ) { //  && !atk.data.Z
+        writeLog(`${poke.myTN} の ${poke.myName} は じごくづきの 効果で 技が 出せない !`)
+        return true
+    }
+    // 3-11.こだわっていない技が出せない (ダイマックスポケモンを除く)
+    if ( poke.myCondition.myChoice && poke.myCondition.myChoice != poke.myMove.name ) { //  && (atk.data.dynaTxt.includes("3") || atk.data.gigaTxt.includes("3"))
+        writeLog(`${poke.myTN} の ${poke.myName} は こだわっているせいで 技が出せなかった !`)
+        return true
+    }
 
     return
     const tgt = con.tgt[0]
@@ -634,6 +665,20 @@ function moveReplace(poke) {
         }
         if ( poke.myMove.name.includes("まねっこ")) {
             move.push("失敗")
+        }
+    }
+    // ゆびをふる
+    if ( poke.myMove.name.includes("ゆびをふる")) {
+        const random = getRandom()
+        let metro_move = ""
+        for (let i = 0; i < moveEff.metronome().length; i++) {
+            if (random >= i / moveEff.metronome().length) {
+                metro_move = moveEff.metronome()[i]
+            }
+        }
+        move.discription = move.name
+        for (let i = 0; i < 9; i++) {
+            move[i] = cfn.moveSearchByName(metro_move)[i]
         }
     }
 }
@@ -888,53 +933,69 @@ function moveTypeChange(poke) {
         }
     }
     // 2.タイプが変わるわざの効果
-    if ( poke.myMove.name == "ウェザーボール" ) {
-        if ( isSunny(poke) ) poke.myMove.type = "ほのお"
-        if ( isRainy(poke) ) poke.myMove.type = "みず"
-        if ( isSandy(poke) ) poke.myMove.type = "いわ"
-        if ( isSnowy(poke) ) poke.myMove.type = "こおり"
-    }
-    if ( poke.myMove.name == "オーラぐるま" && poke.myCondition.myHunger_switch ) {
-        poke.myMove.type = "あく"
-    }
-    if ( poke.myMove.name == "さばきのつぶて" && isItem(poke) ) {
-        for ( const element of judgementPlate ) {
-            if ( poke.myItem == element.item ) {
-                poke.myMove.type = element.type
+    switch ( poke.myMove.name ) {
+        case "ウェザーボール":
+            if ( isSunny(poke) ) poke.myMove.type = "ほのお"
+            if ( isRainy(poke) ) poke.myMove.type = "みず"
+            if ( isSandy(poke) ) poke.myMove.type = "いわ"
+            if ( isSnowy(poke) ) poke.myMove.type = "こおり"
+            break
+
+        case "オーラぐるま":
+            if ( !poke.myCondition.myHunger_switch ) break
+            poke.myMove.type = "あく"
+            break
+
+        case "さばきのつぶて":
+            if ( !isItem(poke) ) break
+            for ( const plate of itemList_plate ) {
+                if ( poke.myItem == plate.name ) {
+                    poke.myMove.type = plate.type
+                }
             }
-        }
-    }
-    if ( poke.myMove.name == "しぜんのめぐみ" && isItem(poke) ) {
-        for ( const element of naturalGift ) {
-            if ( poke.myItem == element.item ) {
-                poke.myMove.type = element.type
-                writeLog(`${poke.muItem} を 力に変えた`)
+            break
+
+        case "しぜんのめぐみ":
+            if ( !isItem(poke) ) break
+            for ( const element of naturalGift ) {
+                if ( poke.myItem == element.item ) {
+                    poke.myMove.type = element.type
+                    writeLog(`${poke.muItem} を 力に変えた`)
+                }
             }
-        }
-    }
-    if ( poke.myMove.name == "だいちのはどう" && onGround(poke) ) {
-        if ( fieldStatus.myElectric ) poke.myMove.type = "でんき"
-        if ( fieldStatus.myGrassy )   poke.myMove.type = "くさ"
-        if ( fieldStatus.myMisty )    poke.myMove.type = "フェアリー"
-        if ( fieldStatus.myPsychic )  poke.myMove.type = "エスパー"
-    }
-    if ( poke.myMove.name == "テクノバスター" && isItem(poke) ) {
-        if ( poke.myItem == "アクアカセット" ) poke.myMove.type = "みず"
-        if ( poke.myItem == "イナズマカセット" ) poke.myMove.type = "でんき"
-        if ( poke.myItem == "ブレイズカセット" ) poke.myMove.type = "ほのお"
-        if ( poke.myItem == "フリーズカセット" ) poke.myMove.type = "こおり"
-    }
-    if ( poke.myMove.name == "マルチアタック" && isItem(poke) ) {
-        for ( const element of multiAttack ) {
-            if ( poke.myItem == element.item ) {
-                poke.myMove.type = element.type
+            break
+
+        case "だいちのはどう":
+            if ( !onGround(poke) ) break
+            if ( fieldStatus.myElectric ) poke.myMove.type = "でんき"
+            if ( fieldStatus.myGrassy )   poke.myMove.type = "くさ"
+            if ( fieldStatus.myMisty )    poke.myMove.type = "フェアリー"
+            if ( fieldStatus.myPsychic )  poke.myMove.type = "エスパー"
+            break
+
+        case "テクノバスター":
+            if ( !isItem(poke) ) break
+            if ( poke.myItem == "アクアカセット" ) poke.myMove.type = "みず"
+            if ( poke.myItem == "イナズマカセット" ) poke.myMove.type = "でんき"
+            if ( poke.myItem == "ブレイズカセット" ) poke.myMove.type = "ほのお"
+            if ( poke.myItem == "フリーズカセット" ) poke.myMove.type = "こおり"
+            break
+
+        case "マルチアタック":
+            if ( !isItem(poke) ) break
+            for ( const memory of itemList_memory ) {
+                if ( poke.myItem == memory.name ) {
+                    poke.myMove.type = memory.type
+                }
             }
-        }
-    }
-    if ( poke.myMove.name == "めざめるダンス" ) {
-        poke.myMove.type = poke.myType[0]
-    }
-    if ( poke.myMove.name == "めざめるパワー" ) {
+            break
+
+        case "めざめるダンス":
+            poke.myMove.type = poke.myType[0]
+            break
+        
+        case "めざめるパワー":
+            break
 
     }
     // 3.そうでん/プラズマシャワー状態

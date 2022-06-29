@@ -389,19 +389,19 @@ function setPokemon(){
     const team = document.getElementById("team").team.value
 
     // アルセウス：プレートによるタイプ変更
-    if ($("#" + team + "_ability").text() == "マルチタイプ"){
-        for (let i = 0; i < judgementPlate.length; i++){
-            if ($("#" + team + "_item").text() == judgementPlate[i][0]){
-                $("#" + team + "_type").text(judgementPlate[i][1])
+    if ( document.getElementById(`${team}_ability`).textContent == "マルチタイプ" ) {
+        for ( const plate of itemList_plate ) {
+            if ( document.getElementById(`${team}_item`).textContent == plate.name ) {
+                document.getElementById(`${team}_type`).textContent = plate.type
             }
         }
     }
 
     // シルヴァディ：メモリによるタイプ変更
-    if ($("#" + team + "_ability").text() == "ARシステム"){
-        for (let i = 0; i < multiAttack.length; i++){
-            if ($("#" + team + "_item").text() == multiAttack[i][0]){
-                $("#" + team + "_type").text(multiAttack[i][1])
+    if ( document.getElementById(`${team}_ability`).textContent == "ARシステム" ) {
+        for ( const memory of itemList_memory ) {
+            if ( document.getElementById(`${team}_item`).textContent == memory.name ) {
+                document.getElementById(`${team}_type`).textContent = memory.type
             }
         }
     }

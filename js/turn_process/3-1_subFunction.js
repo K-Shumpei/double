@@ -3,12 +3,54 @@
 //**************************************************
 
 function getNextMove(poke) {
+    const target = isTarget(poke)
+    if ( !target ) return false // ターゲットがいない時
+    const tgt = target[0]
+
     switch ( poke.myMove.name ) {
         case "オウムがえし":
-            break
+            const history = tgt.myCondition.myHistory
+            if ( !history ) return false           // 対象が技を使っていない
+            const mirrorMoveName = history[0].name   // 最後の技の名前
+            const mirrorMoveTgt  = history[0].target // 最後の技の対象
+
+            // 例外的にコピーできる技
+            switch ( mirrorMoveName ) {
+                case "トリックルーム":
+                case "ワンダールーム":
+                case "マジックルーム":
+                case "フェアリーロック":
+                    return mirrorMoveName
+            }
+
+            // 対象によりコピーできない技
+            switch ( mirrorMoveTgt ) {
+                case "自分":
+                case "味方の場":
+                case "相手の場":
+                case "全体の場":
+                case "味方全員":
+                case "全員":
+                case "味方1体": // てだすけ・てをつなぐ・アロマミスト
+                case "自分か味方": // つぼをつく
+                    return false
+            }
+
+            // それ以外にコピーできない技
+            if ( cannotMirrorMove.includes(mirrorMoveName) ) return false
+            if ( !isNormalMove(mirrorMoveName) ) return false
+
+            // コピーされる技
+            return mirrorMoveName
 
         case "さきどり":
-            break
+            if ( tgt.myCmd_move === "" ) return false
+            if ( isHide(tgt) ) return false
+            const nextMove = selectedMove(tgt)
+            if ( nextMove.nature == "変化" ) return false
+            if ( cannotMeFirst.includes(nextMove.name) ) return false
+
+            return nextMove.name
 
         case "しぜんのちから":
             if ( fieldStatus.myElectric ) return "10まんボルト"
@@ -19,25 +61,39 @@ function getNextMove(poke) {
 
         case "ねごと":
             if ( !( poke.myAilment == "ねむり" || poke.myAbility == "ぜったいねむり" && isAbility(poke) ) ) return false
-            const moveList = [poke.myMove_0, poke.myMove_1, poke.myMove_2, poke.myMove_3]
-            const sleepTalkList = moveList.filter( move => !sleepTalk.includes(move) && !accumulationMove.includes(move) )
+            const myMoveList = [poke.myMove_0, poke.myMove_1, poke.myMove_2, poke.myMove_3]
+            const sleepTalkList = myMoveList.filter( move => !sleepTalk.includes(move) && !accumulationMove.includes(move) )
             if ( !sleepTalkList ) return false // ねごとで出る技が一つもない時
-            const sleepTalkMove = moveSearchByName(shuffle(sleepTalkList)[0])
+            const sleepTalkMove = shuffle(sleepTalkList)[0]
             return sleepTalkMove
 
         case "ねこのて":
-            break
+            let ourMoveList = []
+            for ( const _poke of myParty ) {
+                for ( let i = 0; i < 4; i++ ) {
+                    if ( _poke[`myMove_${i}`] ) ourMoveList.push(_poke[`myMove_${i}`])
+                }
+            }
+            const catHandList = ourMoveList.filter( move => !cannotAssistMove.includes(move) )
+            if ( !catHandList ) return false // ねこのてで出る技が一つもない時
+            const catHandMove = shuffle(catHandList)[0]
+            return catHandMove
 
         case "まねっこ":
             break
 
         case "ゆびをふる":
-            let shuffleMove = shuffle(moveList)
-            while ( !cannotMetronome.includes(shuffleMove[0].name) ) shuffleMove = shuffle(moveList)
-            return shuffleMove[0].name
+            while ( true ) {
+                const metronomeMoveNum = Math.floor(getRandom() * moveList.length)
+                const metronomeMoveName = moveList[metronomeMoveNum].name
+                // ゆびをふるで出ない技
+                if ( cannotMetronome.includes(metronomeMoveName) ) continue
+                if ( !isNormalMove(metronomeMoveName) ) continue
+                return metronomeMoveName
+            }
     }
 
-    return false
+    return null
 }
 
 //**************************************************
