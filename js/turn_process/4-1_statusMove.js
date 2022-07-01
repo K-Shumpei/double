@@ -743,7 +743,8 @@ function statusMoveForOneOfThem(poke) {
             break
         
         case "スポットライト":
-            tgt.poke.myCondition.mySpotlight = "スポットライト"
+            const spotlight = {position: tgt.poke.myPosition, move: poke.myMove.name}
+            isField(tgt.poke).mySpotlight.push(spotlight)
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 注目の的になった`)
             break
         
@@ -995,7 +996,8 @@ function statusMoveForMe(poke) {
         
         case "いかりのこな":
         case "このゆびとまれ":
-            poke.myCondition.mySpotlight = poke.myMove.name
+            const followMe = {position: poke.myPosition, move: poke.myMove.name}
+            isField(poke).mySpotlight.push(followMe)
             writeLog(`${poke.myTN} の ${poke.myName} は 注目の的になった`)
             break
         

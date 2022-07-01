@@ -80,9 +80,6 @@ function moveEffect(poke){
 
 // 1.ダメージ計算
 function isDamage(poke){
-    // 連続回数を move.continuous に記録
-    getContinuous(poke)
-
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
@@ -248,9 +245,10 @@ function giveDamage(poke){
         tgt.poke.myCondition.myAssurance = true
         // ゆきなだれ、リベンジ、カウンター。ミラーコート、メタルバースト用
         // 一撃必殺技の時、おうじゃのしるし・あくしゅうでひるまない、きあいパンチは成功する、ナゾのみ・弱点保険は発動する
-        tgt.poke.myCondition.myDamage = tgt.damage
-        tgt.poke.myCondition.myDamage_ID = poke.myID
-        tgt.poke.myCondition.myDamage_nature = poke.myMove.nature
+        tgt.poke.myCondition.myDamage.value    = tgt.damage
+        tgt.poke.myCondition.myDamage.party    = poke.myParty
+        tgt.poke.myCondition.myDamage.position = poke.myPosition
+        tgt.poke.myCondition.myDamage.nature   = poke.myMove.nature
         if ( oneShot.includes(poke.myMove.name) ) tgt.poke.myCondition.myOne_shot = true
         // がまん用
         if ( tgt.poke.myCondition.myBide_turn ) {
@@ -435,7 +433,7 @@ function activateAdditionalEffectEtc(poke){
                 }
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 下がっていた能力変化が 元に戻った`)
             }
-            if ( berryList.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
+            if ( itemList_berry.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
             enableToRecycle(poke)
         }
     }
@@ -475,9 +473,9 @@ function activateAdditionalEffectEtc(poke){
 // 9.ダメージが発生したときの効果
 function effectWithDamage(poke){
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )        continue // すでに失敗していないこと
-        if ( tgt.substitute )      continue // みがわりが有効でないこと
-        if ( tgt.damage != false ) continue // ダメージが0以上であること
+        if ( !tgt.success )   continue // すでに失敗していないこと
+        if ( tgt.substitute ) continue // みがわりが有効でないこと
+        if ( tgt.damage > 0 ) continue // ダメージが0以上であること
 
         // 1.コアパニッシャーによるとくせいなし
         if ( poke.myMove.name == "コアパニッシャー" ) {
@@ -537,236 +535,223 @@ function effectWithDamage(poke){
         }
         // 7.防御側の特性
         if ( isAbility(tgt.poke) ) {
-            // ゆうばく: 直接攻撃を受けてひんしになったとき
-            if ( tgt.poke.myAbility == "ゆうばく" ) {
-                if ( tgt.poke.myRest_hp == 0 && poke.myMove.direct == "直接" && !( poke.myItem == "ぼうごパット" && isItem(poke) ) && !( poke.myAbility == "しめりけ" && isAbility(poke) ) ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『ゆうばく』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 4 * isDynamax(poke)), "-")
-                }
-            }
-            // とびだすなかみ: ひんしになったとき
-            if ( tgt.poke.myAbility == "とびだすなかみ" ) {
-                if ( tgt.poke.myRest_hp == 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『とびだすなかみ』 !`)
+            const random = getRandom()
+            const damage_4 = Math.floor(poke.myFull_hp / 4 * isDynamax(poke))
+            const damage_8 = Math.floor(poke.myFull_hp / 8 * isDynamax(poke))
+            switch ( tgt.poke.myAbility ) {
+                case "ゆうばく":
+                    if ( tgt.poke.myRest_hp > 0 ) break
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( poke.myAbility == "しめりけ" && isAbility(poke) ) break
+                    abilityDeclaration(tgt.poke)
+                    changeHP(poke, damage_4, "-")
+                    break
+
+                case "とびだすなかみ":
+                    if ( tgt.poke.myRest_hp > 0 ) break
+                    abilityDeclaration(tgt.poke)
                     changeHP(poke, tgt.damage, "-")
-                }
-            }
-            // シンクロ: どく/もうどく/まひ/やけど状態になったとき
-            /*
-            if (tgt.poke.myAbility == "シンクロ" && tgt.p_con.includes("特性『シンクロ』") && !me.f_con.includes("しんぴのまもり")){
-                const abnormal = searchText(tgt.p_con, "特性『シンクロ』").slice(9)
-                if (abnormal == "どく" || abnormal == "もうどく" || abnormal == "まひ" || abnormal == "やけど"){
-                    writeLog(me, you, tgt.name + "　の　特性『シンクロ』　!" + "\n")
-                    getAbnormal(me, yuo, con, abnormal)
-                }
-                removeText(tgt.p_con, "特性『シンクロ』")
-            }
-            */
-            // てつのトゲ/さめはだ/ほうし/どくのトゲ/せいでんき/ほのおのからだ/メロメロボディ/ミイラ/ぬめぬめ/カーリーヘアー/さまようたましい/ほろびのボディ: 直接攻撃を受けたとき
-            if ( poke.myMove.direct == "直接" && !( poke.myItem == "ぼうごパット" && isItem(poke) ) ) {
-                const random = getRandom()
-                if ( tgt.poke.myAbility == "てつのトゲ" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 8 * isDynamax(poke)), "-")
-                }
-                if ( tgt.poke.myAbility == "さめはだ" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 8 * isDynamax(poke)), "-")
-                }
-                if ( tgt.poke.myAbility == "ほうし" ) {
-                    if ( !( poke.myAbility == "ぼうじん" && isAbility(poke) ) && !( poke.myItem == "ぼうじんゴーグル" && isItem(poke) ) && !poke.myType.includes("くさ") ) {
-                        if ( random < 0.3 ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        if ( random < 0.09 )      getAbnormal(poke, "どく")
-                        else if ( random < 0.19 ) getAbnormal(poke, "まひ")
-                        else if ( random < 0.3  ) getAbnormal(poke, "ねむり")
-                    }
-                }
-                if ( tgt.poke.myAbility == "どくのトゲ" ) {
-                    if ( random < 0.3 ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        getAbnormal(poke, "どく")
-                    }
-                }
-                if ( tgt.poke.myAbility == "せいでんき" ) {
-                    if ( random < 0.3 ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        getAbnormal(poke, "まひ")
-                    }
-                }
-                if ( tgt.poke.myAbility == "ほのおのからだ" ) {
-                    if ( random < 0.3 ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        getAbnormal(poke, "やけど")
-                    }
-                }
-                if ( tgt.poke.myAbility == "メロメロボディ" ) {
-                    if ( random < 0.3 && tgt.poke.myRest_hp > 0 && (( poke.myGender == "♂" && tgt.poke.myGender == "♀") || ( poke.myGender == "♀" && tgt.poke.myGender == "♂")) && poke.myCondition.myAttract == false ) {
-                        poke.myCondition.myAttract = tgt.poke.myID
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        writeLog(`${poke.myTN} の ${poke.myName} は メロメロに なってしまった !`)
-                        mentalHerb(poke)
-                    }
-                }
-                if ( tgt.poke.myAbility == "ミイラ" ) {
-                    if ( !mummy.includes(poke.myAbility) ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        poke.myAbility = "ミイラ"
-                        writeLog(`${poke.myTN} の ${poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
-                    }
-                }
-                if ( tgt.poke.myAbility == "ぬめぬめ" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
+
+                case "シンクロ":
+                    break
+
+                case "てつのトゲ":
+                case "さめはだ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    abilityDeclaration(tgt.poke)
+                    changeHP(poke, damage_8, "-")
+                    break
+
+                case "ほうし":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( poke.myAbility == "ぼうじん" && isAbility(poke) ) break
+                    if ( poke.myItem == "ぼうじんゴーグル" && isItem(poke) ) break
+                    if ( poke.myType.includes("くさ") ) break
+                    if ( random >= 0.3 ) break
+                    abilityDeclaration(tgt.poke)
+                    if ( random < 0.09 )      getAbnormal(poke, "どく")
+                    else if ( random < 0.19 ) getAbnormal(poke, "まひ")
+                    else if ( random < 0.3 )  getAbnormal(poke, "ねむり")
+                    break
+
+                case "どくのトゲ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( random >= 0.3 ) break
+                    abilityDeclaration(tgt.poke)
+                    getAbnormal(poke, "どく")
+                    break
+
+                case "せいでんき":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( random >= 0.3 ) break
+                    abilityDeclaration(tgt.poke)
+                    getAbnormal(poke, "まひ")
+                    break
+
+                case "ほのおのからだ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( random >= 0.3 ) break
+                    abilityDeclaration(tgt.poke)
+                    getAbnormal(poke, "やけど")
+                    break
+
+                case "メロメロボディ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( random >= 0.3 ) break
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myCondition.myAttract ) break
+                    if ( poke.myGender == "-" ) break
+                    if ( tgt.poke.myGender == "-" ) break
+                    if ( poke.myGender == tgt.poke.myGender ) break
+                    poke.myCondition.myAttract = tgt.poke.myID
+                    abilityDeclaration(tgt.poke)
+                    writeLog(`${poke.myTN} の ${poke.myName} は メロメロに なってしまった !`)
+                    mentalHerb(poke)
+                    break
+
+                case "ミイラ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( mummy.includes(poke.myAbility) ) break
+                    abilityDeclaration(tgt.poke)
+                    poke.myAbility = "ミイラ"
+                    writeLog(`${poke.myTN} の ${poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
+                    break
+
+                case "ぬめぬめ":
+                case "カーリーヘアー":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    abilityDeclaration(tgt.poke)
                     changeRank(poke, "speed", -1, isSpirit(poke, tgt.poke))
-                }
-                if ( tgt.poke.myAbility == "カーリーヘアー" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                    changeRank(poke, "speed", -1, isSpirit(poke, tgt.poke))
-                }
-                /*
-                    if (poke.myAbility == "ミラーアーマー"){
-                        writeLog(me, you, con.TN + "　の　" + con.name + "　の　ミラーアーマーが　発動した!" + "\n")
-                        changeRank(me, you, tgt, "S", -1, 100, tgt.poke.myAbility, true)
-                        whiteHerb(me, you, tgt)
-                    } else {
-                        changeRankByOther(me, you, con, "S", -1, true, {name: tgt.name, cause: "特性『カーリーヘアー』"})
-                        whiteHerb(poke)
-                    }
-                }
-                */
-                if ( tgt.poke.myAbility == "さまようたましい" ) {
-                    if ( !wanderingSpirit.includes(poke.myAbility) ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        const myAbility = poke.myAbility
-                        poke.myAbility = "さまようたましい"
-                        tgt.poke.myAbility= myAbility
-                        writeLog(`${poke.myTN} の ${poke.myName} は 特性『${poke.myAbility}』 になった!`)
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
-                    }
-                }
-                if ( tgt.poke.myAbility == "ほろびのボディ" ) {
-                    /*
-                    let check = false
-                    for (const con of [me.con0, me.con1, you.con0, you.con1]){
-                        if (!con.p_con.includes("状態変化『ほろびのうた』")){
-                            con.p_con += "状態変化『ほろびのうた』　4" + "\n"
-                            check = true
-                        }
-                    }
-                    if (check) writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　特性『ほろびのボディ』が　発動した!" + "\n")
-                    */
-                }
-            }
-            // のろわれボディ/イリュージョン/じきゅうりょく/すなはき/わたげ/うのミサイル: 攻撃技を受けたとき
-            if ( tgt.poke.myAbility == "のろわれボディ" ) {
-                if ( getRandom() < 0.3 && !poke.myCondition.myDisable_move ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
+                    // ミラーアーマーの処理
+                    break
+
+                case "さまようたましい":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    if ( wanderingSpirit.includes(poke.myAbility) ) break
+                    abilityDeclaration(tgt.poke)
+                    [poke.myAbility, tgt.poke.myAbility] = [tgt.poke.myAbility, poke.myAbility]
+                    writeLog(`${poke.myTN} の ${poke.myName} は 特性『${poke.myAbility}』 になった!`)
+                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
+                    break
+
+                case "ほろびのボディ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    break
+
+                case "のろわれボディ":
+                    if ( random >= 0.3 ) break
+                    if ( poke.myCondition.myDisable_move ) break
+                    abilityDeclaration(tgt.poke)
                     poke.myCondition.myDisable_move = poke.myMove.name
                     poke.myCondition.myDisable_turn = 1
                     mentalHerb(poke)
-                }
-            }
-            /*
-            if ( tgt.p_con.includes("特性『イリュージョン』") ){
-                writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　特性『イリュージョン』　が解けた!" + "\n")
-                const num = searchText(tgt.p_con, "特性『イリュージョン』").slice(12)
-                for (const para of ["name", "sex", "level", "type"]){
-                    tgt[para] = user[0]["poke" + num][para]
-                }
-                removeText(tgt.p_con, "特性『イリュージョン』")
-            }
-            */
-            if ( tgt.poke.myAbility == "じきゅうりょく" ) {
-                if ( tgt.poke.myRest_hp > 0 ) {
+                    break
+
+                case "イリュージョン":
+                    break
+
+                case "じきゅうりょく":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    abilityDeclaration(tgt.poke)
                     changeRank(tgt.poke, "def", 1, isSpirit(poke, tgt.poke))
-                }
-            }
-            if ( tgt.poke.myAbility == "すなはき" ) {
-                if ( !fieldStatus.mySandstorm && !fieldStatus.myHeavy_rain && !fieldStatus.myDrought && !fieldStatus.myTurbulence ){
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                    resetWeather()
-                    fieldStatus.mySandstorm = 1
-                    if ( tgt.poke.myItem == "さらさらいわ" && isItem(tgt.poke) ) isField(tgt.poke).myWeather_long = true
-                    writeLog(`砂嵐が吹き始めた`)
-                }
-            }
-            if ( tgt.poke.myAbility == "わたげ" ) {
-                changeRank(poke, "speed", -1, isSpirit(poke, tgt.poke))
-                /*
-                if (poke.myAbility == "ミラーアーマー"){
-                    writeLog(me, you, con.TN + "　の　" + con.name + "　の　ミラーアーマーが　発動した!" + "\n")
-                    changeRank(me, you, tgt, "S", -1, 100, "わたげ", true)
-                    whiteHerb(me, you, tgt)
-                } else {
-                    changeRankByOther(me, you, con, "S", -1, true, {name: tgt.name, cause: "特性『わたげ』"})
-                    whiteHerb(poke)
-                }
-                */
-            }
-            if ( tgt.poke.myAbility == "うのミサイル" ) {
-                if ( tgt.poke.myCondition.myGulp_missile ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 4 * isDynamax(poke)), "-")
-                    if ( tgt.poke.myCondition.myGulp_missile == "うのみのすがた" ) changeRank(poke, "def", -1, isSpirit(poke, tgt.poke))
-                    if ( tgt.poke.myCondition.myGulp_missile == "まるのみのすがた" ) getAbnormal(poke, "まひ")
+                    break
+
+                case "すなはき":
+                    if ( fieldStatus.mySandstorm ) break
+                    if ( fieldStatus.myHeavy_rain ) break
+                    if ( fieldStatus.myDrought ) break
+                    if ( fieldStatus.myTurbulence ) break
+                    abilityDeclaration(tgt.poke)
+                    activateWeather(tgt.poke, "sandstorm")
+                    break
+
+                case "わたげ":
+                    abilityDeclaration(tgt.poke)
+                    changeRank(poke, "speed", -1, isSpirit(poke, tgt.poke))
+                    // ミラーアーマー
+                    break
+
+                case "うのミサイル":
+                    if ( !tgt.poke.myCondition.myGulp_missile ) break
+                    abilityDeclaration(tgt.poke)
+                    changeHP(poke, damage_4, "-")
+                    switch ( tgt.poke.myCondition.myGulp_missile ) {
+                        case "うのみのすがた":
+                            changeRank(poke, "def", -1, isSpirit(poke, tgt.poke))
+                            // ミラーアーマー
+                            break
+
+                        case "まるのみのすがた":
+                            getAbnormal(poke, "まひ")
+                            break
+                    }
                     tgt.poke.myCondition.myGulp_missile = false
                     eatBerryInAbnormal(poke)
                     eatBerryInPinch(poke)
-                }
-                /*
-                if (poke.myAbility == "ミラーアーマー"){
-                    writeLog(me, you, con.TN + "　の　" + con.name + "　の　ミラーアーマーが　発動した!" + "\n")
-                    changeRank(me, you, tgt, "B", -1, 100, "うのミサイル", true)
-                    whiteHerb(me, you, tgt)
-                } else {
-                    changeRankByOther(me, you, con, "B", -1, true, {name: tgt.name, cause: "特性『うのミサイル』"})
+                    break
+
+                case "くだけるよろい":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.nature != "物理" ) break
+                    abilityDeclaration(tgt.poke)
+                    changeMyRank(tgt.poke, "def", -1)
+                    changeMyRank(tgt.poke, "speed", 2)
                     whiteHerb(poke)
-                }
-                */
-            }
-            if ( tgt.poke.myRest_hp > 0 ) {
-                // くだけるよろい: 物理技を受けたとき
-                if ( tgt.poke.myAbility == "くだけるよろい" ) {
-                    if ( poke.myMove.nature == "物理" ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        changeMyRank(tgt.poke, "def", -1)
-                        changeMyRank(tgt.poke, "speed", 2)
-                        whiteHerb(poke)
+                    break
+
+                case "みずがため":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "みず" ) break
+                    abilityDeclaration(tgt.poke)
+                    changeMyRank(tgt.poke, "def", 2)
+                    break
+
+                case "せいぎのこころ":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "あく" ) break
+                    abilityDeclaration(tgt.poke)
+                    changeMyRank(tgt.poke, "atk", 1)
+                    break
+
+                case "びびり":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    switch ( poke.myMove.type ) {
+                        case "あく":
+                        case "ゴースト":
+                        case "むし":
+                            abilityDeclaration(tgt.poke)
+                            changeMyRank(tgt.poke, "speed", 1)
                     }
-                    
-                }
-                // みずがため/せいぎのこころ/びびり/じょうききかん: 特定のタイプの攻撃技を受けたとき
-                if ( tgt.poke.myAbility == "みずがため" ) {
-                    if ( poke.myMove.type == "みず" ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        changeMyRank(tgt.poke, "def", 2)
+                    break
+
+                case "じょうききかん":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    switch ( poke.myMove.type ) {
+                        case "みず":
+                        case "ほのお":
+                            abilityDeclaration(tgt.poke)
+                            changeMyRank(tgt.poke, "speed", 6)
                     }
-                }
-                if ( tgt.poke.myAbility == "せいぎのこころ" ) {
-                    if ( poke.myMove.type == "あく" ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        changeMyRank(tgt.poke, "atk", 1)
-                    }
-                }
-                if ( tgt.poke.myAbility == "びびり" ) {
-                    if ( poke.myMove.type == "あく" || poke.myMove.type == "ゴースト" || poke.myMove.type == "むし" ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        changeMyRank(tgt.poke, "speed", 1)
-                    }
-                }
-                if ( tgt.poke.myAbility == "じょうききかん" ) {
-                    if ( poke.myMove.type == "みず" || poke.myMove.type == "ほのお") {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        changeMyRank(tgt.poke, "speed", 6)
-                    }
-                }
-                // いかりのつぼ
-                if ( tgt.poke.myAbility == "いかりのつぼ" ) {
-                    if ( tgt.critical ) {
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 攻撃が 最大まで上がった !`)
-                        tgt.poke.myRank_atk = 6
-                    }
-                }
+                    break
+
+                case "いかりのつぼ":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( !tgt.critical ) break
+                    abilityDeclaration(tgt.poke)
+                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 攻撃が 最大まで上がった !`)
+                    tgt.poke.myRank_atk = 6
+                    break
             }
         }
         // 8.相性に関するきのみ
@@ -788,7 +773,7 @@ function effectWithDamage(poke){
         }
         // 9.やきつくすによるきのみ/ジュエル6-の消失
         if ( poke.myMove.name == "やきつくす" ) {
-            if ( !( tgt.poke.myAbility == "ねんちゃく" && isAbility(tgt.poke) ) && tgt.poke.myRest_hp > 0 && ( berryList.includes(tgt.poke.myItem) || tgt.poke.myItem.includes("ジュエル") ) ) {
+            if ( !( tgt.poke.myAbility == "ねんちゃく" && isAbility(tgt.poke) ) && tgt.poke.myRest_hp > 0 && ( itemList_berry.includes(tgt.poke.myItem) || tgt.poke.myItem.includes("ジュエル") ) ) {
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} は 焼き尽くされた !`)
                 tgt.poke.myItem = ""
                 if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myCondition.myUnburden = true
@@ -796,98 +781,105 @@ function effectWithDamage(poke){
         }
         // 10.防御側のもちもの
         if ( isItem(tgt.poke) ) {
-            ( tgt.poke.myAbility == "じゅくせい" && isAbility(tgt.poke) )? ripen = 2 : ripen = 1
-            // ゴツゴツメット: 直接攻撃を受けたとき
-            if ( tgt.poke.myItem == "ゴツゴツメット" ) {
-                if ( poke.myMove.direct == "直接" && !( poke.myItem == "ぼうごパット" && isItem(poke) ) ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 6 * isDynamax(poke)), "-")
+            const damage_6 = Math.floor(poke.myFull_hp / 6 * isDynamax(poke))
+            const damage_8 = Math.floor(poke.myFull_hp / 8 * isDynamax(poke) * isRipen(tgt.poke))
+            switch ( tgt.poke.myItem ) {
+                case "ゴツゴツメット":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
+                    itemDeclaration(tgt.poke)
+                    changeHP(poke, damage_6, "-")
                     eatBerryInPinch(poke)
-                }
-            }
-            // くっつきバリが攻撃側に渡る: 直接攻撃の攻撃側に持ち物が無いとき
-            if ( tgt.poke.myItem == "くっつきバリ" ) {
-                if ( poke.myMove.direct == "直接" && poke.myItem == "" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "くっつきバリ":
+                    if ( poke.myMove.direct == "間接" ) break
+                    if ( poke.myItem ) break
+                    itemDeclaration(tgt.poke)
                     poke.myItem = "くっつきバリ"
                     tgt.poke.myItem = ""
-                }
-            }
-            // ジャポのみ: 物理技を受けたとき
-            if ( tgt.poke.myItem == "ジャポのみ" ) {
-                if ( poke.myMove.nature == "物理" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 8 * isDynamax(poke) * ripen), "-")
+                    break
+
+                case "ジャポのみ":
+                    if ( poke.myMove.nature != "物理" ) break
+                    itemDeclaration(tgt.poke)
+                    changeHP(poke, damage_8, "-")
                     enableToRecycle(tgt.poke)
                     eatBerryInPinch(poke)
-                }
-            }
-            // レンブのみ: 特殊技を受けたとき
-            if ( tgt.poke.myItem == "レンブのみ" ) {
-                if ( poke.myMove.nature == "特殊" ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
-                    changeHP(poke, Math.floor(poke.myFull_hp / 8 * isDynamax(poke) * ripen), "-")
+                    break
+
+                case "レンブのみ":
+                    if ( poke.myMove.nature != "特殊" ) break
+                    itemDeclaration(tgt.poke)
+                    changeHP(poke, damage_8, "-")
                     enableToRecycle(tgt.poke)
                     eatBerryInPinch(poke)
-                }
-            }
-            // じゃくてんほけん: 効果がバツグンの技を受けたとき
-            if ( tgt.poke.myItem == "じゃくてんほけん" ) {
-                if ( tgt.effective && tgt.poke.myRest_hp > 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "じゃくてんほけん":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( tgt.effective <= 1 ) break
+                    itemDeclaration(tgt.poke)
                     changeMyRank(tgt.poke, "atk", 2)
                     changeMyRank(tgt.poke, "sp_atk", 2)
                     enableToRecycle(tgt.poke)
-                }
-            }
-            // じゅうでんち/ゆきだま/きゅうこん/ひかりごけ: 特定タイプの攻撃技を受けたとき
-            if ( tgt.poke.myItem == "じゅうでんち" ) {
-                if ( poke.myMove.type == "でんき" && tgt.poke.myRest_hp > 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "じゅうでんち":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "でんき" ) break
+                    itemDeclaration(tgt.poke)
                     changeMyRank(tgt.poke, "atk", 1)
                     enableToRecycle(tgt.poke)
-                }
-            }
-            if ( tgt.poke.myItem == "ゆきだま" ) {
-                if ( poke.myMove.type == "こおり" && tgt.poke.myRest_hp > 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "ゆきだま":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "こおり" ) break
+                    itemDeclaration(tgt.poke)
                     changeMyRank(tgt.poke, "atk", 1)
                     enableToRecycle(tgt.poke)
-                }
-            }
-            if ( tgt.poke.myItem == "きゅうこん" ) {
-                if ( poke.myMove.type == "みず" && tgt.poke.myRest_hp > 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "きゅうこん":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "みず" ) break
+                    itemDeclaration(tgt.poke)
                     changeMyRank(tgt.poke, "sp_atk", 1)
                     enableToRecycle(tgt.poke)
-                }
-            }
-            if ( tgt.poke.myItem == "ひかりごけ" ) {
-                if ( poke.myMove.type == "みず" && tgt.poke.myRest_hp > 0 ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 『${tgt.poke.myItem}』 !`)
+                    break
+
+                case "ひかりごけ":
+                    if ( tgt.poke.myRest_hp == 0 ) break
+                    if ( poke.myMove.type != "みず" ) break
+                    itemDeclaration(tgt.poke)
                     changeMyRank(tgt.poke, "sp_def", 1)
                     enableToRecycle(tgt.poke)
-                }
-            }
-            // ふうせんが割れる: 攻撃技を受けたとき
-            if ( tgt.poke.myItem == "ふうせん" ) {
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ふうせんがわれた !`)
-                enableToRecycle(tgt.poke)
+                    break
+
+                case "ふうせん":
+                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ふうせんがわれた !`)
+                    enableToRecycle(tgt.poke)
+                    break
             }
         }
         // 11.防御側のばけのかわ/アイスフェイス
-        if ( tgt.poke.myAbility == "ばけのかわ" ) {
-            if ( tgt.poke.myDisguise == "ばけたすがた" ) {
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 化けの皮が剥がれた !`)
-                changeHP(tgt.poke, Math.floor(tgt.poke.full_HP / 8 * isDynamax(tgt.poke)), "-")
-                tgt.poke.myDisguise = "ばれたすがた"
-            }
-        }
-        if ( tgt.poke.myAbility == "アイスフェイス" ) {
-            if ( tgt.poke.myIce_face == "アイスフェイス" && poke.myMove.nature == "物理" ) {
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 !`)
-                formChange(tgt.poke, "コオリッポ(ナイスフェイス)", true)
-                tgt.poke.myIce_face = "ナイスフェイス"
+        if ( isAbility(tgt.poke) ) {
+            switch ( tgt.poke.myAbility ) {
+                case "ばけのかわ":
+                    if ( tgt.poke.myDisguise != "ばけたすがた" ) break
+                    abilityDeclaration(tgt.poke)
+                    changeHP(tgt.poke, Math.floor(tgt.poke.full_HP / 8 * isDynamax(tgt.poke)), "-")
+                    tgt.poke.myDisguise = "ばれたすがた"
+                    break
+
+                case "アイスフェイス":
+                    if ( tgt.poke.myIce_face != "アイスフェイス" ) break
+                    if ( poke.myMove.nature != "物理" ) break
+                    abilityDeclaration(tgt.poke)
+                    formChange(tgt.poke, "コオリッポ(ナイスフェイス)", true)
+                    tgt.poke.myIce_face = "ナイスフェイス"
+                    break
             }
         }
         // 12.直接攻撃のZワザを守りきれなかったとき、ニードルガード/トーチカ/キングシールドの効果
@@ -943,7 +935,7 @@ function continuousMove(poke){
         
     // 攻撃回数の記録
     let count = 1
-    
+
     // 連続攻撃技は単体対象
     const tgt = poke.myTarget[0]
 
@@ -1106,7 +1098,7 @@ function activateMoveEffect(poke){
                 eatBerryInPinch(poke)
             }
             if ( poke.myMove.name == "むしくい" || poke.myMove.name == "ついばむ" ) {
-                if ( !berryList.includes(tgt.poke.myItem) ) continue
+                if ( !itemList_berry.includes(tgt.poke.myItem) ) continue
                 eatBerryImmediately(poke, tgt.poke.myItem)
                 tgt.poke.myItem = ""
                 if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true

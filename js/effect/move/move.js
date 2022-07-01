@@ -372,7 +372,7 @@ var cannotProtectByDynaWall = [
 
 
 // 連続攻撃技
-var continuous = [
+const moveList_continuous = [
     {name: 'ダブルニードル', num: 2}, 
     {name: 'にどげり', num: 2}, 
     {name: 'ホネブーメラン', num: 2}, 

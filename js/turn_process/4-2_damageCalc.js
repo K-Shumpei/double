@@ -33,20 +33,17 @@ function isDamageByFixedDamageMove(poke, tgt){
     if ( poke.myMove.name == "しぜんのいかり" ) tgt.damage = Math.floor(tgt.poke.myRest_hp / 2 * dyna)
     if ( poke.myMove.name == "がむしゃら") tgt.damage = tgt.poke.myRest_hp * dyna - poke.myRest_hp
     if ( poke.myMove.name == "カウンター" ){
-        tgt.damage = poke.myCondition.myDamage * 2
-        poke.myCondition.myDamage = 0
-        poke.myCondition.myDamage_nature = false
+        tgt.damage = poke.myCondition.myDamage.value * 2
+        poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
     }
     if (poke.myMove.name == "ミラーコート"){
-        tgt.damage = poke.myCondition.myDamage * 2
-        poke.myCondition.myDamage = 0
-        poke.myCondition.myDamage_nature = false
+        tgt.damage = poke.myCondition.myDamage.value * 2
+        poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
     }
     if (poke.myMove.name == "がまん") tgt.damage = poke.myMove.power
     if (poke.myMove.name == "メタルバースト"){
-        tgt.damage = poke.myCondition.myDamage * 1.5
-        poke.myCondition.myDamage = 0
-        poke.myCondition.myDamage_nature = false
+        tgt.damage = poke.myCondition.myDamage.value * 1.5
+        poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
     }
     if ( poke.myMove.name == "いのちがけ" ) tgt.damage = poke.myRest_hp
     if ( oneShot.includes(poke.myMove.name) ){
@@ -167,7 +164,7 @@ function powerCalculation(poke, tgt){
     }
     if ( poke.myMove.name == "なげつける" ){
         writeLog(`${poke.myItem} を 投げつけた !`)
-        if ( berryList.includes(poke.myItem) ) poke.myMove.power = 10
+        if ( itemList_berry.includes(poke.myItem) ) poke.myMove.power = 10
         if ( poke.myItem.includes("おこう") ) poke.myMove.power = 10
         if ( fling10.includes(poke.myItem) ) poke.myMove.power = 10
         if ( fling30.includes(poke.myItem) ) poke.myMove.power = 30
@@ -214,10 +211,10 @@ function powerCalculation(poke, tgt){
     //if (poke.myMove.name == "おいうち" && tgt.p_con.includes("おいうち成功")) poke.myMove.power *= 2
     //if (poke.myMove.name == "しっぺがえし" && tgt.com == "" && !user[0].f_con.includes("交代済" + tgt.child)) poke.myMove.power *= 2
     if ( poke.myMove.name == "ダメおし" ) {
-        if ( poke.myCondition.myDamaged ) poke.myMove.power *= 2
+        if ( poke.myCondition.myAssurance ) poke.myMove.power *= 2
     }
     if ( poke.myMove.name == "ゆきなだれ" || poke.myMove.name == "リベンジ" ) {
-        if ( poke.myCondition.myDamage_nature ) poke.myMove.power *= 2
+        if ( poke.myCondition.myDamage.value ) poke.myMove.power *= 2
     }
 
 
@@ -313,11 +310,11 @@ function powerCalculation(poke, tgt){
     }
     // プレート類、特定タイプの威力UPアイテム（おこう含む）、こころのしずく、こんごうだま、しらたま、はっきんだま * 4915 / 4096 → 四捨五入
     if ( isItem(poke) ){
-        for ( const element of judgementPlate ) {
-            if ( poke.myItem == element.item && poke.myMove.type == element.type ) correction = Math.round(correction * 4915 / 4096)
+        for ( const plate of itemList_plate ) {
+            if ( poke.myItem == plate.name && poke.myMove.type == plate.type ) correction = Math.round(correction * 4915 / 4096)
         }
-        for ( const element of incense ) {
-            if ( poke.myItem == element.item && poke.myMove.type == element.type ) correction = Math.round(correction * 4915 / 4096)
+        for ( const incense of itemList_incense ) {
+            if ( poke.myItem == incense.name && poke.myMove.type == incense.type ) correction = Math.round(correction * 4915 / 4096)
         }
         if ( poke.myItem == "こころのしずく" && ( poke.myName == "ラティアス" || poke.myName == "ラティオス" ) ) {
             if ( poke.myMove.type == "ドラゴン" || poke.myMove.type == "エスパー" ) correction = Math.round(correction * 4915 / 4096)
@@ -828,8 +825,8 @@ function finalDamage(poke, tgt, power, attack, defense){
         damage = Math.floor(damage * 5324 / 4096)
     }
     // 半減きのみ補正
-    for ( const element of berryToHalfDamage ) {
-        if ( tgt.poke.myItem == element.item && isItem(tgt.poke) && poke.myMove.type == element.type && tgt.effective > 1 ) {
+    for ( const berry of itemList_halfDamageBerry ) {
+        if ( tgt.poke.myItem == berry.name && isItem(tgt.poke) && poke.myMove.type == berry.type && tgt.effective > 1 ) {
             tgt.poke.myCondition.myHalf_berry = true
             damage = Math.round(damage * 2048 / 4096 / isRipen(tgt.poke))
         }

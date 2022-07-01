@@ -233,7 +233,7 @@ function onGround(poke){
 }
 
 function enableToRecycle(poke){
-    if ( berryList.includes(poke.myItem) ) {
+    if ( itemList_berry.includes(poke.myItem) ) {
         poke.myCondition.myBelch = true // ゲップが使えるようになる
         cheekPouch(poke)                // 特性『ほおぶくろ』
     }
@@ -492,19 +492,19 @@ function isPokeByPosition(party, position) {
 
 // 連続技の回数
 function getContinuous(poke) {
-    poke.myMove.continuous = 1
-    for ( const element of continuous ) {
-        if ( poke.myMove.name == element.name ) poke.myMove.continuous = element.num
+    let num = 1
+    for ( const continuous of moveList_continuous ) {
+        if ( poke.myMove.name == continuous.name ) num = continuous.num
     }
-    if ( poke.myMove.continuous == 5 ) {
+    if ( num == 5 ) {
         const random = getRandom()
-        if ( random >= 0 )    poke.myMove.continuous = 2
-        if ( random >= 0.35 ) poke.myMove.continuous = 3
-        if ( random >= 0.7 )  poke.myMove.continuous = 4
-        if ( random >= 0.85 ) poke.myMove.continuous = 5
-        if ( poke.myAbility == "スキルリンク" && isAbility(poke) ) poke.myMove.continuous = 5
+        if ( random >= 0 )    num = 2
+        if ( random >= 0.35 ) num = 3
+        if ( random >= 0.7 )  num = 4
+        if ( random >= 0.85 ) num = 5
+        if ( poke.myAbility == "スキルリンク" && isAbility(poke) ) num = 5
     }
-    if ( poke.myMove.name == "みずしゅりけん" && poke.myName == "ゲッコウガ(サトシゲッコウガ)" ) poke.myMove.continuous = 3
+    if ( poke.myMove.name == "みずしゅりけん" && poke.myName == "ゲッコウガ(サトシゲッコウガ)" ) num = 3
 
     if ( poke.myMove.name == "ふくろだたき" ) {
         let beatUp = 1
@@ -513,12 +513,13 @@ function getContinuous(poke) {
             if ( _poke.myAilment )         continue // 他のポケモンは状態異常だと攻撃しない
             beatUp += 1
         }
-        poke.myMove.continuous = beatUp
+        num = beatUp
     }
-    // 連続攻撃技かつ特性おやこあいであれば2回攻撃になる
-    if ( poke.myAbility == "おやこあい" && isAbility(poke) ) poke.myMove.continuous = 2
+    // 連続攻撃技でない　かつ　特性おやこあい　であれば2回攻撃になる
+    if ( poke.myAbility == "おやこあい" && isAbility(poke) && num == 1 ) num = 2
 
-    return
+    return num
+
     if ( poke.myMove.name == "ドラゴンアロー" ){
         if (con.tgt.length == 1){
             if (con.tgt.child == con.child){
@@ -549,70 +550,182 @@ function mentalHerb(poke){
 
 // 攻撃対象
 function isTarget(poke){
-    if ( poke.myMove.target == "自分" ) return [poke]
-    if ( poke.myMove.target == "全体" ) return allPokeInBattle()
-    if ( poke.myMove.target == "味方全体" ) return myPokeInBattle(poke)
-    if ( poke.myMove.target == "相手全体" ) return oppPokeInBattle(poke)
-    if ( poke.myMove.target == "自分以外" ) {
-        let target = []
-        for ( const _poke of oppPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
-        for ( const _poke of myPokeInBattle(poke) ) if ( poke.myID != _poke.myID ) target.push(_poke)
-        return target
-    }
+    switch ( poke.myMove.target ) {
+        case "味方の場":
+        case "相手の場":
+        case "全体の場":
+            return []
 
-    // ちゅうもくのまと状態に対象が移動
-    if ( oppPokeInBattle(poke).length > 0 ) {
-        for ( const _poke of oppPokeInBattle(poke) ) {
-            if ( !_poke.myCondition.mySpotlight ) continue
-            if ( _poke.myCondition.mySpotlight == "いかりのこな" ) {
-                if ( poke.myType.includes("くさ") ) continue
-                if ( poke.myItem == "ぼうじんゴーグル" && isItem(poke) ) continue
-            }
-            return [_poke]
-        }
-    }
+        case "自分":
+            return [poke]
 
-    if ( poke.myMove.target == "ランダム1体" ) {
-        const num = oppPokeInBattle(poke).length
-        if ( num == 0 ) return []
-        if ( num == 1 ) return oppPokeInBattle(poke)
-        if ( num == 2 ) return [shuffle(oppPokeInBattle(poke))[0]]
+        case "全体":
+            return allPokeInBattle()
+
+        case "味方全体":
+            return myPokeInBattle(poke)
+
+        case "相手全体":
+            return oppPokeInBattle(poke)
+
+        case "自分以外":
+            const oppTarget = oppPokeInBattle()
+            const myTarget  = myPokeInBattle().filter( _poke => _poke.myID != poke.myID )
+            return Object.assign(oppTarget, myTarget)
     }
 
     // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択)
-    if ( poke.myMove.name == "カウンター" || poke.myMove.name == "カウンター" || poke.myMove.name == "カウンター" ) {
-        return [isPokeByID(poke.myCondition.myDamage_ID)]
-    }
 
-    // ドラゴンアローのとき
-    /*
-    if (move.name == "ドラゴンアロー"){
-        if (con.target == 0 || con.target == 1) con.tgt = [you.con0, you.con1]
-        else {
-            (con.child == 0)? child = 1 : child = 0
-            con.tgt = [me["con" + child]]
-        }
-    }
-    if (con.tgt != "") return
-    */
+    let target = false
+    // 1.フリーフォールによる対象
+    target = isTargetBySkyDrop(poke)
+    if ( target ) return target
+    // 2.ちゅうもくのまと状態の敵
+    target = isTargetBySpotlight(poke)
+    if ( target ) return target
+    // 3.ひらいしん/よびみずのポケモン
+    target = isTargetByAttract(poke)
+    if ( target ) return target
+    // 4.カウンター/ミラーコート/メタルバーストの反射対象
+    target = isTargetByReflect(poke)
+    if ( target ) return target
+    // 5.ランダム1体が対象のわざの対象
+    target = isTargetByRandom(poke)
+    if ( target ) return target
+    // 6.技を選択した対象
+    return decideTargetByCmd(poke)
+}
 
-    if ( poke.myCmd_tgt == 2 || poke.myCmd_tgt == 3 ) {
-        if ( oppPokeInBattle(poke).length == 2 ) {
-            for ( const _poke of oppPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt - 2 ) return [_poke]
-        } else if ( oppPokeInBattle(poke).length == 1 ) {
-            return oppPokeInBattle(poke)
-        } else if ( oppPokeInBattle(poke).length == 0 ) {
-            return []
-        }
-    }
-    if ( poke.myCmd_tgt == 0 || poke.myCmd_tgt == 1 ) {
-        if ( myPokeInBattle(poke).length == 2 ) {
-            for ( const _poke of myPokeInBattle(poke) ) if ( _poke.myPosition == poke.myCmd_tgt ) return [_poke]
-        } else {
-            return []
-        }
+// 攻撃対象をコマンドから選択
+function decideTargetByCmd(poke) {
+    switch ( poke.myCmd_tgt ) {
+        case 0:
+        case 1:
+            switch ( myPokeInBattle(poke).length ) {
+                case 2:
+                    return myPokeInBattle(poke).filter( _poke => _poke.myPosition == poke.myCmd_tgt )
+                
+                case 1:
+                case 0:
+                    return []
+            }
+
+        case 2:
+        case 3:
+            switch ( oppPokeInBattle(poke).length ) {
+                case 2:
+                    return oppPokeInBattle(poke).filter( _poke => _poke.myPosition == poke.myCmd_tgt - 2 )
+
+                case 1:
+                    return oppPokeInBattle(poke)
+
+                case 0:
+                    return []
+            }
     }
 }
+
+// 引き寄せる特性による対象
+function decideTargetByAttract(pokeList, ability, ID) {
+    const target = pokeList.filter( poke => poke.myAbility == ability && isAbility(poke) && poke.myID != ID )
+    console.log(pokeList)
+    console.log(target)
+    if ( target === [] ) return false
+    target.sort(function(a,b){
+        // 素早さ実数値
+        if ( a.mySpeed > b.mySpeed ) return -1
+        if ( a.mySpeed < b.mySpeed ) return 1
+        // 乱数
+        if ( getRandom() < 0.5 ) return -1
+        else return 1
+    }) 
+    return [target[0]]
+}
+
+// 1.フリーフォールによる対象
+function isTargetBySkyDrop(poke) {
+    if ( poke.myMove.name == "フリーフォール" ) {
+        return decideTargetByCmd(poke)
+    } else {
+        return false
+    }
+}
+
+// 2.ちゅうもくのまと状態の敵
+function isTargetBySpotlight(poke) {
+    // ちゅうもくのまと状態になった順に優先される
+    for ( const spot of isOppField(poke).mySpotlight ) {
+        if ( spot.move == "いかりのこな" ) {
+            if ( poke.myType.includes("くさ") ) break
+            if ( poke.myItem == "ぼうじんゴーグル" && isItem(poke) ) break
+        }
+        return oppPokeInBattle(poke).filter( _poke => _poke.myPosition == spot.myPosition )
+    }
+    return false
+}
+
+// 3.ひらいしん/よびみずのポケモン
+function isTargetByAttract(poke) {
+    // すばやさ実数値が高いポケモンの特性が優先される。すばやさにはランク補正やトリックルームを考慮しない
+    const attract = [
+        {type: "でんき", ability: "ひらいしん"}, 
+        {type: "みず", ability: "よびみず"}
+    ]
+
+    for ( const element of attract ) {
+        if ( poke.myMove.type != element.type ) continue
+        switch ( poke.myMove.target ) {
+            case "味方1体":
+            case "自分か味方":
+                const target1 = decideTargetByAttract( myPokeInBattle(poke), element.ability, poke.myID )
+                if ( !target1 ) break
+                return target1
+            
+            case "不定":
+            case "1体選択":
+                const target2 = decideTargetByAttract( allPokeInBattle(), element.ability, poke.myID )
+                console.log(target2)
+                if ( !target2 ) break
+                return target2
+        }
+    }
+
+    return false
+}
+
+// 4.カウンター/ミラーコート/メタルバーストの反射対象
+function isTargetByReflect(poke) {
+    switch ( poke.myMove.name ) {
+        case "カウンター":
+        case "ミラーコート":
+        case "メタルバースト":
+            const party = ( poke.myCondition.myDamage.party == "me" )? 0 : 1
+            poke.myCmd_tgt = party * 2 + poke.myCondition.myDamage.position
+            const target = decideTargetByCmd(poke)
+            poke.myCmd_tgt = ""
+            return target
+    }
+    return false
+}
+
+// 5.ランダム1体が対象のわざの対象
+function isTargetByRandom(poke) {
+    // ねごと/ねこのて/まねっこで選ばれた技の対象も同様
+    if ( poke.myMove.target == "ランダム1体" ) {
+        switch ( oppPokeInBattle(poke).length ) {
+            case 0:
+                return []
+            case 1:
+                return oppPokeInBattle(poke)
+            case 2:
+                return shuffle(oppPokeInBattle(poke)).pop()
+        }
+    }
+    return false
+}
+
+
+
 
 // ３における各ステップでの技の成功判定
 function checkMoveSuccess(poke) {   
@@ -844,15 +957,15 @@ function cannotChangeItem(poke){
     if ( poke.myNtem == "ザマゼンタ(たてのおう)" && poke.myItem == "くちたたて" ) return true
     if ( poke.myNtem == "ゲンシカイオーガ" && poke.myItem == "あいいろのたま" ) return true
     if ( poke.myNtem == "ゲンシグラードン" && poke.myItem == "べにいろのたま" ) return true
-    for ( const line of megaStone ){
-        if ( poke.myName == line[1] && poke.myItem == line[0]) return true
-        if ( poke.myName == line[2] && poke.myItem == line[0]) return true
+    for ( const megaStone of itemList_megaStone ){
+        if ( poke.myName == megaStone.poke && poke.myItem == megaStone.name ) return true
+        if ( poke.myName == megaStone.mega && poke.myItem == megaStone.name ) return true
     }
-    for ( const line of Z_crystal ){
-        if ( poke.myItem == line[2] ) return true
+    for ( const Z of moveList_Z ){
+        if ( poke.myItem == Z.item ) return true
     }
-    for (const line of special_Z_crystal){
-        if ( poke.myItem == line[2] ) return true
+    for ( const Z of moveList_dedicated_Z ){
+        if ( poke.myItem == Z.item ) return true
     }
     return false
 }

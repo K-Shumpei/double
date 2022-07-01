@@ -89,6 +89,8 @@ function toHand( poke ){
         }
     }
 
+    // 対象の注目の的状態を解除
+    isField(poke).mySpotlight = isField(poke).mySpotlight.filter( spot => spot.position != poke.myPosition )
     
     /*
     // ダイマックスポケモンを引っ込める時、ダイマックス権を失う

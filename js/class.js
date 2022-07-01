@@ -287,9 +287,7 @@ class Condition {
         this.confusion     = false // こんらん経過ターン数
         this.curse         = false // のろい状態ならtrue
         this.critical      = false // きゅうしょアップ状態ならtrue
-        this.damage        = false // このターン最後に受けたダメージ量
-        this.damage_ID     = false // このターン最後にダメージを与えた相手
-        this.damage_nature = false // このターン最後に受けたダメージの物理・特殊　カウンター・ミラーコートのため
+        this.damage        = {value: 0, party: false, position: false, nature: false} // このターン最後に受けたダメージの情報
         this.defense_curl  = false // まるくなる状態ならtrue
         this.destiny_bond  = false // みちづれ みちづれ状態ならtrue、それ以外ならfalse
         this.dig           = false // あなをほる状態ならtrue
@@ -338,6 +336,7 @@ class Condition {
         this.no_retreat    = false // はいすいのじん状態ならtrue
         this.octolock      = false // たこがためを付与したポケモンのID
         this.one_shot      = false // 一撃必殺を受けたらtrue
+        this.other_move    = false // 他の技が出る技の名前
         this.parental_bond = false // おやこあい補正が乗っているならtrue
         this.perish_song   = false // ほろびカウント数
         this.powder        = false // ふんじん状態ならtrue
@@ -360,7 +359,6 @@ class Condition {
         this.sky_drop      = false // フリーフォール　上空に連れ去られているときはtrue、それ以外ならfalse
         this.slow_start    = "no"  // スロースタート経過ターン数　5ターン経過したら"full"
         this.smack_down    = false // うちおとす状態ならtrue
-        this.spotlight     = false // ちゅうもくのまと状態となった原因(いかりのこな、このゆびとまれ　など)
         this.stockpile     = 0     // たくわえた回数
         this.stockpile_B   = 0     // たくわえるで防御が上がった回数
         this.stockpile_D   = 0     // たくわえるで特防が上がった回数
@@ -404,8 +402,6 @@ class Condition {
     set myCritical( value )      { this.critical = value }
     set myCurse( value )         { this.curse = value }
     set myDamage( value )        { this.damage = value }
-    set myDamage_ID( value )     { this.damage_ID = value }
-    set myDamage_nature( value ) { this.damage_nature = value }
     set myDefense_curl( value )  { this.defense_curl = value }
     set myDestiny_bond( value )  { this.destiny_bond = value }
     set myDig( value )           { this.dig = value }
@@ -454,6 +450,7 @@ class Condition {
     set myNo_retreat( value )    { this.no_retreat = value }
     set myOctolock( value )      { this.octolock = value }
     set myOne_shot( value )      { this.one_shot = value }
+    set myOther_move( value )    { this.other_move = value }
     set myParental_bond( value ) { this.parental_bond = value }
     set myPerish_song( value )   { this.perish_song = value }
     set myPowder( value )        { this.powder = value }
@@ -476,7 +473,6 @@ class Condition {
     set mySky_drop( value )      { this.sky_drop = value }
     set mySlow_start( value )    { this.slow_start = value }
     set mySmack_down( value )    { this.smack_down = value }
-    set mySpotlight( value )     { this.spotlight = value }
     set myStockpile( value )     { this.stockpile = value }
     set myStockpile_B( value )   { this.stockpile_B = value }
     set myStockpile_D( value )   { this.stockpile_D = value }
@@ -519,8 +515,6 @@ class Condition {
     get myCritical()      { return this.critical }
     get myCurse()         { return this.curse }
     get myDamage()        { return this.damage }
-    get myDamage_ID()     { return this.damage_ID }
-    get myDamage_nature() { return this.damage_nature }
     get myDefense_curl()  { return this.defense_curl }
     get myDestiny_bond()  { return this.destiny_bond }
     get myDig()           { return this.dig }
@@ -569,6 +563,7 @@ class Condition {
     get myNo_retreat()    { return this.no_retreat }
     get myOctolock()      { return this.octolock }
     get myOne_shot()      { return this.one_shot }
+    get myOther_move()    { return this.other_move }
     get myParental_bond() { return this.parental_bond }
     get myPerish_song()   { return this.perish_song }
     get myPower_trick()   { return this.power_trick }
@@ -591,7 +586,6 @@ class Condition {
     get mySky_drop()      { return this.sky_drop }
     get mySlow_start()    { return this.slow_start }
     get mySmack_down()    { return this.smack_down }
-    get mySpotlight()     { return this.spotlight }
     get myStockpile()     { return this.stockpile }
     get myStockpile_B()   { return this.stockpile_B }
     get myStockpile_D()   { return this.stockpile_D }
@@ -633,6 +627,7 @@ class Field {
         this.reflect_clay  = false // リフレクター　ひかりのねんどならtrue
         this.safeguard     = false // しんぴのまもり経過ターン数
         this.spikes        = 0     // まきびしの数
+        this.spotlight     = []    // 注目の的状態の{position, couse} (怒りの粉、この指など)
         this.stealth_rock  = false // ステルスロック状態ならtrue
         this.steelsurge    = false // キョダイコウジン状態ならtrue
         this.sticky_web    = false // ねばねばネット状態ならtrue
@@ -663,6 +658,7 @@ class Field {
     set myReflect_clay( value )  { this.reflect_clay = value }
     set mySafeguard( value )     { this.safeguard = value }
     set mySpikes( value )        { this.spikes = value }
+    set mySpotlight( value )     { this.spotlight = value }
     set myStealth_rock( value )  { this.stealth_rock = value }
     set mySteelsurge( value )    { this.steelsurge = value }
     set mySticky_web( value )    { this.sticky_web = value }
@@ -692,6 +688,7 @@ class Field {
     get myReflect_clay()  { return this.reflect_clay }
     get mySafeguard()     { return this.safeguard }
     get mySpikes()        { return this.spikes }
+    get mySpotlight()     { return this.spotlight }
     get myStealth_rock()  { return this.stealth_rock }
     get mySteelsurge()    { return this.steelsurge }
     get mySticky_web()    { return this.sticky_web }

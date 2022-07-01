@@ -123,42 +123,68 @@ function speedAV(poke, type){
     // 素早さ補正初期値
     let correction = 4096
 
+    if ( isAbility(poke) ) {
+        switch ( poke.myAbility ) {
+            case "ようりょくそ":
+                if ( !isSunny(poke) ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
 
-    if ( poke.myAbility == "ようりょくそ" && isAbility(poke) && isSunny(poke) ){
-        correction = Math.round(correction * 8192 / 4096)
+            case "すいすい":
+                if ( !isRainy(poke) ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "すなかき":
+                if ( !isSandy(poke) ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "ゆきかき":
+                if ( !isSnowy(poke) ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "サーフテール":
+                if ( !fieldStatus.myElectric ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "スロースタート":
+                if ( poke.myCondition.mySlow_start == "full" ) break
+                correction = Math.round(correction * 2048 / 4096)
+                break
+
+            case "かるわざ":
+                if ( !poke.myCondition.myUnburden ) break
+                if ( !poke.myItem ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "はやあし":
+                if ( !poke.myAilment ) break
+                correction = Math.round(correction * 6144 / 4096)
+                break
+        }
     }
-    if ( poke.myAbility == "すいすい" && isAbility(poke) && isRainy(poke) ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myAbility == "すなかき" && isAbility(poke) && isSandy(poke) ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myAbility == "ゆきかき" && isAbility(poke) && isSnowy(poke) ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myAbility == "サーフテール" && isAbility(poke) && fieldStatus.myElectric ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myAbility == "スロースタート" && isAbility(poke) && poke.myCondition.mySlow_start > 0 ){
-        correction = Math.round(correction * 2048 / 4096)
-    }
-    if ( poke.myAbility == "かるわざ" && isAbility(poke) && poke.myCondition.myUnburden && poke.myItem == "" ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myAbility == "はやあし" && isAbility(poke) && !poke.myAilment ){
-        correction = Math.round(correction * 6144 / 4096)
-    }
-    if ( poke.myName == "メタモン" && poke.myItem == "スピードパウダー" && isItem(poke) ){
-        correction = Math.round(correction * 8192 / 4096)
-    }
-    if ( poke.myItem == "こだわりスカーフ" && isItem(poke) && !poke.myCondition.myDynamax ){
-        correction = Math.round(correction * 6144 / 4096)
-    }
-    if ( poke.myItem == "くろいてっきゅう" && isItem(poke) ){
-        correction = Math.round(correction * 2048 / 4096)
-    }
-    if ( poke.myItem == "きょうせいギプス" && isItem(poke) ){ // wikiにない
-        correction = Math.round(correction * 2048 / 4096)
+
+    if ( isItem(poke) ) {
+        switch ( poke.myItem ) {
+            case "スピードパウダー":
+                if ( poke.myName != "メタモン" ) break
+                correction = Math.round(correction * 8192 / 4096)
+                break
+
+            case "こだわりスカーフ":
+                if ( poke.myCondition.myDynamax ) break
+                correction = Math.round(correction * 6144 / 4096)
+                break
+
+            case "くろいてっきゅう":
+            case "きょうせいギプス":
+                correction = Math.round(correction * 2048 / 4096)
+                break
+        }
     }
     //if (con.item.includes("パワー") && isItem(me, con)){
       //  correction = Math.round(correction * 2048 / 4096)

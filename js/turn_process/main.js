@@ -140,7 +140,6 @@ function preliminaryAction(secondOrder) {
 function moveUsedEachPokemon() {
     while ( actionOrder().length > 0 ) {
         const poke = actionOrder()[0]
-        console.log("DD")
 
         // クロスサンダー・クロスフレイム
         // crossDragon(me, you)

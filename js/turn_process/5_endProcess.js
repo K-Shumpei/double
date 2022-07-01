@@ -102,8 +102,6 @@ function otherEnd(){
         poke.myCondition.myEndure = false
         // ひるみ
         poke.myCondition.myFlinch = false
-        // ちゅうもくのまと
-        poke.myCondition.mySpotlight = false
         // そうでん
         poke.myCondition.myElectrify = false
         // てだすけ
@@ -121,9 +119,7 @@ function otherEnd(){
         // トラップシェル
         poke.myCondition.myShell_trap = false
         // ダメージ
-        poke.myCondition.myDamage = false
-        poke.myCondition.myDamage_ID = false
-        poke.myCondition.myDamage_nature = false
+        poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
         // よこどり
         // マジックコート
         poke.myCondition.myMagic_coat = false
@@ -146,6 +142,7 @@ function otherEnd(){
         field.myQuick_guard = false // ファストガード
         field.myWide_guard  = false // ワイドガード
         field.myMat_block   = false // たたみがえし
+        field.mySpotlight   = []    // ちゅうもくのまと
     }
 
     // お互いのフィールドの状態の終了
@@ -259,25 +256,36 @@ function weatherEffect(){
         const damage_8 = Math.floor(poke.myFull_hp / 8 * isDynamax(poke))
         const damage_16 = Math.floor(poke.myFull_hp / 16 * isDynamax(poke))
 
-        if ( poke.myAbility == "かんそうはだ" && isSunny(poke) ) {
-            abilityDeclaration(poke)
-            changeHP(poke, Math.max(damage_8, 1), "-")
-        }
-        if ( poke.myAbility == "かんそうはだ" && isRainy(poke) ) {
-            abilityDeclaration(poke)
-            changeHP(poke, Math.max(damage_8, 1), "+")
-        }
-        if ( poke.myAbility == "サンパワー" && isSunny(poke) ) {
-            abilityDeclaration(poke)
-            changeHP(poke, Math.max(damage_8, 1), "-")
-        }
-        if ( poke.myAbility == "あめうけざら" && isRainy(poke) ) {
-            abilityDeclaration(poke)
-            changeHP(poke, Math.max(damage_16, 1), "+")
-        }
-        if ( poke.myAbility == "アイスボディ" && isSnowy(poke) ) {
-            abilityDeclaration(poke)
-            changeHP(poke, Math.max(damage_16, 1), "+")
+        switch ( poke.myAbility ) {
+            case "かんそうはだ":
+                if ( !isSunny(poke) ) break
+                abilityDeclaration(poke)
+                changeHP(poke, Math.max(damage_8, 1), "-")
+                break
+
+            case "かんそうはだ":
+                if ( !isRainy(poke) ) break
+                abilityDeclaration(poke)
+                changeHP(poke, Math.max(damage_8, 1), "+")
+                break
+
+            case "サンパワー":
+                if ( !isSunny(poke) ) break
+                abilityDeclaration(poke)
+                changeHP(poke, Math.max(damage_8, 1), "-")
+                break
+            
+            case "あめうけざら":
+                if ( !isRainy(poke) ) break
+                abilityDeclaration(poke)
+                changeHP(poke, Math.max(damage_16, 1), "+")
+                break
+
+            case "アイスボディ":
+                if ( !isSnowy(poke) ) break
+                abilityDeclaration(poke)
+                changeHP(poke, Math.max(damage_16, 1), "+")
+                break
         }
     }
 }
@@ -289,9 +297,45 @@ function futureAttack(){
         if ( futureSight.turn == 4 ) {
             const poke = isPokeByID(futureSight.ID)                                // 使用ポケモン
             const tgt  = isPokeByPosition(futureSight.party, futureSight.position) // 対象ポケモン
-            if ( !tgt )                  break // 対象の場にポケモンがいなければ失敗
-            if ( poke.myID == tgt.myID ) break // 自分自身への攻撃なら失敗
+            if ( !tgt )                  continue // 対象の場にポケモンがいなければ失敗
+            if ( poke.myID == tgt.myID ) continue // 自分自身への攻撃なら失敗
+            if ( isHide(tgt) )           continue // 姿を隠していたら当たらない
+            if ( invalidByAccuracy_accuracy(poke, tgt) ) continue // 命中判定
             writeLog(`${tgt.myTN} の ${tgt.myName} は 未来の攻撃を受けた !`)
+
+            poke.myTarget = [{
+                poke: tgt,                          // ポケモン
+                success: true,                      // 技の成否
+                damage: 0,                          // ダメージ量
+                effective: 1,                       // タイプ相性
+                critical: false,                    // 急所
+                substitute: isSubstitute(poke, tgt) // みがわりの有無
+            }]
+            // 技の優先度の決定
+            poke.myMove.priority = priorityDegree(poke)
+            // 連続回数の決定
+            poke.myMove.continuous = getContinuous(poke)
+            
+            // 1.対象全員へのダメージ計算
+            isDamage(poke)
+            // 2.みがわり状態に攻撃技が防がれたときの効果: 本体がダメージを受けたときの処理(4~9)などより優先される
+            substituteBlock(poke)
+            // 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
+            dyingDamage(poke)
+            // 4.ダメージを本体に与える
+            giveDamage(poke)
+            // 5.相性判定のメッセージ
+            declareEffectiveness(poke)
+            // 6.ダメージの判定に関するメッセージ
+            damageMassage(poke)
+            // 7.ダメージをHP1で耐える効果
+            remainHP1(poke)
+            // 8.追加効果などの発動
+            activateAdditionalEffectEtc(poke)
+            // 9.ダメージが発生したときの効果
+            effectWithDamage(poke)
+            // 10.ひんし判定
+            dyingJudge(poke)
         }
     }
 
@@ -948,7 +992,7 @@ function otherConditionAbilityItem(){
         if ( poke.myAbility == "ものひろい" && isAbility(poke) && poke.myItem == ""){
 
         }
-        if (tgt.ability == "しゅうかく" && tgt.item == "" && itemEff.berryList().includes(user[0]["poke" + tgt.num].recycle) && (isSunny(me, you, con) || getRandom() < 0.5)){
+        if (tgt.ability == "しゅうかく" && tgt.item == "" && itemEff.itemList_berry().includes(user[0]["poke" + tgt.num].recycle) && (isSunny(me, you, con) || getRandom() < 0.5)){
             writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　しゅうかくで　" + user[0]["poke" + tgt.num].recycle + "　を　拾ってきた" + "\n")
             tgt.item = user[0]["poke" + tgt.num].recycle
             user[0]["poke" + tgt.num].recycle = ""

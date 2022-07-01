@@ -46,20 +46,15 @@ function changeRank(poke, parameter, change, spirit) {
             writeLog(`${poke.myTN} の ${poke.myName} は 白い霧に 守られている !`)
             return false
         }
-        if ( poke.myAbility == "しろいけむり" && isAbility(poke) ) {
-            abilityDeclaration(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)
-            return false
-        }
-        if ( poke.myAbility == "クリアボディ" && isAbility(poke) ) {
-            abilityDeclaration(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)
-            return false
-        }
-        if ( poke.myAbility == "メタルプロテクト" && isAbility(poke) ) {
-            abilityDeclaration(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)
-            return false
+        if ( isAbility(poke) ) {
+            switch ( poke.myAbility ) {
+                case "しろいけむり":
+                case "クリアボディ":
+                case "メタルプロテクト":
+                    abilityDeclaration(poke)
+                    writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)
+                    return false
+            }
         }
         if ( isFlowerVeil(poke) && poke.myType.includes("くさ") ) {
             abilityDeclaration(isFlowerVeil(poke))
@@ -345,88 +340,70 @@ function eatBerryInPinch(poke) {
     }
 
     if ( poke.myRest_hp <= poke.myFull_hp / isGluttony(poke) ) {
-        if ( poke.myItem == "フィラのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
-            if ( poke.myNature == "ずぶとい" || poke.myNature == "ひかえめ" || poke.myNature == "おだやか" || poke.myNature == "おくびょう" ) {
-                getAbnormal(poke, "こんらん")
-            }
-        }
-        if ( poke.myItem == "イアのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
-            if ( poke.myNature == "さみしがり" || poke.myNature == "おっとり" || poke.myNature == "おとなしい" || poke.myNature == "せっかち" ) {
-                getAbnormal(poke, "こんらん")
-            }
-        }
-        if ( poke.myItem == "ウイのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
-            if ( poke.myNature == "いじっぱり" || poke.myNature == "わんぱく" || poke.myNature == "しんちょう" || poke.myNature == "ようき" ) {
-                getAbnormal(poke, "こんらん")
-            }
-        }
-        if ( poke.myItem == "バンジのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
-            if ( poke.myNature == "やんちゃ" || poke.myNature == "のうてんき" || poke.myNature == "うっかりや" || poke.myNature == "むじゃき" ) {
-                getAbnormal(poke, "こんらん")
-            }
-        }
-        if ( poke.myItem == "マゴのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
-            if ( poke.myNature == "ゆうかん" || poke.myNature == "のんき" || poke.myNature == "うれいせい" || poke.myNature == "なまいき" ) {
-                getAbnormal(poke, "こんらん")
-            }
-        }
-        if ( poke.myItem == "チイラのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeMyRank(poke, "atk", isRipen(poke))
-        }
-        if ( poke.myItem == "リュガのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeMyRank(poke, "def", isRipen(poke))
-        }
-        if ( poke.myItem == "ヤタピのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeMyRank(poke, "sp_atk", isRipen(poke))
-        }
-        if ( poke.myItem == "ズアのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeMyRank(poke, "sp_def", isRipen(poke))
-        }
-        if ( poke.myItem == "カムラのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            changeMyRank(poke, "speed", isRipen(poke))
-        }
-        if ( poke.myItem == "サンのみ" && !poke.myCondition.myCritical ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            poke.myCondition.myCritical = true
-            writeLog(`${poke.myTN} の ${poke.myName} は 張り切り出した !`)
-        }
-        if ( poke.myItem == "スターのみ" ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            const parameter = shuffle(["atk", "def", "sp_atk", "sp_def", "speed"])[0]
-            changeRank(poke, parameter, 2 * isRipen(poke))
-        }
-        if ( poke.myItem == "ミクルのみ" && !poke.myCondition.myMicle ) {
-            eatLog = true
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
-            poke.myCondition.myMicle = 1
-            writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
+        switch ( poke.myItem ) {
+            case "フィラのみ":
+            case "イアのみ":
+            case "ウイのみ":
+            case "バンジのみ":
+            case "マゴのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) * isDynamax(poke) / 3), "+")
+                if ( isConfuseByBerry(poke) ) getAbnormal(poke, "こんらん")
+                break
+        
+            case "チイラのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeMyRank(poke, "atk", isRipen(poke))
+                break
+
+            case "リュガのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeMyRank(poke, "def", isRipen(poke))
+                break
+
+            case "ヤタピのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeMyRank(poke, "sp_atk", isRipen(poke))
+                break
+
+            case "ズアのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeMyRank(poke, "sp_def", isRipen(poke))
+                break
+
+            case "カムラのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                changeMyRank(poke, "speed", isRipen(poke))
+                break
+
+            case "サンのみ":
+                if ( poke.myCondition.myCritical ) break
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                poke.myCondition.myCritical = true
+                writeLog(`${poke.myTN} の ${poke.myName} は 張り切り出した !`)
+                break
+
+            case "スターのみ":
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                const parameter = shuffle(["atk", "def", "sp_atk", "sp_def", "speed"])[0]
+                changeRank(poke, parameter, 2 * isRipen(poke))
+                break
+
+            case "ミクルのみ":
+                if ( poke.myCondition.myMicle ) break
+                eatLog = true
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
+                poke.myCondition.myMicle = 1
+                writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
+                break
         }
     }
 
@@ -468,7 +445,7 @@ function eatBerryInAbnormal(poke) {
 }
 
 function eatBerryImmediately(poke) {
-    if ( berryList.includes(poke.myItem) ) return // きのみを持っていること
+    if ( itemList_berry.includes(poke.myItem) ) return // きのみを持っていること
 
     writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem}を 食べた !`)
 
@@ -486,92 +463,147 @@ function eatBerryImmediately(poke) {
         resetAilment(poke)
     }
 
-    if ( poke.myItem == "オレンのみ" ) {
-        changeHP(poke, 10 * isRipen(poke), "+")
-    }
-    if ( poke.myItem == "オボンのみ" || poke.myItem == "ナゾのみ" ) {
-        const damage = Math.floor(poke.myFull_hp * isRipen(poke) / 4 * isDynamax(poke))
-        changeHP(poke, damage, "+")
-    }
+    switch ( poke.myItem ) {
+        case "オレンのみ":
+            changeHP(poke, 10 * isRipen(poke), "+")
+            break
 
-    if ( poke.myItem == "ヒメリのみ" ) {
-        for ( let i = 0; i < 4; i++ ) {
-            if ( poke[`myRest_pp_${i}`] < poke[`myFull_pp_${i}`] ) {
-                poke[`myRest_pp_${i}`] = Math.min(poke[`myFull_pp_${i}`], poke[`myRest_pp_${i}`] + isRipen(poke) * 10)
-                writeLog(`${poke.myTN} の ${poke.myName} は ${poke[`myMove_${i}`]}の PPを回復した`)
-                break
+        case "オボンのみ":
+        case "ナゾのみ":
+            const damage = Math.floor(poke.myFull_hp * isRipen(poke) / 4 * isDynamax(poke))
+            changeHP(poke, damage, "+")
+            break
+
+        case "ヒメリのみ":
+            for ( let i = 0; i < 4; i++ ) {
+                if ( poke[`myRest_pp_${i}`] < poke[`myFull_pp_${i}`] ) {
+                    poke[`myRest_pp_${i}`] = Math.min(poke[`myFull_pp_${i}`], poke[`myRest_pp_${i}`] + isRipen(poke) * 10)
+                    writeLog(`${poke.myTN} の ${poke.myName} は ${poke[`myMove_${i}`]}の PPを回復した`)
+                    break
+                }
             }
-        }
-    }
-    if ( poke.myItem == "キーのみ" && poke.myCondition.myConfusion ) {
-        poke.myCondition.myConfusion = false
-        writeLog(`${poke.myTN} の ${poke.myName} は こんらんが解けた !`)
-    }
-    if ( poke.myItem== "ラムのみ" && ( !poke.myAilment || poke.myCondition.myConfusio ) ) {
-        resetAilment(poke)
-        poke.myCondition.myConfusion = false
-        writeLog(`${poke.myTN} の ${poke.myName} の 状態異常が治った !`)
-    }
-    if ( poke.myItem == "フィラのみ" ) {
-        changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
-        if ( poke.myNature == "ずぶとい" || poke.myNature == "ひかえめ" || poke.myNature == "おだやか" || poke.myNature == "おくびょう" ) {
-            getAbnormal(poke, "こんらん")
-        }
-    }
-    if ( poke.myItem == "イアのみ" ) {
-        changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
-        if ( poke.myNature == "さみしがり" || poke.myNature == "おっとり" || poke.myNature == "おとなしい" || poke.myNature == "せっかち" ) {
-            getAbnormal(poke, "こんらん")
-        }
-    }
-    if ( poke.myItem == "ウイのみ" ) {
-        changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
-        if ( poke.myNature == "いじっぱり" || poke.myNature == "わんぱく" || poke.myNature == "しんちょう" || poke.myNature == "ようき" ) {
-            getAbnormal(poke, "こんらん")
-        }
-    }
-    if ( poke.myItem == "バンジのみ" ) {
-        changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
-        if ( poke.myNature == "やんちゃ" || poke.myNature == "のうてんき" || poke.myNature == "うっかりや" || poke.myNature == "むじゃき" ) {
-            getAbnormal(poke, "こんらん")
-        }
-    }
-    if ( poke.myItem == "マゴのみ" ) {
-        changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
-        if ( poke.myNature == "ゆうかん" || poke.myNature == "のんき" || poke.myNature == "れいせい" || poke.myNature == "なまいき" ) {
-            getAbnormal(poke, "こんらん")
-        }
-    }
-    if ( poke.myItem == "チイラのみ" ) {
-        changeMyRank(poke, "atk", isRipen(poke))
-    }
-    if ( poke.myItem == "リュガのみ" || poke.myItem == "アッキのみ" ) {
-        changeMyRank(poke, "def", isRipen(poke))
-    }
-    if ( poke.myItem == "ヤタピのみ" ) {
-        changeMyRank(poke, "sp_atk", isRipen(poke))
-    }
-    if ( poke.myItem == "ズアのみ" || poke.myItem == "タラプのみ" ) {
-        changeMyRank(poke, "sp_def", isRipen(poke))
-    }
-    if ( poke.myItem == "カムラのみ" ) {
-        changeMyRank(poke, "speed", isRipen(poke))
-    }
-    if ( poke.myItem == "サンのみ" && !poke.myCondition.myCritical ) {
-        poke.myCondition.myCritical = true
-        writeLog(`${poke.myTN} の ${poke.myName} は 張り切り出した !`)
-    }
-    if ( poke.myItem == "スターのみ" ) {
-        const parameter = shuffle(["atk", "def", "sp_atk", "sp_def", "speed"])[0]
-        changeMyRank(poke, parameter, 2 * isRipen(poke))
-    }
-    if ( poke.myItem == "ミクルのみ" && !poke.myCondition.myMicle ) {
-        poke.myCondition.myMicle = true
-        writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
+            break
+
+        case "キーのみ":
+            if ( !poke.myCondition.myConfusion ) break
+            poke.myCondition.myConfusion = false
+            writeLog(`${poke.myTN} の ${poke.myName} は こんらんが解けた !`)
+            break
+
+        case "ラムのみ":
+            if ( !poke.myAilment && !poke.myCondition.myConfusio ) break
+            resetAilment(poke)
+            poke.myCondition.myConfusion = false
+            writeLog(`${poke.myTN} の ${poke.myName} の 状態異常が治った !`)
+            break
+
+        case "フィラのみ":
+        case "イアのみ":
+        case "ウイのみ":
+        case "バンジのみ":
+        case "マゴのみ":
+            changeHP(poke, Math.floor(poke.myFull_hp * isRipen(poke) / 3), "+")
+            if ( isConfuseByBerry(poke) ) getAbnormal(poke, "こんらん")
+            break
+
+        case "チイラのみ":
+            changeMyRank(poke, "atk", isRipen(poke))
+            break
+
+        case "リュガのみ":
+        case "アッキのみ":
+            changeMyRank(poke, "def", isRipen(poke))
+            break
+
+        case "ヤタピのみ":
+            changeMyRank(poke, "sp_atk", isRipen(poke))
+            break
+
+        case "ズアのみ":
+        case "タラプのみ":
+            changeMyRank(poke, "sp_def", isRipen(poke))
+            break
+
+        case "カムラのみ":
+            changeMyRank(poke, "speed", isRipen(poke))
+            break
+
+        case "サンのみ":
+            if ( poke.myCondition.myCritical ) break
+            poke.myCondition.myCritical = true
+            writeLog(`${poke.myTN} の ${poke.myName} は 張り切り出した !`)
+            break
+
+        case "スターのみ":
+            const parameter = shuffle(["atk", "def", "sp_atk", "sp_def", "speed"])[0]
+            changeMyRank(poke, parameter, 2 * isRipen(poke))
+            break
+
+        case "ミクルのみ":
+            if ( poke.myCondition.myMicle ) break
+            poke.myCondition.myMicle = true
+            writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
+            break
     }
 
     // きのみを食べた時の効果
     enableToRecycle(poke) // リサイクルが使えるようになる
+}
+
+// 混乱きのみ判定
+function isConfuseByBerry(poke) {
+    switch ( poke.myItem ) {
+        case "フィラのみ":
+            switch ( poke.myNature ) {
+                case "ずぶとい":
+                case "ひかえめ":
+                case "おだやか":
+                case "おくびょう":
+                    return true
+            }
+            return false
+
+        case "イアのみ":
+            switch ( poke.myNature ) {
+                case "さみしがり":
+                case "おっとり":
+                case "おとなしい":
+                case "せっかち":
+                    return true
+            }
+            return false
+
+        case "ウイのみ":
+            switch ( poke.myNature ) {
+                case "いじっぱり":
+                case "わんぱく":
+                case "しんちょう":
+                case "ようき":
+                    return true
+            }
+            return false
+
+        case "バンジのみ":
+            switch ( poke.myNature ) {
+                case "やんちゃ":
+                case "のうてんき":
+                case "うっかりや":
+                case "むじゃき":
+                    return true
+            }
+            return false
+
+        case "マゴのみ":
+            switch ( poke.myNature ) {
+                case "ゆうかん":
+                case "のんき":
+                case "れいせい":
+                case "なまいき":
+                    return true
+            }
+            return false
+    }
+    return false
 }
 
 // フォルムチェンジ
