@@ -619,7 +619,7 @@ function effectWithDamage(poke){
                 case "ミイラ":
                     if ( poke.myMove.direct == "間接" ) break
                     if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
-                    if ( mummy.includes(poke.myAbility) ) break
+                    if ( abilityList_disable_mummy.includes(poke.myAbility) ) break
                     abilityDeclaration(tgt.poke)
                     poke.myAbility = "ミイラ"
                     writeLog(`${poke.myTN} の ${poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
@@ -637,7 +637,7 @@ function effectWithDamage(poke){
                 case "さまようたましい":
                     if ( poke.myMove.direct == "間接" ) break
                     if ( poke.myItem == "ぼうごパット" && isItem(poke) ) break
-                    if ( wanderingSpirit.includes(poke.myAbility) ) break
+                    if ( abilityList_disable_wanderingSpirit.includes(poke.myAbility) ) break
                     abilityDeclaration(tgt.poke)
                     [poke.myAbility, tgt.poke.myAbility] = [tgt.poke.myAbility, poke.myAbility]
                     writeLog(`${poke.myTN} の ${poke.myName} は 特性『${poke.myAbility}』 になった!`)

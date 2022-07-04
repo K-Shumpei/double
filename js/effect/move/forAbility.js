@@ -90,7 +90,7 @@ var moveToRecoverHP= [
 ]
 
 // がんじょうあご（顎技）
-var bite = [
+const moveList_strongJaw = [
     'エラがみ', 
     'かみくだく', 
     'かみつく', 
@@ -173,7 +173,7 @@ var disableInGravity = [
 ]
 
 // すてみ（捨身技）
-var reckless = [
+const moveList_reckless = [
     'アフロブレイク', 
     'じごくぐるま', 
     'とっしん', 
@@ -210,7 +210,7 @@ var accumulationMove = [
 ]
 
 // てつのこぶし（拳技）
-var ironFist = [
+const moveList_ironFist = [
     'アームハンマー', 
     'アイスハンマー', 
     'あんこくきょうだ', 
@@ -306,7 +306,7 @@ var ballMove = [
 ]
 
 // メガランチャー（波動技）
-var megaLauncher = [
+const moveList_megaLauncher = [
     'あくのはどう', 
     'いやしのはどう', 
     'こんげんのはどう', 

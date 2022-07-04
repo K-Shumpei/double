@@ -259,3 +259,24 @@ const itemList_megaStone = [
     {name: 'リザードナイトY', poke: 'リザードン', mega: 'メガリザードンY'}, 
     {name: 'ルカリオナイト', poke: 'ルカリオ', mega: 'メガルカリオ'}
 ]
+
+const itemList_gem = [
+    {name: 'ノーマルジュエル', type: 'ノーマル'}, 
+    {name: 'ほのおのジュエル', type: 'ほのお'}, 
+    {name: 'みずのジュエル', type: 'みず'}, 
+    {name: 'でんきのジュエル', type: 'でんき'}, 
+    {name: 'くさのジュエル', type: 'くさ'}, 
+    {name: 'こおりジュエル', type: 'こおり'}, 
+    {name: 'かくとうジュエル', type: 'かくとう'}, 
+    {name: 'どくのジュエル', type: 'どく'}, 
+    {name: 'じめんのジュエル', type: 'じめん'}, 
+    {name: 'ひこうのジュエル', type: 'ひこう'}, 
+    {name: 'エスパージュエル', type: 'エスパー'}, 
+    {name: 'むしのジュエル', type: 'むし'}, 
+    {name: 'いわのジュエル', type: 'いわ'}, 
+    {name: 'ゴーストジュエル', type: 'ゴースト'}, 
+    {name: 'ドラゴンジュエル', type: 'ドラゴン'}, 
+    {name: 'あくのジュエル', type: 'あく'}, 
+    {name: 'はがねのジュエル', type: 'はがね'}, 
+    {name: 'フェアリージュエル', type: 'フェアリー'}
+]

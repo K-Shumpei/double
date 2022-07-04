@@ -942,37 +942,37 @@ function invalidByAccuracy_accuracy(poke, tgt) {
 function invalidBySpec3rd_ability(poke, tgt) {
     switch ( poke.myMove.name ) {
         case "なかまづくり":
-            if ( poke.myAbility == tgt.poke.myAbility )         return true // 対象が自身と同じ特性である
-            if ( yourEntrainment.includes(tgt.poke.myAbility) ) return true // 対象が上書きできない特性である
-            if ( myEntrainment.includes(poke.myAbility) )       return true // 自身がコピーできない特性である
-            if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
-            if ( tgt.substitute )                               return true // 対象がみがわり状態である
+            if ( poke.myAbility == tgt.poke.myAbility )                             return true // 対象が自身と同じ特性である
+            if ( abilityList_disalbe_entrainment.tgt.includes(tgt.poke.myAbility) ) return true // 対象が上書きできない特性である
+            if ( abilityList_disalbe_entrainment.me.includes(poke.myAbility) )      return true // 自身がコピーできない特性である
+            if ( tgt.poke.myCondition.myDynamax )                                   return true // 対象がダイマックスしている
+            if ( tgt.substitute )                                                   return true // 対象がみがわり状態である
             return false
         
         case "いえき":
-            if ( tgt.poke.myCondition.myNo_ability )            return true // 対象がすでにとくせいなし状態である
-            if ( gastro.includes(tgt.poke.myAbility) )          return true // とくせいなしにできない特性である
+            if ( tgt.poke.myCondition.myNo_ability )                       return true // 対象がすでにとくせいなし状態である
+            if ( abilityList_disable_gastro.includes(tgt.poke.myAbility) ) return true // とくせいなしにできない特性である
             return false
         
         case "なりきり":
-            if ( poke.myAbility == tgt.poke.myAbility )         return true // 自身が対象と同じ特性である
-            if ( yourRolePlay.includes(tgt.poke.myAbility) )    return true // 対象がコピーできない特性である
-            if ( myRolePlay.includes(poke.myAbility) )          return true // 自身がコピーできない特性である
+            if ( poke.myAbility == tgt.poke.myAbility )                          return true // 自身が対象と同じ特性である
+            if ( abilityList_disalbe_rolePlay.tgt.includes(tgt.poke.myAbility) ) return true // 対象がコピーできない特性である
+            if ( abilityList_disalbe_rolePlay.me.includes(poke.myAbility) )      return true // 自身がコピーできない特性である
             return false
         
         case "シンプルビーム":
-            if ( tgt.poke.myAbility == "たんじゅん" )             return true // 対象がすでにたんじゅんである
-            if ( simpleBeam.includes(tgt.poke.myAbility) )      return true // 上書きできない特性である
+            if ( tgt.poke.myAbility == "たんじゅん" )                            return true // 対象がすでにたんじゅんである
+            if ( abilityList_disable_simpleBeam.includes(tgt.poke.myAbility) ) return true // 上書きできない特性である
             return false
         
         case "なやみのタネ":
-            if ( tgt.poke.myAbility == "ふみん" )                return true // 対象がすでにふみんである
-            if ( worrySeed.includes(tgt.poke.myAbility) )       return true // 対象が上書きできない特性である
+            if ( tgt.poke.myAbility == "ふみん" )                              return true // 対象がすでにふみんである
+            if ( abilityList_disable_worrySeed.includes(tgt.poke.myAbility) ) return true // 対象が上書きできない特性である
             return false
         
         case "スキルスワップ":
-            if ( cannotSkillSwap.includes(poke.myAbility) )     return true // 自身が交換できない特性である
-            if ( cannotSkillSwap.includes(tgt.poke.myAbility) ) return true // 対象が交換できない特性である
+            if ( abilityList_disable_skillSwap.includes(poke.myAbility) )     return true // 自身が交換できない特性である
+            if ( abilityList_disable_skillSwap.includes(tgt.poke.myAbility) ) return true // 対象が交換できない特性である
             if ( tgt.poke.myCondition.myDynamax )               return true // 対象がダイマックスしている
             return false
     }

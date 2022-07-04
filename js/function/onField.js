@@ -431,6 +431,7 @@ function activateAbility(poke){
     }
     if ( poke.myAbility == "トレース" ) {
         return
+        if ( abilityList_disable_trace.includes() ) return
         writeLog(me, you, con.TN + "　の　" +　con.name + "　の　特性『" + con.ability + "』" + "\n")
         afn.changeAbility(enemy, team, 1, "NA")
     }

@@ -155,7 +155,7 @@ function skyDropFailure(poke) {
     if ( poke.myCondition.mySky_drop ) {
         writeLog(`${poke.myTN} の ${poke.myName} は 空中で身動きが取れない !`)
         if ( !poke.myCondition.myCant_move ) return true
-        else return false
+        return false
     }
 
     return false
@@ -627,29 +627,42 @@ function attackDeclaration(poke) {
 // 9.わざのタイプが変わる。1→2→3の順にタイプが変わる
 function moveTypeChange(poke) {
     // 1.技のタイプを変える特性の効果
-    if ( poke.myAbility == "うるおいボイス" && isAbility(poke) && musicMove.includes(poke.myMove.name) ) {
-        poke.myMove.type = "みず"
-    }
-    if ( !canChangeMoveType.includes(poke.myMove.name) && isAbility(poke) ) {
-        if ( poke.myAbility == "エレキスキン" && poke.myMove.type == "ノーマル" ) {
-            poke.myMove.type = "でんき"
-            poke.myCondition.mySkin = "エレキスキン"
-        }
-        if ( poke.myAbility == "スカイスキン" && poke.myMove.type == "ノーマル" ) {
-            poke.myMove.type = "ひこう"
-            poke.myCondition.mySkin = "スカイスキン"
-        }
-        if ( poke.myAbility == "ノーマルスキン" && poke.myMove.type != "ノーマル" ) {
-            poke.myMove.type = "ノーマル"
-            poke.myCondition.mySkin = "ノーマルスキン"
-        }
-        if ( poke.myAbility == "フェアリースキン" && poke.myMove.type == "ノーマル" ) {
-            poke.myMove.type = "フェアリー"
-            poke.myCondition.mySkin = "フェアリースキン"
-        }
-        if ( poke.myAbility == "フリーズスキン" && poke.myMove.type == "ノーマル" ) {
-            poke.myMove.type = "こおり"
-            poke.myCondition.mySkin = "フリーズスキン"
+    if ( !moveList_changeType.includes(poke.myMove.name) && isAbility(poke) ) {
+        switch ( poke.myAbility ) {
+            case "うるおいボイス":
+                if ( !musicMove.includes(poke.myMove.name) ) break
+                poke.myMove.type = "みず"
+                break
+
+            case "エレキスキン":
+                if ( poke.myMove.type != "ノーマル" ) break
+                poke.myMove.type = "でんき"
+                poke.myCondition.mySkin = true
+                break
+
+            case "スカイスキン":
+                if ( poke.myMove.type != "ノーマル" ) break
+                poke.myMove.type = "ひこう"
+                poke.myCondition.mySkin = true
+                break
+
+            case "ノーマルスキン":
+                if ( poke.myMove.type == "ノーマル" ) break
+                poke.myMove.type = "ノーマル"
+                poke.myCondition.mySkin = true
+                break
+
+            case "フェアリースキン":
+                if ( poke.myMove.type != "ノーマル" ) break
+                poke.myMove.type = "フェアリー"
+                poke.myCondition.mySkin = true
+                break
+
+            case "フリーズスキン":
+                if ( poke.myMove.type != "ノーマル" ) break
+                poke.myMove.type = "こおり"
+                poke.myCondition.mySkin = true
+                break
         }
     }
     // 2.タイプが変わるわざの効果
@@ -1133,22 +1146,26 @@ function hideInvalidation(poke) {
         if ( !isHide(tgt.poke) ) continue
 
         // 以下の状況では当たらない
-        if ( tgt.poke.myCondition.myDig ) {
-            if ( poke.myMove.name == "じしん" ) continue
-            if ( poke.myMove.name == "マグニチュード" ) continue
-        }
-        if ( tgt.poke.myCondition.mySky ) {
-            if ( poke.myMove.name == "うちおとす" ) continue
-            if ( poke.myMove.name == "かぜおこし" ) continue
-            if ( poke.myMove.name == "かみなり" ) continue
-            if ( poke.myMove.name == "サウザンアロー" ) continue
-            if ( poke.myMove.name == "スカイアッパー" ) continue
-            if ( poke.myMove.name == "たつまき" ) continue
-            if ( poke.myMove.name == "ぼうふう" ) continue
-        }
-        if ( tgt.poke.myCondition.myDive ) {
-            if ( poke.myMove.name == "なみのり" ) continue
-            if ( poke.myMove.name == "うずしお" ) continue
+        switch ( poke.myMove.name ) {
+            case "じしん":
+            case "マグニチュード":
+                if ( tgt.poke.myCondition.myDig ) continue
+                break
+
+            case "うちおとす":
+            case "かぜおこし":
+            case "かみなり":
+            case "サウザンアロー":
+            case "スカイアッパー":
+            case "たつまき":
+            case "ぼうふう":
+                if ( tgt.poke.myCondition.mySky ) continue
+                break
+
+            case "なみのり":
+            case "うずしお":
+                if ( tgt.poke.myCondition.myDive ) continue
+                break
         }
 
         tgt.success = false
@@ -1747,12 +1764,15 @@ function useJuwel(poke) {
     if ( poke.myMove.name == "みずのちかい" ) return false
     if ( oneShot.includes(poke.myMove.name) ) return false
     if ( poke.myMove.nature == "変化" ) return false
+    if ( !isItem(poke) ) return false
 
-    if ( poke.myItem.includes("ジュエル") && isItem(poke) && poke.myItem.includes(poke.myMove.type) ) {
+    for ( const gem of itemList_gem ) {
+        if ( gem.name != poke.myItem ) continue
+        if ( gem.type != poke.myMove.type ) continue
         writeLog(`${poke.myItem} が 技の威力を高めた !`)
         enableToRecycle(poke)
         poke.myCondition.myGem = true
-    }
+    } 
 }
 
 // 57. かわらわり/サイコファング/ネコにこばんの効果が発動する

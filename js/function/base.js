@@ -584,8 +584,8 @@ function isTarget(poke){
     target = isTargetBySpotlight(poke)
     if ( target ) return target
     // 3.ひらいしん/よびみずのポケモン
-    target = isTargetByAttract(poke)
-    if ( target ) return target
+    // target = isTargetByAttract(poke)
+    // if ( target ) return target
     // 4.カウンター/ミラーコート/メタルバーストの反射対象
     target = isTargetByReflect(poke)
     if ( target ) return target
@@ -1116,4 +1116,16 @@ function getColorCode(type) {
     if ( type == "あく" ) return "#7a0049"
     if ( type == "はがね" ) return "#9b9b9b"
     if ( type == "フェアリー" ) return "#ffbbff"
+}
+
+function allParameter() {
+    return [
+        "atk", 
+        "def", 
+        "sp_atk", 
+        "sp_def", 
+        "speed", 
+        "accuracy", 
+        "evasion"
+    ]
 }

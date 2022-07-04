@@ -1,4 +1,4 @@
-var moveList = [
+const moveList = [
     {name: '1000まんボルト', type: 'でんき', nature: '特殊', power: 195, accuracy: '-', PP: 1, direct: '間接', protect: '不能', target: '1体選択', discription: '『サトシのピカチュウ』の専用Zワザ。急所に当たりやすい(急所ランク:+2)。'}, 
     {name: 'アームハンマー', type: 'かくとう', nature: '物理', power: 100, accuracy: 90, PP: 10, direct: '直接', protect: '可能', target: '1体選択', discription: '自分のすばやさが1段階下がる。拳技。'}, //
     {name: 'アイアンテール', type: 'はがね', nature: '物理', power: 100, accuracy: 75, PP: 15, direct: '直接', protect: '可能', target: '1体選択', discription: '追加効果として、30%の確率でぼうぎょを1段階下げる。'}, //
@@ -842,7 +842,7 @@ var moveList = [
 ]
 
 // Zワザ
-var moveList_Z = [
+const moveList_Z = [
     {name: 'ウルトラダッシュアタック', type: 'ノーマル', item: 'ノーマルZ'}, 
     {name: 'ブルームシャインエクストラ', type: 'くさ', item: 'クサZ'}, 
     {name: 'ダイナミックフルフレイム', type: 'ほのお', item: 'ホノオZ'}, 
@@ -864,7 +864,7 @@ var moveList_Z = [
 ]
 
 // 専用Zワザ
-var moveList_dedicated_Z = [
+const moveList_dedicated_Z = [
     {name: 'ひっさつのピカチュート', poke: 'ピカチュウ', item: 'ピカチュウZ', org: 'ボルテッカー'}, 
     {name: 'シャドーアローズストライク', poke: 'ジュナイパー', item: 'ジュナイパーZ', org: 'かげぬい'}, 
     {name: 'ハイパーダーククラッシャー', poke: 'ガオガエン', item: 'ガオガエンZ', org: 'DDラリアット'}, 
@@ -892,7 +892,7 @@ var moveList_dedicated_Z = [
 ]
 
 // ダイマックス技
-var moveList_dynamax = [
+const moveList_dynamax = [
     {name: 'ダイアーク', type: 'あく'}, 
     {name: 'ダイアース', type: 'じめん'}, 
     {name: 'ダイアイス', type: 'こおり'}, 
@@ -915,7 +915,7 @@ var moveList_dynamax = [
 ]
 
 // キョダイダイマックス技
-var moveList_gigantamax = [
+const moveList_gigantamax = [
     {name: 'キョダイイチゲキ', poke: 'ウーラオス(いちげきのかた)', type: 'あく'}, 
     {name: 'キョダイカキュウ', poke: 'エースバーン', type: 'ほのお'}, 
     {name: 'キョダイカンデン', poke: 'ストリンダー', type: 'でんき'}, 
@@ -948,4 +948,17 @@ var moveList_gigantamax = [
     {name: 'キョダイホウゲキ', poke: 'カメックス', type: 'みず'}, 
     {name: 'キョダイホウマツ', poke: 'キングラー', type: 'みず'}, 
     {name: 'キョダイレンゲキ', poke: 'ウーラオス(れんげきのかた)', type: 'みず'}
+]
+
+// タイプが変わる技
+const moveList_changeType = [
+    'ウェザーボール', 
+    'オーラぐるま', 
+    'さばきのつぶて', 
+    'しぜんのめぐみ', 
+    'だいちのはどう', 
+    'テクノバスター', 
+    'マルチアタック', 
+    'めざめるダンス', 
+    'めざめるパワー'
 ]
