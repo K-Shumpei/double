@@ -357,7 +357,7 @@ class Condition {
         this.shields_down  = false // リミットシールド　流星の姿ならtrue
         this.skin          = false // 発動したスキン系の特性、それ以外はfalse
         this.sky_drop      = false // フリーフォール　上空に連れ去られているときはtrue、それ以外ならfalse
-        this.slow_start    = "no"  // スロースタート経過ターン数　5ターン経過したら"full"
+        this.slow_start    = false // スロースタート経過ターン数　5ターン経過したらtrue
         this.smack_down    = false // うちおとす状態ならtrue
         this.stockpile     = 0     // たくわえた回数
         this.stockpile_B   = 0     // たくわえるで防御が上がった回数

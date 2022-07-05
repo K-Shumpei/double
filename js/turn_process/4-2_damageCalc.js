@@ -71,6 +71,8 @@ function isDamageByFixedDamageMove(poke, tgt){
 }
 
 
+// 威力計算
+// 参照：https://wiki.xn--rckteqa2e.com/wiki/%E5%A8%81%E5%8A%9B
 function powerCalculation(poke, tgt){
     // 基礎威力の変化
     switch ( poke.myMove.name ) {
@@ -318,7 +320,7 @@ function powerCalculation(poke, tgt){
 
 
     // 威力に補正をかける効果
-    // 威力補正初期値
+    // 威力補正値
     let corr = 4096
 
     // * 3072 / 4096 → 四捨五入
@@ -547,7 +549,10 @@ function powerCalculation(poke, tgt){
     corr = Math.round(corr * waterSport)
 
 
-    // 最終威力 1より小さければ1になる
+    // 最終威力
+    // = 基礎威力 * 威力補正値 / 4096
+    // → 五捨五入
+    // → 1より小さければ1にする
     return Math.max(fiveCut(poke.myMove.power * corr / 4096), 1)
 }
 
@@ -661,147 +666,136 @@ function getStatus(poke, tgt){
 
 
 // 最終攻撃力
+// 参照：https://latest.pokewiki.net/%E3%83%80%E3%83%A1%E3%83%BC%E3%82%B8%E8%A8%88%E7%AE%97%E5%BC%8F
 function attackCalculation(poke, tgt, atk){
 
     let attack = atk
 
+    // * 6144 / 4096 → 切り捨て
     // はりきり
-    if ( poke.myAbility == "はりきり" && isAbility(poke) ) {
-        if ( poke.myMove.nature == "物理" ) attack = Math.floor(attack * 6144 / 4096)
-    }
+    const hustle = atkCorr_hustle(poke)
+    attack = Math.floor(attack * hustle)
     
-    // 初期値
-    attack = attack * 4096
+    // 攻撃補正値
+    let corr = 4096
 
-    // スロースタート、よわき
-    if ( !isNaN(poke.myCondition.mySlow_start) ) {
-        if ( poke.myMove.nature == "物理" ) attack = Math.round(attack * 2048 / 4096)
-    }
-    if ( poke.myAbility == "よわき" && isAbility(poke) ) {
-        if ( poke.myRest_hp <= poke.myFull_hp / 2 ) attack = Math.round(attack * 2048 / 4096)
-    }
-    // フラワーギフト、こんじょう、しんりょく、もうか、げきりゅう、むしのしらせ、もらいび、サンパワー、プラス、マイナス、はがねつかい、ごりむちゅう、トランジスタ、りゅうのあぎと
-    if ( poke.myMove.nature == "物理" ) {
-        for ( const _poke of myPokeInBattle(poke) ) {
-            if ( _poke.myAbility == "フラワーギフト" && isAbility(_poke) && isSunny(_poke) ) {
-                attack = Math.round(attack * 6144 / 4096)
-            }
-        }
-    }
-    if ( poke.myMove.type == "はがね" ) {
-        for ( const _poke of myPokeInBattle(poke) ) {
-            if ( _poke.myAbility == "はがねつかい" && isAbility(_poke) ) {
-                attack = Math.round(attack * 6144 / 4096)
-            }
-        }
-    }
-    if ( isAbility(poke) ) {
-        switch ( poke.myAbility ) {
-            case "こんじょう":
-                if ( !poke.myAilment ) break
-                if ( poke.myMove.nature != "物理" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // * 2048 / 4096 → 四捨五入
+    // スロースタート
+    const slowStart = atkCorr_slowStart(poke)
+    corr = Math.round(corr * slowStart)
 
-            case "しんりょく":
-                if ( poke.myRest_hp > poke.myFull_hp / 3 ) break
-                if ( poke.myMove.type != "くさ" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // よわき
+    const defeatist = atkCorr_defeatist(poke)
+    corr = Math.round(corr * defeatist)
 
-            case "もうか":
-                if ( poke.myRest_hp > poke.myFull_hp / 3 ) break
-                if ( poke.myMove.type != "ほのお" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // * 6144 / 4096 → 四捨五入
+    // フラワーギフト
+    const flowerGift = atkCorr_flowerGift(poke)
+    corr = Math.round(corr * flowerGift)
 
-            case "げきりゅう":
-                if ( poke.myRest_hp > poke.myFull_hp / 3 ) break
-                if ( poke.myMove.type != "みず" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // こんじょう
+    const guts = atkCorr_guts(poke)
+    corr = Math.round(corr * guts)
 
-            case "むしのしらせ":
-                if ( poke.myRest_hp > poke.myFull_hp / 3 ) break
-                if ( poke.myMove.type != "むし" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // しんりょく
+    const overgrow = atkCorr_overgrow(poke)
+    corr = Math.round(corr * overgrow)
 
-            case "もらいび":
-                if ( !poke.myCondition.myFlash_fire ) break
-                if ( poke.myMove.type != "ほのお" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // もうか
+    const blaze = atkCorr_blaze(poke)
+    corr = Math.round(corr * blaze)
 
-            case "サンパワー":
-                if ( !isSunny(poke) ) break
-                if ( poke.myMove.nature != "特殊" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // げきりゅう
+    const torrent = atkCorr_torrent(poke)
+    corr = Math.round(corr * torrent)
 
-            case "ごりむちゅう":
-                if ( poke.myMove.nature != "物理" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // むしのしらせ
+    const swarm = atkCorr_swarm(poke)
+    corr = Math.round(corr * swarm)
 
-            case "トランジスタ":
-                if ( poke.myMove.type != "でんき" ) break
-                attack = Math.round(attack * 6144 / 4096)
-                break
+    // もらいび
+    const flashFire = atkCorr_flashFire(poke)
+    corr = Math.round(corr * flashFire)
 
-            case "りゅうのあぎと":
-                if ( poke.myMove.type != "ドラゴン") break
-                attack = Math.round(attack * 6144 / 4096)
-                break
-        }
-    }
-    // ちからもち、ヨガパワー、すいほう強化、はりこみ
-    if ( poke.myAbility == "ちからもち" && isAbility(poke) ) {
-        if ( poke.myMove.nature == "物理" ) attack = Math.round(attack * 8192 / 4096)
-    }
-    if ( poke.myAbility == "ヨガパワー" && isAbility(poke) ) {
-        if ( poke.myMove.nature == "物理" ) attack = Math.round(attack * 8192 / 4096)
-    }
-    if ( poke.myAbility == "すいほう" && isAbility(poke) ) {
-        if ( poke.myMove.type == "みず") attack = Math.round(attack * 8192 / 4096)
-    }
-    if ( poke.myAbility == "はりこみ" && isAbility(poke) ) {
-        /*
-        const log = cfn.thisTurnLog(me.log)
-        if (log.includes("(" + tgt.TN + "の行動)")){
-            if (log[log.indexOf("(" + tgt.TN + "の行動)") + 1].includes(tgt.TN + "　は") && log[log.indexOf("(" + tgt.TN + "の行動)") + 1].includes("引っ込めた")){
-                attack = Math.round(attack * 8192 / 4096)
-            }
-        }
-        */
-    }
-    // あついしぼう、すいほう弱化
-    if ( tgt.poke.myAbility == "あついしぼう" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.type == "ほのお" || poke.myMove.type == "こおり" ) attack = Math.round(attack * 2048 / 4096)
-    }
-    if ( tgt.poke.myAbility == "すいほう" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.type == "ほのお" ) attack = Math.round(attack * 2048 / 4096)
-    }
-    // こだわりハチマキ、こだわりメガネ
-    if ( poke.myItem == "こだわりハチマキ" && isItem(poke) ) {
-        if ( poke.myMove.nature == "物理" && !poke.myCondition.myDynamax ) attack = Math.round(attack * 6144 / 4096)
-    }
-    if ( poke.myItem == "こだわりメガネ" && isItem(poke) ) {
-        if ( poke.myMove.nature == "特殊" && !poke.myCondition.myDynamax ) attack = Math.round(attack * 6144 / 4096)
-    }
+    // サンパワー
+    const solarPower = atkCorr_solarPower(poke)
+    corr = Math.round(corr * solarPower)
+
+    // プラス、マイナス
+    const plusMinus = atkCorr_plusMinus(poke)
+    corr = Math.round(corr * plusMinus)
+
+    // はがねつかい
+    const steelworker = atkCorr_steelworker(poke)
+    corr = Math.round(corr * steelworker)
+
+    // ごりむちゅう
+    const gorillaTactics = atkCorr_gorillaTactics(poke)
+    corr = Math.round(corr * gorillaTactics)
+
+    // トランジスタ
+    const transistor = atkCorr_transistor(poke)
+    corr = Math.round(corr * transistor)
+
+    // りゅうのあぎと
+    const dragonsMaw = atkCorr_dragonsMaw(poke)
+    corr = Math.round(corr * dragonsMaw)
+
+    // * 8192 / 4096 → 四捨五入
+    // ちからもち
+    const hugePower = atkCorr_hugePower(poke)
+    corr = Math.round(corr * hugePower)
+
+    // ヨガパワー
+    const purePower = atkCorr_purePower(poke)
+    corr = Math.round(corr * purePower)
+
+    // すいほう強化
+    const waterBubble_strengthen = atkCorr_waterBubble_strengthen(poke)
+    corr = Math.round(corr * waterBubble_strengthen)
+
+    // はりこみ
+    const stakeout = atkCorr_stakeout(poke)
+    corr = Math.round(corr * stakeout)
+
+    // * 2048 / 4096 → 四捨五入
+    // あついしぼう
+    const thickFat = atkCorr_thickFat(poke, tgt)
+    corr = Math.round(corr * thickFat)
+
+    // すいほう弱化
+    const waterBubble_weaken = atkCorr_waterBubble_weaken(poke, tgt)
+    corr = Math.round(corr * waterBubble_weaken)
+
+    // * 6144 / 4096 → 四捨五入
+    // こだわりハチマキ
+    const choiceBand = atkCorr_choiceBand(poke)
+    corr = Math.round(corr * choiceBand)
+
+    // こだわりメガネ
+    const choiceSpecs = atkCorr_choiceSpecs(poke)
+    corr = Math.round(corr * choiceSpecs)
+
     // ふといホネ、しんかいのキバ、でんきだま
-    if ( poke.myItem == "ふといホネ" && isItem(poke) ) {
-        if ( ( poke.myName == "カラカラ" || poke.myName.includes("ガラガラ") ) && poke.myMove.nature == "物理" ) attack = Math.round(attack * 8192 / 4096)
-    }
-    if ( poke.myItem == "しんかいのキバ" && isItem(poke) ) {
-        if ( poke.myName == "パールル" && poke.myMove.nature == "特殊" ) attack = Math.round(attack * 8192 / 4096)
-    }
-    if ( poke.myItem == "でんきだま" && isItem(poke) ) {
-        if ( poke.myName == "ピカチュウ" ) attack = Math.round(attack * 8192 / 4096)
-    }
+    const thickClub = atkCorr_thickClub(poke)
+    corr = Math.round(corr * thickClub)
+
+    const deepSeaTooth = atkCorr_deepSeaTooth(poke)
+    corr = Math.round(corr * deepSeaTooth)
+
+    const lightBall = atkCorr_lightBall(poke)
+    corr = Math.round(corr * lightBall)
+
 
     // 最終攻撃 1より小さかったら1にする
-    return Math.max(fiveCut(attack / 4096), 1)
+    // = 攻撃実数値 * ランク補正
+    // → 切り捨て
+    // * はりきり補正
+    // → 切り捨て
+    // * 攻撃補正値 / 4096
+    // → 五捨五入
+    // 1より小さければ1にする
+    return Math.max(fiveCut(attack * corr / 4096), 1)
 }
 
 

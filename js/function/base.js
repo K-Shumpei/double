@@ -73,11 +73,7 @@ function getOppParty(poke) {
 // 戦闘中のポケモン
 function allPokeInBattle() {
     let result = []
-    for ( let i = 0; i < 12; i++ ) {
-        for ( const poke of myParty ) {
 
-        }
-    }
     for ( const party of myParty ) {
         if ( party.myPosition != null ) { result.push(party) }
     }
@@ -864,7 +860,7 @@ function isBench(poke){
 
 
 
-
+// ランク補正ありの実数値
 function isValueIncludingRank(AV, rank, critical){
     //急所に当たった時
     if ( critical == true ) {

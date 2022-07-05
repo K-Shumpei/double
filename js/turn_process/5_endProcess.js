@@ -954,7 +954,7 @@ function otherConditionAbilityItem(){
             }
             if ( poke.myAbility == "スロースタート" ) {
                 if ( poke.myCondition.mySlow_start == 5 ) {
-                    poke.myCondition.mySlow_start = "full"
+                    poke.myCondition.mySlow_start = true
                     writeLog(`${poke.myTN} の ${poke.myName} は 力を取り戻した !`)
                 }
                 else if ( !isNaN(poke.myCondition.mySlow_start) ) {

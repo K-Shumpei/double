@@ -121,7 +121,7 @@ function canUse(){
 
 function setRandom(){
     let data = [1, "フシギダネ"]
-    while (eviolite.includes(data[1])){
+    while (pokeList_eviolite.includes(data[1])){
         let random = Math.random()
         for (let i = 0; i < basePokemon.length; i++){
             if (random > i / basePokemon.length){

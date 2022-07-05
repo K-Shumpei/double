@@ -151,7 +151,7 @@ function speedAV(poke, type){
                 break
 
             case "スロースタート":
-                if ( poke.myCondition.mySlow_start == "full" ) break
+                if ( poke.myCondition.mySlow_start === true ) break
                 correction = Math.round(correction * 2048 / 4096)
                 break
 
