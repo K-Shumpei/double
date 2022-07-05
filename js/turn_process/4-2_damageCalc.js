@@ -325,227 +325,227 @@ function powerCalculation(poke, tgt){
 
     // * 3072 / 4096 → 四捨五入
     // オーラブレイク
-    const auraBreak = powerCorr_auraBreak(poke)
+    const auraBreak = pwrCorr_auraBreak(poke)
     corr = Math.round(corr * auraBreak)
 
     // とうそうしん　弱化
-    const rivalry_weeken = powerCorr_rivalry_weeken(poke, tgt)
+    const rivalry_weeken = pwrCorr_rivalry_weeken(poke, tgt)
     corr = Math.round(corr * rivalry_weeken)
 
     // * 4915 / 4096 → 四捨五入
     // スキン特性
-    const skin = powerCorr_skin(poke)
+    const skin = pwrCorr_skin(poke)
     corr = Math.round(corr * skin)
 
     // すてみ
-    const reckless = powerCorr_reckless(poke)
+    const reckless = pwrCorr_reckless(poke)
     corr = Math.round(corr * reckless)
 
     // てつのこぶし
-    const ironFist = powerCorr_reckless(poke)
+    const ironFist = pwrCorr_reckless(poke)
     corr = Math.round(corr * ironFist)
 
     // * 5120 / 4096 → 四捨五入
     // とうそうしん強化
-    const rivalry_strengthen = powerCorr_rivalry_strengthen(poke, tgt)
+    const rivalry_strengthen = pwrCorr_rivalry_strengthen(poke, tgt)
     corr = Math.round(corr * rivalry_strengthen)
 
     // * 5325 / 4096 → 四捨五入
     // バッテリー
-    const battery = powerCorr_battery(poke)
+    const battery = pwrCorr_battery(poke)
     corr = Math.round(corr * battery)
 
     // パワースポット
-    const powerSpot = powerCorr_powerSpot(poke)
+    const powerSpot = pwrCorr_powerSpot(poke)
     corr = Math.round(corr * powerSpot)
 
     // * 5325 / 4096 → 四捨五入
     // アナライズ
-    const analytic = powerCorr_analytic(poke)
+    const analytic = pwrCorr_analytic(poke)
     corr = Math.round(corr * analytic)
 
     // かたいツメ
-    const toughClaws = powerCorr_toughClaws(poke)
+    const toughClaws = pwrCorr_toughClaws(poke)
     corr = Math.round(corr * toughClaws)
 
     // すなのちから
-    const sandForce = powerCorr_sandForce(poke)
+    const sandForce = pwrCorr_sandForce(poke)
     corr = Math.round(corr * sandForce)
 
     // ちからずく
-    const sheerForce = powerCorr_sheerForce(poke)
+    const sheerForce = pwrCorr_sheerForce(poke)
     corr = Math.round(corr * sheerForce)
 
     // パンクロック
-    const punkRock = powerCorr_punkRock(poke)
+    const punkRock = pwrCorr_punkRock(poke)
     corr = Math.round(corr * punkRock)
 
     // * 5448 / 4096 → 四捨五入
     // ダークオーラ
-    const darkAura = powerCorr_darkAura(poke)
+    const darkAura = pwrCorr_darkAura(poke)
     corr = Math.round(corr * darkAura)
 
     // フェアリーオーラ 
-    const failyAura = powerCorr_failyAura(poke)
+    const failyAura = pwrCorr_failyAura(poke)
     corr = Math.round(corr * failyAura)
 
     // * 6144 / 4096 → 四捨五入
     // がんじょうあご
-    const strongJaw = powerCorr_strongJaw(poke)
+    const strongJaw = pwrCorr_strongJaw(poke)
     cor = Math.round(corr * strongJaw)
 
     // テクニシャン
-    const technician = powerCorr_technician(poke)
+    const technician = pwrCorr_technician(poke)
     corr = Math.round(corr * technician)
 
     // どくぼうそう
-    const toxicBoost = powerCorr_toxicBoost(poke)
+    const toxicBoost = pwrCorr_toxicBoost(poke)
     corr = Math.round(corr * toxicBoost)
 
     // ねつぼうそう
-    const flareBoost = powerCorr_flareBoost(poke)
+    const flareBoost = pwrCorr_flareBoost(poke)
     corr = Math.round(corr * flareBoost)
 
     // はがねのせいしん
-    const steelySpirit = powerCorr_steelySpirit(poke)
+    const steelySpirit = pwrCorr_steelySpirit(poke)
     corr = Math.round(corr * steelySpirit)
 
     // メガランチャー
-    const megaLauncher = powerCorr_megaLauncher(poke)
+    const megaLauncher = pwrCorr_megaLauncher(poke)
     corr = Math.round(corr * megaLauncher)
 
     // * 2048 / 4096 → 四捨五入
     // たいねつ
-    const heatproof = powerCorr_heatproof(poke, tgt)
+    const heatproof = pwrCorr_heatproof(poke, tgt)
     corr = Math.round(corr * heatproof)
 
     // * 5120 / 4096 → 四捨五入
     // かんそうはだ
-    const drySkin = powerCorr_drySkin(poke, tgt)
+    const drySkin = pwrCorr_drySkin(poke, tgt)
     corr = Math.round(corr * drySkin)
 
     // * 4505 / 4096 → 四捨五入
     // ちからのハチマキ
-    const muscleBand = powerCorr_muscleBand(poke)
+    const muscleBand = pwrCorr_muscleBand(poke)
     corr = Math.round(corr * muscleBand)
 
     // ものしりメガネ
-    const wiseGlasses = powerCorr_wiseGlasses(poke)
+    const wiseGlasses = pwrCorr_wiseGlasses(poke)
     corr = Math.round(corr * wiseGlasses)
 
     // * 4915 / 4096 → 四捨五入
     // プレート類
-    const plate = powerCorr_plate(poke)
+    const plate = pwrCorr_plate(poke)
     corr = Math.round(corr * plate)
 
     // 特定タイプの威力UPアイテム（おこう含む）
-    const incense = powerCorr_incense(poke)
+    const incense = pwrCorr_incense(poke)
     corr = Math.round(corr * incense)
 
     // こころのしずく
-    const soulDew = powerCorr_soulDew(poke)
+    const soulDew = pwrCorr_soulDew(poke)
     corr = Math.round(corr * soulDew)
 
     // こんごうだま
-    const adamantOrb = powerCorr_adamantOrb(poke)
+    const adamantOrb = pwrCorr_adamantOrb(poke)
     corr = Math.round(corr * adamantOrb)
 
     // しらたま
-    const lustrousOrb = powerCorr_lustrousOrb(poke)
+    const lustrousOrb = pwrCorr_lustrousOrb(poke)
     corr = Math.round(corr * lustrousOrb)
 
     // はっきんだま
-    const griseousOrb = powerCorr_griseousOrb(poke)
+    const griseousOrb = pwrCorr_griseousOrb(poke)
     corr = Math.round(corr * griseousOrb)
 
     // * 5325 / 4096 → 四捨五入
     // ジュエル
-    const gem = powerCorr_gem(poke)
+    const gem = pwrCorr_gem(poke)
     corr = Math.round(corr * gem)
 
     // * 2048 / 4096 → 四捨五入
     // ソーラービーム、ソーラーブレード
-    const solar = powerCorr_solar(poke)
+    const solar = pwrCorr_solar(poke)
     corr = Math.round(corr * solar)
 
     // * 6144 / 4096 → 四捨五入
     // Gのちから
-    const gravApple = powerCorr_gravApple(poke)
+    const gravApple = pwrCorr_gravApple(poke)
     corr = Math.round(corr * gravApple)
 
     // はたきおとす
-    const knockOff = powerCorr_knockOff(poke, tgt)
+    const knockOff = pwrCorr_knockOff(poke, tgt)
     corr = Math.round(corr * knockOff)
 
     // ミストバースト
-    const mistyExplosion = powerCorr_mistyExplosion(poke)
+    const mistyExplosion = pwrCorr_mistyExplosion(poke)
     corr = Math.round(corr * mistyExplosion)
 
     // ワイドフォース
-    const expandingForce = powerCorr_expandingForce(poke)
+    const expandingForce = pwrCorr_expandingForce(poke)
     corr = Math.round(corr * expandingForce)
 
     // * 6144 / 4096 → 四捨五入
     // てだすけ
-    const helpingHand = powerCorr_helpingHand(poke)
+    const helpingHand = pwrCorr_helpingHand(poke)
     corr = Math.round(corr * helpingHand)
 
     // * 6144 / 4096 → 四捨五入
     // さきどり
-    const meFirst = powerCorr_meFirst(poke)
+    const meFirst = pwrCorr_meFirst(poke)
     corr = Math.round(corr * meFirst)
 
     // * 8192 / 4096 → 四捨五入
     // じゅうでん 
-    const charge = powerCorr_charge(poke)
+    const charge = pwrCorr_charge(poke)
     corr = Math.round(corr * charge)
 
     // * 8192 / 4096 → 四捨五入
     // うっぷんばらし
-    const lashOut = powerCorr_lashOut(poke)
+    const lashOut = pwrCorr_lashOut(poke)
     corr = Math.round(corr * lashOut)
 
     // かたきうち
-    const retailate = powerCorr_retaliate(poke)
+    const retailate = pwrCorr_retaliate(poke)
     corr = Math.round(corr * retailate)
 
     // からげんき
-    const facade = powerCorr_facade(poke)
+    const facade = pwrCorr_facade(poke)
     corr = Math.round(corr * facade)
 
     // クロスサンダー
-    const fusionBolt = powerCorr_fusionBolt(poke)
+    const fusionBolt = pwrCorr_fusionBolt(poke)
     corr = Math.round(corr * fusionBolt)
 
     // クロスサンダー
-    const fusionFlare = powerCorr_fusionFlare(poke)
+    const fusionFlare = pwrCorr_fusionFlare(poke)
     corr = Math.round(corr * fusionFlare)
 
     // しおみず
-    const brine = powerCorr_brine(poke)
+    const brine = pwrCorr_brine(poke)
     corr = Math.round(corr * brine)
 
     // ベノムショック
-    const venoshock = powerCorr_venoshock(poke)
+    const venoshock = pwrCorr_venoshock(poke)
     corr = Math.round(corr * venoshock)
 
     // * 2048 / 4096 → 四捨五入
     // フィールド弱化
-    const terrain_weaken = powerCorr_terrain_weaken(poke, tgt)
+    const terrain_weaken = pwrCorr_terrain_weaken(poke, tgt)
     corr = Math.round(corr * terrain_weaken)
 
     // * 5325 / 4096 → 四捨五入
     // フィールド強化
-    const terrain_strengthen = powerCorr_terrain_strengthen(poke)
+    const terrain_strengthen = pwrCorr_terrain_strengthen(poke)
     corr = Math.round(corr * terrain_strengthen)
 
     // * 1352 / 4096 → 四捨五入
     // どろあそび
-    const mudSport = powerCorr_mudSport(poke)
+    const mudSport = pwrCorr_mudSport(poke)
     corr = Math.round(corr * mudSport)
 
     // みずあそび
-    const waterSport = powerCorr_waterSport(poke)
+    const waterSport = pwrCorr_waterSport(poke)
     corr = Math.round(corr * waterSport)
 
 
@@ -668,13 +668,9 @@ function getStatus(poke, tgt){
 // 最終攻撃力
 // 参照：https://latest.pokewiki.net/%E3%83%80%E3%83%A1%E3%83%BC%E3%82%B8%E8%A8%88%E7%AE%97%E5%BC%8F
 function attackCalculation(poke, tgt, atk){
-
-    let attack = atk
-
     // * 6144 / 4096 → 切り捨て
     // はりきり
     const hustle = atkCorr_hustle(poke)
-    attack = Math.floor(attack * hustle)
     
     // 攻撃補正値
     let corr = 4096
@@ -776,18 +772,21 @@ function attackCalculation(poke, tgt, atk){
     const choiceSpecs = atkCorr_choiceSpecs(poke)
     corr = Math.round(corr * choiceSpecs)
 
-    // ふといホネ、しんかいのキバ、でんきだま
+    // * 8192 / 4096 → 四捨五入
+    // ふといホネ
     const thickClub = atkCorr_thickClub(poke)
     corr = Math.round(corr * thickClub)
 
+    // しんかいのキバ
     const deepSeaTooth = atkCorr_deepSeaTooth(poke)
     corr = Math.round(corr * deepSeaTooth)
 
+    // でんきだま
     const lightBall = atkCorr_lightBall(poke)
     corr = Math.round(corr * lightBall)
 
 
-    // 最終攻撃 1より小さかったら1にする
+    // 最終攻撃
     // = 攻撃実数値 * ランク補正
     // → 切り捨て
     // * はりきり補正
@@ -795,71 +794,77 @@ function attackCalculation(poke, tgt, atk){
     // * 攻撃補正値 / 4096
     // → 五捨五入
     // 1より小さければ1にする
-    return Math.max(fiveCut(attack * corr / 4096), 1)
+    const hustleVal = Math.floor(atk * hustle)
+    const corrVal = fiveCut(hustleVal * corr / 4096)
+    return Math.max(corrVal, 1)
 }
 
 
 // 最終防御
 function defenseCalculation(poke, tgt, def){
-    let defense = def
+    const refNature = {def: "物理", sp_def: "特殊"}
 
-    let phys = "物理"
-    let spec = "特殊"
-
-    if ( fieldStatus.myWonder_room ){
-        phys = "特殊"
-        spec = "物理"
+    if ( fieldStatus.myWonder_room ) {
+        [refNature.def, refNature.sp_def] = [refNature.sp_def, refNature.def]
     }
-    if ( poke.myMove.name == "サイコショック" || poke.myMove.name == "サイコブレイク" || poke.myMove.name == "しんぴのつるぎ" ){
-        phys = "特殊"
-        spec = "物理"
+    if ( poke.myMove.name == "サイコショック" || poke.myMove.name == "サイコブレイク" || poke.myMove.name == "しんぴのつるぎ" ) {
+        [refNature.def, refNature.sp_def] = [refNature.sp_def, refNature.def]
     }
     
 
+    // * 6144 / 4096 → 切り捨て
     // すなあらしの時、岩タイプの特防が上がる
-    if ( isSandy(tgt.poke) && tgt.poke.myType.includes("いわ") && poke.myMove.nature == spec ){
-        defense = Math.floor(defense * 6144 / 4096)
-    }
+    const sandstorm = defCorr_sandstorm(poke, tgt, refNature.sp_def)
 
     // 初期値
-    defense = defense * 4096
+    let corr = 4096
     
-    // フラワーギフト、ふしぎなうろこ、くさのけがわ
-    if ( poke.myMove.nature == spec ){
-        for ( const _poke of myPokeInBattle(tgt.poke) ){
-            if ( _poke.myAbility == "フラワーギフト" && isAbility(_poke) && isSunny(_poke) ){
-                defense = Math.floor(defense * 6144 / 4096)
-            }
-        }
-    }
-    if ( tgt.poke.myAbility == "ふしぎなうろこ" && isAbility(tgt.poke) ) {
-        if ( !tgt.poke.myAilment && poke.myMove.nature == phys ) defense = Math.floor(defense * 6144 / 4096)
-    }
-    if ( tgt.poke.myAbility == "くさのけがわ" && isAbility(tgt.poke) ) {
-        if ( fieldStatus.myGrassy && poke.myMove.nature == phys ) defense = Math.floor(defense * 6144 / 4096)
-    }
+    // * 6144 / 4096 → 四捨五入
+    // フラワーギフト
+    const flowerGift = defCorr_flowerGift(poke, tgt, refNature.sp_def)
+    corr = Math.round(corr * flowerGift)
+
+    // ふしぎなうろこ
+    const marvelScale = defCorr_marvelScale(poke, tgt, refNature.def)
+    corr = Math.round(corr * marvelScale)
+
+    // くさのけがわ
+    const glassPelt = defCorr_glassPelt(poke, tgt, refNature.def)
+    corr = Math.round(corr * glassPelt)
+
+    // * 8192 / 4096 → 四捨五入
     // ファーコート
-    if ( tgt.poke.myAbility == "ファーコート" && isAbility(tgt.poke) ) {
-        if ( poke.myMove.nature == phys ) defense = Math.floor(defense * 8192 / 4096)
-    }
-    // しんかのきせき、とつげきチョッキ
-    if ( tgt.poke.myItem == "しんかのきせき" && isItem(tgt.poke) ) {
-        if ( eviolite.includes(tgt.poke.myName) ) defense = Math.floor(defense * 6144 / 4096)
-    }
-    if ( tgt.poke.myItem == "とつげきチョッキ" && isItem(tgt.poke) ) {
-        if ( poke.myMove.nature == spec ) defense = Math.floor(defense * 6144 / 4096)
-    }
+    const furCoat = defCorr_furCoat(poke, tgt, refNature.def)
+    corr = Math.round(corr * furCoat)
+
+    // * 6144 / 4096 → 四捨五入
+    // しんかのきせき
+    const eviolite = defCorr_eviolite(tgt)
+    corr = Math.round(corr * eviolite)
+
+    // とつげきチョッキ
+    const assaultVest = defCorr_assaultVest(poke, tgt, refNature.sp_def)
+    corr = Math.round(corr * assaultVest)
+    
     // しんかいのウロコ、メタルパウダー
-    if ( tgt.poke.myItem == "しんかいのウロコ" && isItem(tgt.poke) ) {
-        if ( tgt.poke.myName == "パールル" && poke.myMove.nature == spec ) defense = Math.floor(defense * 8192 / 4096)
-    }
-    if ( tgt.poke.myItem == "メタルパウダー" && isItem(tgt.poke) ) {
-        if ( tgt.poke.myName == "メタモン" && poke.myMove.nature == phys ) defense = Math.floor(defense * 8192 / 4096)
-    }
+    const deepSeaScale = defCorr_deepSeaScale(poke, tgt, refNature.sp_def)
+    corr = Math.round(corr * deepSeaScale)
+
+    const metalPowder = defCorr_metalPowder(poke, tgt, refNature.def)
+    corr = Math.round(corr * metalPowder)
+
 
     // 最終防御　1より小さかったら1にする
-    return Math.max(fiveCut(defense / 4096), 1)
-
+    // = 防御実数値 * ランク補正
+    // → 切り捨て
+    // * すなあらし補正
+    // → 切り捨て
+    // * 防御補正値 / 4096
+    // → 五捨五入
+    // 1より小さければ1にする
+    const sandstormVal = Math.floor(def * sandstorm)
+    const corrVal = fiveCut(sandstormVal * corr / 4096)
+    return Math.max(corrVal, 1)
 }
 
 
