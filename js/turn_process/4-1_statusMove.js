@@ -213,8 +213,12 @@ function statusMoveToChangeAllField(poke) {
             break
 
         case "ワンダールーム":
-            fieldStatus.myWonder_room = 1
+            for ( const _poke of allPokeInBattle() ) {
+                [ _poke.myDef, _poke.mySp_def ] = [ _poke.mySp_def, _poke.myDef ]
+            }
             writeLog(`防御と特防が入れ替わった !`)
+            if ( fieldStatus.myWonder_room ) fieldStatus.myWonder_room = false
+            else fieldStatus.myWonder_room = 1
             break
     }
 }

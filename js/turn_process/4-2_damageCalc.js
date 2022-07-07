@@ -75,250 +75,8 @@ function isDamageByFixedDamageMove(poke, tgt){
 // 参照：https://wiki.xn--rckteqa2e.com/wiki/%E5%A8%81%E5%8A%9B
 function powerCalculation(poke, tgt){
     // 基礎威力の変化
-    switch ( poke.myMove.name ) {
-        // HPによるもの
-        case "きしかいせい":
-        case "じたばた":
-            poke.myMove.power = 20
-            if ( poke.myRest_hp < poke.myFull_hp * 33 / 48 ) poke.myMove.power = 40
-            if ( poke.myRest_hp < poke.myFull_hp * 17 / 48 ) poke.myMove.power = 80
-            if ( poke.myRest_hp < poke.myFull_hp * 10 / 48 ) poke.myMove.power = 100
-            if ( poke.myRest_hp < poke.myFull_hp * 5 / 48 )  poke.myMove.power = 150
-            if ( poke.myRest_hp < poke.myFull_hp * 2 / 48 )  poke.myMove.power = 200
-            break
-
-        case "しおふき":
-        case "ふんか":
-        case "ドラゴンエナジー":
-            poke.myMove.power = Math.max(Math.floor(150 * poke.myRest_hp / poke.myFull_hp), 1)
-            break
-
-        case "しぼりとる":
-        case "にぎりつぶす":
-            poke.myMove.power = Math.max(Math.floor(120 * tgt.poke.myRest_hp / tgt.poke.myFull_hp), 1)
-            break
-
-        // 能力によるもの
-        case "アシストパワー":
-        case "つけあがる":
-            let power_assist = 0
-            for ( const para of allParameter() ) {
-                    power_assist += Math.max(poke[`myRank_${para}`], 0)
-            }
-            poke.myMove.power = 20 * (power_assist + 1)
-            break
-
-        case "おしおき":
-            let power = 0
-            for ( const para of allParameter() ) {
-                    power += Math.max(poke[`myRank_${para}`], 0)
-            }
-            poke.myMove.power = Math.min(20 * (power + 3), 200)
-            break
-
-        case "エレキボール":
-            const atk_speed_el = speedAV(poke, "c")
-            const def_speed_el = speedAV(tgt.poke, "c")
-            poke.myMove.power = 40
-            if ( atk_speed_el >= def_speed_el )     poke.myMove.power = 80
-            if ( atk_speed_el >= def_speed_el * 3 ) poke.myMove.power = 120
-            if ( atk_speed_el >= def_speed_el * 4 ) poke.myMove.power = 150
-            break
-
-        case "ジャイロボール":
-            const atk_speed_jy = speedAV(poke, "c")
-            const def_speed_jy = speedAV(tgt.poke, "c")
-            poke.myMove.power = Math.min(Math.floor((25 * def_speed_jy / atk_speed_jy) + 1), 150)
-            break
-
-        case "おんがえし":
-        case "やつあたり":
-            break
-
-        case "きりふだ":
-            const PP = poke[`myRest_pp_${poke.myCmd_move}`]
-            poke.myMove.power = 40
-            if ( PP == 3 ) poke.myMove.power = 50
-            if ( PP == 2 ) poke.myMove.power = 60
-            if ( PP == 1 ) poke.myMove.power = 80
-            if ( PP == 0 ) poke.myMove.power = 200
-            break
-
-        case "くさむすび":
-        case "けたぐり":
-            const weight = isWeight(tgt.poke)
-            poke.myMove.power = 20
-            if ( weight >= 10 )  poke.myMove.power = 40
-            if ( weight >= 25 )  poke.myMove.power = 60
-            if ( weight >= 50 )  poke.myMove.power = 80
-            if ( weight >= 100 ) poke.myMove.power = 100
-            if ( weight >= 200 ) poke.myMove.power = 120
-            break
-
-        case "ヒートスタンプ":
-        case "ヘビーボンバー":
-            const atk_weight = isWeight(poke)
-            const def_weight = isWeight(tgt.poke)
-            poke.myMove.power = 40
-            if ( atk_weight >= def_weight * 2 ) poke.myMove.power = 60
-            if ( atk_weight >= def_weight * 3 ) poke.myMove.power = 80
-            if ( atk_weight >= def_weight * 4 ) poke.myMove.power = 100
-            if ( atk_weight >= def_weight * 5 ) poke.myMove.power = 120
-            break
-
-        // 状態異常・状態変化・場の状態によるもの
-        case "きつけ":
-            if ( tgt.poke.myAilment != "まひ" ) break
-            poke.myMove.power *= 2
-            break
-
-        case "めざましビンタ":
-            if ( tgt.poke.myAilment != "ねむり" ) break
-            poke.myMove.power *= 2
-            break
-
-        case "たたりめ":
-            if ( !tgt.poke.myAilment ) poke.mymove.power = 130
-            if ( tgt.poke.myAbility == "ぜったいねむり" && isAbility(tgt.poke) ) poke.myMove.power = 130
-            break
-
-        case "ウェザーボール":
-            if ( isSunny(poke) ) poke.mymove.power = 100
-            if ( isRainy(poke) ) poke.mymove.power = 100
-            if ( isSandy(poke) ) poke.mymove.power = 100
-            if ( isSnowy(poke) ) poke.myMove.power = 100
-            break
-        
-        case "だいちのはどう":
-            if ( !onGround(poke) ) break
-            if ( fieldStatus.myElectric ) poke.myMove.power = 100
-            if ( fieldStatus.myGrassy )   poke.myMove.power = 100
-            if ( fieldStatus.myMisty )    poke.myMove.power = 100
-            if ( fieldStatus.myPsychic )  poke.myMove.power = 100
-            break
-
-        case "ライジングボルト":
-            if ( onGround(tgt.poke) && fieldStatus.myElectric ) poke.myMove.power *= 2
-            break
-
-        case "かぜおこし":
-        case "たつまき":
-            if ( tgt.poke.myCondition.mySky_drop ) poke.myMove.power *= 2
-            if ( tgt.poke.myCondition.mySky ) poke.myMove.power *= 2
-            break
-
-        // もちものによるもの
-        case "アクロバット":
-            if ( !poke.myItem ) poke.myMove.power  = 110
-            break
-        
-        case "しぜんのめぐみ":
-            for ( const element of naturalGift ) {
-                if ( poke.myItem == element.item ) poke.myMove.power = element.power
-            }
-            break
-
-        case "なげつける":
-            writeLog(`${poke.myItem} を 投げつけた !`)
-            if ( itemList_berry.includes(poke.myItem) ) poke.myMove.power = 10
-            for ( const incense of itemList_incense ) if ( incense.name == poke.myItem && incense.name.includes("おこう") ) poke.myMove.power = 10
-            if ( itemList_fling.damage10.includes(poke.myItem) ) poke.myMove.power = 10
-            if ( itemList_fling.damage30.includes(poke.myItem) ) poke.myMove.power = 30
-            if ( itemList_fling.damage40.includes(poke.myItem) ) poke.myMove.power = 40
-            if ( itemList_fling.damage50.includes(poke.myItem) ) poke.myMove.power = 50
-            for ( const memory of itemList_memory ) if ( memory.name == poke.myItem ) poke.myMove.power = 50
-            if ( itemList_fling.damage60.includes(poke.myItem) ) poke.myMove.power = 60
-            if ( itemList_fling.damage70.includes(poke.myItem) ) poke.myMove.power = 70
-            if ( poke.myItem.includes("カセット") ) poke.myMove.power = 70
-            if ( poke.myItem.includes("パワー") ) poke.myMove.power = 70
-            if ( itemList_fling.damage80.includes(poke.myItem) ) poke.myMove.power = 80
-            for ( const mega of itemList_megaStone ) if ( mega.name == poke.myItem ) poke.myMove.power = 80
-            if ( itemList_fling.damage90.includes(poke.myItem) ) poke.myMove.power = 90
-            for ( const plate of itemList_plate ) if ( plate.name == poke.myItem ) poke.myMove.pow = 90
-            if ( itemList_fling.damage100.includes(poke.myItem) ) poke.myMove.power = 100
-            if ( itemList_fling.damage130.includes(poke.myItem) ) poke.myMove.power = 130
-            break
-
-        // 連続性によるもの
-        case "アイスボール":
-        case "ころがる":
-            if ( poke.myCondition.myDefense_curl ) poke.myMove.power *= 2
-            const ice = poke.myCondition.myIce_ball
-            const roll = poke.myCondition.myRollout
-            poke.myMove.power *= Math.pow(2, Math.max(ice, roll) - 1)
-            break
-
-        case "エコーボイス":
-            poke.myMove.power = Math.min(40 * (fieldStatus.myEchoed_voice), 200)
-            break
-
-        case "じだんだ":
-            break
-
-        case "トリプルキック":
-            break
-
-        case "トリプルアクセル":
-            break
-
-        case "はきだす":
-            const def    = poke.myCondition.myStockpile_B
-            const sp_def = poke.myCondition.myStockpile_D
-            poke.myMove.power = Math.max(def, sp_def) * 100
-            changeMyRank(poke, "def", -1 * def)
-            changeMyRank(poke, "sp_def", -1 * sp_def)
-            writeLog(`${poke.myTN} の ${poke.myName} は たくわえが なくなった !`)
-            poke.myCondition.myStockpile_B = 0
-            poke.myCondition.myStockpile_D = 0
-            break
-
-        case "りんしょう":
-            break
-
-        case "れんぞくぎり":
-            const num = poke.myCondition.myFury_cutter
-            poke.myMove.power = Math.min(40 * num, 160)
-            break
-
-        // コンビネーションわざ
-        case "くさのちかい":
-        case "ほのおのちかい":
-        case "みずのちかい":
-            break
-
-        // 行動順によるもの
-        case "エラがみ":
-        case "でんげきくちばし":
-            // if (tgt.com != "" || user[0].f_con.includes("交代済" + tgt.child)) poke.myMove.power *= 2
-            break
-
-        case "おいうち":
-            break
-
-        case "しっぺがえし":
-            break
-
-        case "ダメおし":
-            if ( poke.myCondition.myAssurance ) poke.myMove.power *= 2
-            break
-
-        case "ゆきなだれ":
-        case "リベンジ":
-            if ( poke.myCondition.myDamage.value ) poke.myMove.power *= 2
-            break
-
-        // その他
-        case "プレゼント":
-            break
-
-        case "マグニチュード":
-            break
-
-        case "みずしゅりけん":
-            break
-    }
-
-
+    poke.myMove.power = changeBasePower(poke, tgt)
+    
     // 威力に補正をかける効果
     // 威力補正値
     let corr = 4096
@@ -551,7 +309,7 @@ function powerCalculation(poke, tgt){
 
     // 最終威力
     // = 基礎威力 * 威力補正値 / 4096
-    // → 五捨五入
+    // → 五捨五超入
     // → 1より小さければ1にする
     return Math.max(fiveCut(poke.myMove.power * corr / 4096), 1)
 }
@@ -587,80 +345,84 @@ function getCritical(poke, tgt){
 
 // 実数値取得
 function getStatus(poke, tgt){
+    const value = {
+        poke: {
+            atk         : poke.myAtk, 
+            sp_atk      : poke.mySp_atk, 
+            rank_atk    : poke.myRank_atk, 
+            rank_sp_atk : poke.myRank_sp_atk
+        }, 
+        tgt: {
+            def         : tgt.poke.myDef, 
+            sp_def      : tgt.poke.mySp_def, 
+            rank_def    : tgt.poke.myRank_def, 
+            rank_sp_def : tgt.poke.myRank_sp_def
+        }
+    }
 
-    let atk         = poke.myAtk
-    let def         = tgt.poke.myDef
-    let sp_atk      = poke.mySp_atk
-    let sp_def      = tgt.poke.mySp_def
-    let rank_atk    = poke.myRank_atk
-    let rank_def    = tgt.poke.myRank_def
-    let rank_sp_atk = poke.myRank_sp_atk
-    let rank_sp_def = tgt.poke.myRank_sp_def
+    switch ( poke.myMove.name ) {
+        // 性質が変わる技
+        case "フォトンゲイザー":
+        case "てんこがすめつぼうのひかり":
+            const A_photon = isValueIncludingRank(value.poke.atk, value.poke.rank_atk, false)
+            const C_photon = isValueIncludingRank(value.poke.sp_atk, value.poke.rank_sp_atk, false)
+            if ( A_photon > C_photon ) poke.myMove.nature = "物理"
+            break
 
-    if ( fieldStatus.myWonder_room ){
-        def    = tgt.poke.mySp_def
-        sp_def = tgt.poke.myDef
-    }
-    if ( poke.myMove.name == "フォトンゲイザー" || poke.myMove.name == "てんこがすめつぼうのひかり" ){
-        const A_photon = isValueIncludingRank(atk, rank_atk, false)
-        const C_photon = isValueIncludingRank(sp_atk, rank_sp_atk, false)
-        if ( A_photon > C_photon ) poke.myMove.nature = "物理"
-    }
-    if ( poke.myMove.name == "シェルアームズ" ){
-        const A_shell = isValueIncludingRank(atk, rank_atk, false)
-        const B_shell = isValueIncludingRank(def, rank_def, false)
-        const C_shell = isValueIncludingRank(sp_atk, rank_sp_atk, false)
-        const D_shell = isValueIncludingRank(sp_def, rank_sp_def, false)
-        if ( A_shell / B_shell > C_shell / D_shell ) poke.myMove.nature = "物理"
-    }
-    if ( poke.myMove.nature == "物理" ){
-        if ( poke.myMove.name == "イカサマ" ){
-            atk      = tgt.poke.myAtk
-            rank_atk = tgt.poke.myRank_atk
-        }
-        if ( poke.myMove.name == "せいなるつるぎ" || poke.myMove.name == "DDラリアット" || poke.myMove.name == "なしくずし" ){
-            rank_def    = 0
-            rank_sp_def = 0
-        }
-        if ( poke.myMove.name == "ボディプレス" ){
-            atk      = poke.myDef
-            rank_atk = poke.myRank_def
-            if ( fieldStatus.myWonder_room ) rank_atk = poke.myRank_sp_def
-        }
-        const A_result = isValueIncludingRank(atk, rank_atk, tgt.critical)
-        const B_result = isValueIncludingRank(def, rank_def, tgt.critical)
-        return {atk: A_result, def: B_result}
-    }
-    if ( poke.myMove.nature == "特殊" ){
-        if ( poke.myMove.name == "サイコショック" || poke.myMove.name == "サイコブレイク" || poke.myMove.name == "しんぴのつるぎ" ){
-            ( fieldStatus.myWonder_room )? sp_def = tgt.poke.mySp_def : sp_def = tgt.poke.myDef
-            rank_sp_def = tgt.poke.myRank_def
-        }
-        if ( poke.myMove.name == "はめつのねがい" || poke.myMove.name == "みらいよち" ){
-            /*
-            const text = searchText(user[0].f_con, "状態変化『みらいにこうげき』")
-            const parent = Number(text.split("　")[3].split(",")[0])
-            const child = Number(text.split("　")[3].split(",")[1])
-            const num = Number(text.split("　")[3].split(",")[2])
+        case "シェルアームズ":
+            let A_shell = isValueIncludingRank(value.poke.atk, value.poke.rank_atk, false)
+            let B_shell = isValueIncludingRank(value.tgt.def, value.tgt.rank_def, false)
+            let C_shell = isValueIncludingRank(value.poke.sp_atk, value.poke.rank_sp_atk, false)
+            let D_shell = isValueIncludingRank(value.tgt.sp_def, value.tgt.rank_sp_def, false)
+            // if ( fieldStatus.myWonder_room ) [ B_shell, D_shell ] = [ D_shell, B_shell ]
+            if ( A_shell / B_shell > C_shell / D_shell ) poke.myMove.nature = "物理"
+            break
 
-            let field = false
-            for (let i = 0; i < 2; i++){
-                if (isCon(me, you, parent, i).num == num){
-                    sp_atk = isCon(me, you, parent, i).sp_atk
-                    rank_sp_atk = isCon(me, you, parent, i).rank_sp_atk
-                    field = true
-                }
+        // 参照する数値が変わる技
+        case "イカサマ":
+            value.poke.atk      = tgt.poke.myAtk
+            value.poke.rank_atk = tgt.poke.myRank_atk
+            break
+
+        case "せいなるつるぎ":
+        case "DDラリアット":
+        case "なしくずし":
+            value.tgt.rank_def    = 0
+            value.tgt.rank_sp_def = 0
+            break
+
+        case "ボディプレス":
+            if ( fieldStatus.myWonder_room ) {
+                value.poke.atk      = poke.mySp_def
+                value.poke.rank_atk = poke.myRank_sp_def
+            } else {
+                value.poke.atk      = poke.myDef
+                value.poke.rank_atk = poke.myRank_def
             }
+            break
 
-            if (field == false){
-                sp_atk = me["poke" + num].sp_atk
-                rank_sp_atk = 0
-            }
-            */
-        }
-        const C_result = isValueIncludingRank(sp_atk, rank_sp_atk, tgt.critical)
-        const D_result = isValueIncludingRank(sp_def, rank_sp_def, tgt.critical)
-        return {atk: C_result, def: D_result}
+        case "サイコショック":
+        case "サイコブレイク":
+        case "しんぴのつるぎ":
+            value.tgt.sp_def      = tgt.poke.myDef
+            value.tgt.rank_sp_def = tgt.poke.myRank_def
+            break
+
+        case "はめつのねがい":
+        case "みらいよち":
+            break
+    }
+
+    switch ( poke.myMove.nature ) {
+        case "物理":
+            const A_result = isValueIncludingRank(value.poke.atk, value.poke.rank_atk, tgt.critical)
+            const B_result = isValueIncludingRank(value.tgt.def, value.tgt.rank_def, tgt.critical)
+            return {atk: A_result, def: B_result}
+
+        case "特殊":
+            const C_result = isValueIncludingRank(value.poke.sp_atk, value.poke.rank_sp_atk, tgt.critical)
+            const D_result = isValueIncludingRank(value.tgt.sp_def, value.tgt.rank_sp_def, tgt.critical)
+            return {atk: C_result, def: D_result}
     }
 }
 
@@ -792,7 +554,7 @@ function attackCalculation(poke, tgt, atk){
     // * はりきり補正
     // → 切り捨て
     // * 攻撃補正値 / 4096
-    // → 五捨五入
+    // → 五捨五超入
     // 1より小さければ1にする
     const hustleVal = Math.floor(atk * hustle)
     const corrVal = fiveCut(hustleVal * corr / 4096)
@@ -860,7 +622,7 @@ function defenseCalculation(poke, tgt, def){
     // * すなあらし補正
     // → 切り捨て
     // * 防御補正値 / 4096
-    // → 五捨五入
+    // → 五捨五超入
     // 1より小さければ1にする
     const sandstormVal = Math.floor(def * sandstorm)
     const corrVal = fiveCut(sandstormVal * corr / 4096)
@@ -870,148 +632,107 @@ function defenseCalculation(poke, tgt, def){
 
 // 最終ダメージ
 function finalDamage(poke, tgt, power, attack, defense){
-
+    // 基礎ダメージ
     let damage = Math.floor(poke.myLevel * 2 / 5 + 2)
     damage = Math.floor(damage * power * attack / defense)
     damage = Math.floor(damage / 50 + 2)
 
+    // 複数対象補正 → 五捨五超入
+    const multipleTargets = dmgCorr_multipleTargets(poke)
+    damage = fiveCut(damage * multipleTargets)
 
-    // 複数対象補正
-    // おやこあい補正
-    if ( poke.myCondition.myParental_bond ){
-        damage = fiveCut(damage * 1024 / 4096)
-        poke.myCondition.myParental_bond = false
-    }
-    // 天気弱化補正
-    if ( isRainy(tgt.poke) && poke.myMove.type == "ほのお" ) damage = fiveCut(damage * 2048 / 4096)
-    if ( isSunny(tgt.poke) && poke.myMove.type == "みず" ) damage = fiveCut(damage * 2048 / 4096)
-    // 天気強化補正
-    if ( isRainy(tgt.poke) && poke.myMove.type == "みず" ) damage = fiveCut(damage * 6144 / 4096)
-    if ( isSunny(tgt.poke) && poke.myMove.type == "ほのお" ) damage = fiveCut(damage * 6144 / 4096)
-    // 急所補正
-    if ( tgt.critical ) damage = fiveCut(damage * 6144 / 4096)
-    // ダメージ乱数補正
-    const random = (Math.floor(getRandom() * 16 + 85)) / 100
+    // おやこあい補正 → 五捨五超入
+    const parentalBond = dmgCorr_parentalBond(poke)
+    damage = fiveCut(damage * parentalBond)
+
+    // 天気補正 → 五捨五超入
+    const weather = dmgCorr_weather(poke, tgt)
+    damage = fiveCut(damage * weather)
+
+    // 急所補正 → 五捨五超入
+    const critical = dmgCorr_critical(tgt)
+    damage = fiveCut(damage * critical)
+
+    // ダメージ乱数補正 → 切り捨て
+    const random = dmgCorr_random()
     damage = Math.floor(damage * random)
-    // タイプ一致補正
-    if ( poke.myType.includes(poke.myMove.type) ) {
-        if ( poke.myAbility == "てきおうりょく" && isAbility(poke) ) {
-            damage = fiveCut(damage * 8192 / 4096)
-        }
-        else {
-            damage = fiveCut(damage * 6144 / 4096)
-        }
-    }
-    // タイプ相性補正
-    // ( tgt.effective )? rate = compatibilityCheck(poke, tgt) : rate = tgt.damage.compatibility
-    damage = Math.floor(damage * tgt.effective)
-    // やけど補正
-    if ( poke.myAilment == "やけど" && poke.myMove.nature == "物理" && poke.myMove.name != "からげんき" ) {
-        if ( !( poke.myAbility == "こんじょう" && isAbility(poke) ) ) damage = fiveCut(damage * 2048 / 4096)
-    }
-    // 壁補正
-    if (!tgt.critical && !( poke.myAbility == "すりぬけ" && isAbility(poke) ) ) {
-        if ( ( isField(tgt.poke).myReflect || isField(tgt.poke).myAurora_veil ) && poke.myMove.nature == "物理" ) {
-            damage = Math.round(damage * 2048 / 4096)
-        }
-        if ( ( isField(tgt.poke).myLight_screen || isField(tgt.poke).myAurora_veil ) && poke.myMove.nature == "特殊" ) {
-            damage = Math.round(damage * 2048 / 4096)
-        }
-    }
 
-    // 自分の特性による補正
-    if ( isAbility(poke) ) {
-        switch ( poke.myAbility ) {
-            case "ブレインフォース":
-                if ( tgt.effective > 1 ) damage = Math.round(damage * 5120 / 4096)
-                break
+    // タイプ一致補正 → 五捨五超入
+    const typeMatch = dmgCorr_typeMatch(poke)
+    damage = fiveCut(damage * typeMatch)
 
-            case "スナイパー":
-                if ( tgt.critical ) damage = Math.round(damage * 6144 / 4096)
-                break
+    // タイプ相性補正 → 切り捨て
+    const typeCompatibility = dmgCorr_typeCompatibility(tgt)
+    damage = Math.floor(damage * typeCompatibility)
 
-            case "いろめがね":
-                if ( tgt.effective < 1 ) damage = Math.round(damage * 8192 / 4096)
-                break
-        }
-    }
-    // 相手の特性による補正
-    if ( isAbility(tgt.poke) ) {
-        switch ( tgt.poke.myAbility ) {
-            case "もふもふ":
-                if ( poke.myMove.type == "ほのお" ) damage = Math.round(damage * 8192 / 4096)
-                break
+    // やけど補正 → 五捨五超入
+    const burn = dmgCorr_burn(poke)
+    damage = fiveCut(damage * burn)
 
-            case "こおりのりんぷん":
-                if ( poke.myMove.nature == "特殊" ) damage = Math.round(damage * 2048 / 4096)
-                break
+    // ダメージ補正値
+    let corr = 1
 
-            case "パンクロック":
-                if ( musicMove.includes(poke.myMove.name) ) damage = Math.round(damage * 2048 / 4096)
-                break
+    // 壁補正 → 四捨五入
+    const wall = dmgCorr_wall(poke, tgt)
+    corr = Math.round(corr * wall)
 
-            case "ファントムガード":
-                if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
-                break
+    // ブレインフォース → 四捨五入
+    const neuroforce = dmgCorr_neuroforce(poke, tgt)
+    corr = Math.round(corr * neuroforce)
 
-            case "マルチスケイル":
-                if ( tgt.poke.myFull_hp == tgt.poke.myRest_hp ) damage = Math.round(damage * 2048 / 4096)
-                break
+    // スナイパー → 四捨五入
+    const sniper = dmgCorr_sniper(poke, tgt)
+    corr = Math.round(corr * sniper)
 
-            case "もふもふ":
-                if ( poke.myMove.direct == "直接" ) damage = Math.round(damage * 2048 / 4096)
-                break
+    // いろめがね → 四捨五入
+    const tintedLens = dmgCorr_tintedLens(poke, tgt)
+    corr = Math.round(corr * tintedLens)
 
-            case "ハードロック":
-                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
-                break
+    // もふもふほのお → 四捨五入
+    const fluffy = dmgCorr_fluffy(poke, tgt)
+    corr = Math.round(corr * fluffy)
 
-            case "フィルター":
-                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
-                break
+    // ダメージ半減補正 → 四捨五入
+    // こおりのりんぷん、パンクロック、ファントムガード、マルチスケイル、もふもふ直接
+    const half = dmgCorr_half(poke, tgt)
+    corr = Math.round(corr * half)
 
-            case "プリズムアーマー":
-                if ( tgt.effective > 1 ) damage = Math.round(damage * 3072 / 4096)
-                break
-        }
-    }
-    // フレンドガード補正
-    // たつじんのおび補正
-    if ( poke.myItem == "たつじんのおび" && isItem(poke) ) {
-        if ( tgt.effective > 1 ) damage = Math.round(damage * 4915 / 4096)
-    }
-    // メトロノーム補正
-    // いのちのたま補正
-    if ( poke.myItem == "いのちのたま" && isItem(poke) ) {
-        damage = Math.floor(damage * 5324 / 4096)
-    }
-    // 半減きのみ補正
-    for ( const berry of itemList_halfDamageBerry ) {
-        if ( tgt.poke.myItem == berry.name && isItem(tgt.poke) && poke.myMove.type == berry.type && tgt.effective > 1 ) {
-            tgt.poke.myCondition.myHalf_berry = true
-            damage = Math.round(damage * 2048 / 4096 / isRipen(tgt.poke))
-        }
-    }
-    // ちいさくなる、あなをほる、ダイマックス状態への攻撃補正
-    if ( tgt.poke.myCondition.myMinimize ) {
-        if ( minimize.includes(poke.myMove.name) ) damage = Math.round(damage * 8192 / 4096)
-    }
-    if ( tgt.poke.myCondition.myDig ) {
-        if ( poke.myMove.name == "じしん" || poke.myMove.name == "マグニチュード" ) damage = Math.round(damage * 8192 / 4096)
-    }
-    if ( tgt.poke.myCondition.myDive ) {
-        if ( poke.myMove.name == "なみのり" || poke.myMove.name == "ダイビング" ) damage = Math.round(damage * 8192 / 4096)
-    }
-    // まもる状態貫通補正
-    /*
-    if (!(poke.myMove.name == "キョダイイチゲキ" || poke.myMove.name == "キョダイレンゲキ")){
-        for (let i = 0; i < tgt.p_con.split("\n").length; i++){
-            if (moveEff.protect().includes(tgt.p_con.split("\n")[i])){
-                damage = fiveCut(damage * 1024 / 4096)
-            }
-        }
-    }
-    */
+    // 効果抜群軽減補正 → 四捨五入
+    // ハードロック、フィルター、プリズムアーマー
+    const filter = dmgCorr_filter(tgt)
+    corr = Math.round(corr * filter)
+
+    // フレンドガード → 四捨五入
+    const friendGuard = dmgCorr_friendGuard(tgt)
+    corr = Math.round(corr * friendGuard)
+
+    // たつじんのおび → 四捨五入
+    const expertBelt = dmgCorr_expertBelt(poke, tgt)
+    corr = Math.round(corr * expertBelt)
+
+    // メトロノーム → 四捨五入
+    const metronome = dmgCorr_metronome(poke)
+    corr = Math.round(corr * metronome)
+
+    // いのちのたま → 四捨五入
+    const lifeOrb = dmgCorr_lifeOrb(poke)
+    corr = Math.round(corr * lifeOrb)
+
+    // 半減の実 → 四捨五入
+    const halfDmgBerry = dmgCorr_halfDmgBerry(poke, tgt)
+    corr = Math.round(corr * halfDmgBerry)
+
+    // その他ダメージ2倍補正 → 四捨五入
+    // あなをほる、ダイビング、ちいさくなる、ダイマックス状態
+    const twice = dmgCorr_twice(poke, tgt)
+    corr = Math.round(corr * twice)
+
+    // ダメージ補正 → 五捨五超入
+    damage = fiveCut(damage * corr)
+
+    // Zワザ/ダイマックスわざのまもるによる軽減補正 → 五捨五超入
+    const protect = dmgCorr_protect(poke, tgt)
+    damage = fiveCut(damage * protect)
 
     // 最終ダメージ
     tgt.damage = damage

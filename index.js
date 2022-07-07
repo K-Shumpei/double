@@ -122,19 +122,19 @@ $(function () {
         document.getElementById("yourName").textContent = oppParty[0].myTN
         document.getElementById("opp_TN").textContent = oppParty[0].myTN
         // 画像の設定
-        for (let i = 0; i < 6; i++) {
-            for (let j = 0; j < pokemon.length; j++){
-                if (myParty[i].myName == pokemon[j].name){
-                    document.getElementById("player_" + i).src = "poke_figure/" + pokemon[j].number + ".gif"
-                    document.getElementById("me_" + i).src = "poke_figure/" + pokemon[j].number + ".gif"
+        for ( let i = 0; i < 6; i++ ) {
+            for ( const poke of pokeList ) {
+                if ( myParty[i].myName == poke.name ) {
+                    document.getElementById(`player_${i}`).src = "poke_figure/" + poke.number + ".gif"
+                    document.getElementById(`me_${i}`).src = "poke_figure/" + poke.number + ".gif"
                 }
             }
         }
-        for (let i = 0; i < 6; i++) {
-            for (let j = 0; j < pokemon.length; j++){
-                if (oppParty[i].myName == pokemon[j].name){
-                    document.getElementById("enemy_" + i).src = "poke_figure/" + pokemon[j].number + ".gif"
-                    document.getElementById("opp_" + i).src = "poke_figure/" + pokemon[j].number + ".gif"
+        for ( let i = 0; i < 6; i++ ) {
+            for ( const poke of pokeList ) {
+                if ( oppParty[i].myName == poke.name ) {
+                    document.getElementById(`enemy_${i}`).src = "poke_figure/" + poke.number + ".gif"
+                    document.getElementById(`opp_${i}`).src = "poke_figure/" + poke.number + ".gif"
                 }
             }
         }

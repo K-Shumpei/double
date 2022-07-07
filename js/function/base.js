@@ -565,8 +565,8 @@ function isTarget(poke){
             return oppPokeInBattle(poke)
 
         case "自分以外":
-            const oppTarget = oppPokeInBattle()
-            const myTarget  = myPokeInBattle().filter( _poke => _poke.myID != poke.myID )
+            const oppTarget = oppPokeInBattle(poke)
+            const myTarget  = myPokeInBattle(poke).filter( _poke => _poke.myID != poke.myID )
             return Object.assign(oppTarget, myTarget)
     }
 
@@ -622,9 +622,9 @@ function decideTargetByCmd(poke) {
 }
 
 // 引き寄せる特性による対象
-function decideTargetByAttract(pokeList, ability, ID) {
-    const target = pokeList.filter( poke => poke.myAbility == ability && isAbility(poke) && poke.myID != ID )
-    console.log(pokeList)
+function decideTargetByAttract(tgtList, ability, ID) {
+    const target = tgtList.filter( poke => poke.myAbility == ability && isAbility(poke) && poke.myID != ID )
+    console.log(tgtList)
     console.log(target)
     if ( target === [] ) return false
     target.sort(function(a,b){
@@ -969,9 +969,10 @@ function cannotChangeItem(poke){
 
 
 function pokeSearch(name){
-    for ( const poke of pokemon ) {
+    for ( const poke of pokeList ) {
         if ( poke.name == name ) return poke
     }
+    return false
 }
 
 function crossDragon(user0, user1){

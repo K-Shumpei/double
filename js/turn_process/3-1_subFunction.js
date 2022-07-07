@@ -294,7 +294,7 @@ function failureByAbility_ability(poke) {
     // じょおうのいげん/ビビッドボディ: 優先度が高い技
     if ( poke.myMove.priority <= 0 ) return false
     for ( const tgt of poke.myTarget ) {
-        if ( !isAbility(tgt) ) continue
+        if ( !isAbility(tgt.poke) ) continue
         if ( poke.myParty == tgt.poke.myParty ) continue
         if ( tgt.myAbility == "じょおうのいげん" || tgt.myAbility == "ビビッドボディ" ) {
             abilityDeclaration(tgt)

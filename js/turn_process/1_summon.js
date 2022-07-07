@@ -42,7 +42,7 @@ function toHand( poke ){
     // おわりのだいち
     if ( poke.myAbility == "おわりのだいち" ) {
         const drought = allPokeInBattle().filter( _poke => _poke.myAbility == "おわりのだいち" && isAbility(_poke) )
-        if ( !drought ) {
+        if ( !drought.length ) {
             writeLog(`日差しが元に戻った`)
             fieldStatus.myDrought = false
         }
@@ -50,7 +50,7 @@ function toHand( poke ){
     // はじまりのうみ
     if ( poke.myAbility == "はじまりのうみ" ) {
         const heavy_rain = allPokeInBattle().filter( _poke => _poke.myAbility == "はじまりのうみ" && isAbility(_poke) )
-        if ( !heavy_rain ) {
+        if ( !heavy_rain.length ) {
             writeLog(`雨が止んだ`)
             fieldStatus.myHeavy_rain = false
         }
@@ -58,7 +58,7 @@ function toHand( poke ){
     // デルタストリーム
     if ( poke.myAbility == "デルタストリーム" ) {
         const turbulence = allPokeInBattle().filter( _poke => _poke.myAbility == "デルタストリーム" && isAbility(_poke) )
-        if ( !turbulence ) {
+        if ( !turbulence.length ) {
             writeLog(`乱気流が収まった`)
             fieldStatus.myTurbulence = false
         }
@@ -209,13 +209,18 @@ function summon( poke, position ) {
     // 場に出た時の効果
     poke.myCondition.myLanding = true
     // バトル場に画像
-    for ( const _poke of pokemon ) {
+    for ( const _poke of pokeList ) {
         if ( poke.myName == _poke.name ) {
             document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = "poke_figure/" + _poke.number + ".gif"
         }
     }
     // HPバーの表示
     showHPbar(poke)
+
+    // ワンダールーム状態なら防御と特防を入れ替える
+    if ( fieldStatus.myWonder_room ) {
+        [ poke.myDef, poke.mySp_def ] = [ poke.mySp_def, poke.myDef ]
+    }
 
     /*
     let con = me["con" + n]
@@ -304,14 +309,14 @@ function summon( poke, position ) {
 
 // 戦闘に出す時の特性の発動 summon_poke
 function onField() {
-    let pokeList = []
+    let pokeLanding = []
     for ( const poke of allPokeInBattle() ) {
         if ( poke.myCondition.myLanding ) {
-            pokeList.push(poke)
+            pokeLanding.push(poke)
             poke.myCondition.myLanding = false
         }
     }
-    const order = speedOrder(pokeList)
+    const order = speedOrder(pokeLanding)
 
     // 1.かがくへんかガスの発動
     for ( const poke of order ) {

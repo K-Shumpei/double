@@ -1,25 +1,20 @@
 // 技のリセット
-function moveReset(){
-    for (i = 0; i < 4; i++){
-        $("#move" + i).val("")
-        $("#type" + i).text("")
-        $("#power" + i).text("")
-        $("#accuracy" + i).text("")
-        $("#PP" + i).text("")
-        $("#discription" + i).text("")
+function moveReset() {
+    for ( i = 0; i < 4; i++ ) {
+        document.getElementById(`move${i}`).value = ""
+        document.getElementById(`type${i}`).textContent = ""
+        document.getElementById(`power${i}`).textContent = ""
+        document.getElementById(`accuracy${i}`).textContent = ""
+        document.getElementById(`PP${i}`).textContent = ""
+        document.getElementById(`discription${i}`).textContent = ""
     }
 }
 
 function setID(){
     moveReset()
     const name = document.getElementById("name").value
-    let poke = ""
-    for ( const _poke of pokemon){
-        if ( _poke.name == name ){
-            poke = _poke
-        }
-    }
-    if ( poke == "" ) return
+    const poke = pokeSearch(name)
+    if ( !poke ) return
 
     // 種族値
     document.getElementById("H_BS").textContent = poke.HP
@@ -72,36 +67,44 @@ function setID(){
 }
 
 function AVcalc(){
-    const lv = Number($("#lv").val())
-    const para = ["H", "A", "B", "C", "D", "S"]
+    const name = document.getElementById("name").value
+    const poke = pokeSearch(name)
+    if ( !poke ) return
+    const lv = Number(document.getElementById(`lv`).value)
+    const parameter = ["H", "A", "B", "C", "D", "S"]
 
-    for (let i = 0; i < 6; i++){
-        const BS = Number($("#" + para[i] + "_BS").text())
-        const IV = Number($("#" + para[i] + "_IV").val())
-        const EV = Number($("#" + para[i] + "_EV").val())
-        let AV = Math.floor(((BS*2 + IV + Math.floor(EV/4)) * lv)/100)
-        if (i == 0){
-            AV += lv + 10
-            if ($("#name").val() == "ヌケニン"){
-                AV = 1
-            }
-        } else {
-            const plus = $("#naturePlus" + i).prop("checked")
-            const minus = $("#natureMinus" + i).prop("checked")
-            let rate = 1.0
-            if (plus && !minus){
-                rate = 1.1
-            } else if (!plus && minus){
-                rate = 0.9
-            }
-            AV = Math.floor((AV + 5) * rate)
+    for ( const para of parameter ) {
+        const BS = document.getElementById(`${para}_BS`).textContent
+        const IV = document.getElementById(`${para}_IV`).value
+        const EV = document.getElementById(`${para}_EV`).value
+        let AV = Math.floor((( Number(BS)*2 + Number(IV) + Math.floor( Number(EV) / 4 )) * lv ) / 100 )
+
+        switch ( para ) {
+            case "H":
+                if ( name == "ヌケニン" ) AV = 1
+                else AV += lv + 10
+                break
+
+            case "A":
+            case "B":
+            case "C":
+            case "D":
+            case "S":
+                const plus = $("#naturePlus" + i).prop("checked")
+                const minus = $("#natureMinus" + i).prop("checked")
+                let rate = 1.0
+                if ( plus && !minus ) rate = 1.1
+                else if ( !plus && minus ) rate = 0.9
+                AV = Math.floor((AV + 5) * rate)
+                break
         }
-        $("#" + para[i] + "_AV").val(AV)
+
+        document.getElementById(`${para}_AV`).value = AV
     }
 }
 
-function setLV(value){
-    $("#lv").val(value)
+function setLV(value) {
+    document.getElementById(`lv`).value = value
 }
 
 

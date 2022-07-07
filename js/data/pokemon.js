@@ -1,4 +1,4 @@
-var pokemon = [
+const pokeList = [
     {number: '1', name: 'フシギダネ', HP: 45, Atk: 49, Def: 49, Sp_atk: 65, Sp_def: 65, Speed: 45, all: 318, type: ['くさ', 'どく'], gender: ['♂', '♀'], height: 0.7, weight: 6.9, ability: ['しんりょく', 'ようりょくそ']}, 
     {number: '2', name: 'フシギソウ', HP: 60, Atk: 62, Def: 63, Sp_atk: 80, Sp_def: 80, Speed: 60, all: 405, type: ['くさ', 'どく'], gender: ['♂', '♀'], height: 1.0, weight: 13.0, ability: ['しんりょく', 'ようりょくそ']}, 
     {number: '3', name: 'フシギバナ', HP: 80, Atk: 82, Def: 83, Sp_atk: 100, Sp_def: 100, Speed: 80, all: 525, type: ['くさ', 'どく'], gender: ['♂', '♀'], height: 2.0, weight: 100.0, ability: ['しんりょく', 'ようりょくそ']}, 
@@ -1043,7 +1043,7 @@ var pokemon = [
 
 
 // しんかのきせき対応ポケモン
-var eviolite = [
+const pokeList_eviolite = [
     'フシギダネ', 
     'フシギソウ', 
     'ヒトカゲ', 

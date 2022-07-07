@@ -865,6 +865,9 @@ function bothSideFieldEnd(){
     // e. ワンダールーム
     if ( fieldStatus.myWonder_room ) {
         if ( fieldStatus.myWonder_room == 5 ) {
+            for ( const poke of allPokeInBattle() ) {
+                [ poke.myDef, poke.mySp_def ] = [ poke.mySp_def, poke.myDef ]
+            }
             fieldStatus.myWonder_room = false
             writeLog(`防御と特防が入れ替わった`)
         } else {
