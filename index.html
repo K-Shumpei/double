@@ -47,7 +47,6 @@
         <script src="js/turn_process/5_endProcess.js"></script>
         <script src="js/turn_process/main.js"></script>
 
-
     </head>
 
     <!--
@@ -107,7 +106,7 @@
                 <input type="button" value="50" onclick="setLV(value), AVcalc()">
                 <input type="button" value="100" onclick="setLV(value), AVcalc()">
             特性：<select id="ability"></select>
-            持ち物：<input id=item type="text" list="pokeItem" value="" autocomplete="off" onchange="itemForm(value)">
+            持ち物：<input id=item type="text" list="pokeItem" value="" autocomplete="off" onchange="itemForm()">
             <datalist id="pokeItem">
                 <script type="text/javascript">
                 for (i = 0; i < item_list.length; i++){
@@ -177,7 +176,8 @@
                 document.write("<tr align='center'><td>技</td><td>タイプ</td><td>威力</td><td>命中</td><td>PP</td></tr>")
                 document.write("<tr align='center'>")
                 for (i = 0; i < 4; i++){
-                    document.write("<td><input type='text' id='move"+i+"' list='move' value='' onchange='setMove("+i+")'></td>")
+                    // document.write("<td><input type='text' id='move"+i+"' list='move' value='' onchange='setMove("+i+")'></td>")
+                    document.write("<td><select id='move"+i+"' onchange='setMove("+i+")'></select></td>")
                     document.write("<td align='center' width='80'><span id='type"+i+"'></span></td>")
                     document.write("<td align='center' width='35'><span id='power"+i+"'></span></td>")
                     document.write("<td align='center' width='35'><span id='accuracy"+i+"'></span></td>")

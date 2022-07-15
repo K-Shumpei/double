@@ -109,114 +109,114 @@ function setLV(value) {
 
 
 function canUse(){
-    $("#move").html("")
-    for (let i = 0; i < can_use_move.length; i++){
-        if ($("#name").val() == can_use_move[i][1]){
-            for (const move of can_use_move[i][2]){
-                $("<option>", {
-                    text: move
-                }).appendTo('#move')
-            }
+    const name = document.getElementById(`name`).value
+    const pokeNum = pokeSearch(name).number
+    const avalMove = availableMove[`${pokeNum}`]
+
+    for ( let i = 0; i < 4; i++ ) {
+        document.getElementById(`move${i}`).innerHTML = ""
+        const selectMove = document.getElementById(`move${i}`)
+        // 空白
+        const blunk = document.createElement(`option`)
+        blunk.value = ""
+        blunk.textContent = ""
+        selectMove.appendChild(blunk)
+        // 使用可能な技
+        for ( const move of avalMove.move ) {
+            const option = document.createElement(`option`)
+            option.value = move
+            option.textContent = move
+            selectMove.appendChild(option)
         }
     }
 }
 
 
 function setRandom(){
-    let data = [1, "フシギダネ"]
-    while (pokeList_eviolite.includes(data[1])){
-        let random = Math.random()
-        for (let i = 0; i < basePokemon.length; i++){
-            if (random > i / basePokemon.length){
-                data = basePokemon[i]
-            }
-        }
+    // 名前
+    let pokeName = "フシギダネ"
+    while ( pokeList_eviolite.includes(pokeName) || pokeList_formChange.includes(pokeName)) {
+        const num = Math.floor(Math.random() * pokeList.length)
+        pokeName = pokeList[num].name
     }
-    $("#name").val(data[1])
+    document.getElementById(`name`).value = pokeName
     setID()
+
     // 持ち物の設定
-    random = Math.random()
-    for (let i = 0; i < random_item_list.length; i++){
-        if (random > i / random_item_list.length){
-            $("#item").val(random_item_list[i])
-        }
-    }
+    const itemNum = Math.floor(Math.random() * random_item_list.length)
+    document.getElementById(`item`).value = random_item_list[itemNum]
 
     // 技が4つ未満のポケモン
-    if ($("#name").val() == "メタモン"){
-        $("#move0").val("へんしん")
-        setMove(0)
-    } else if ($("#name").val() == "ドーブル"){
-        let num = ["", "", "", ""]
-        while (num[0] == num[1] || num[0] == num[2] || num[0] == num[3] || num[1] == num[2] || num[1] == num[3] || num[2] == num[3]){
-            for (let i = 0; i < 4; i++){
-                num[i] = Math.floor(Math.random() * base_move_list.length)
+    const name = document.getElementById(`name`).value
+    const pokeNum = pokeSearch(name).number
+    const avalMove = availableMove[`${pokeNum}`]
+
+    switch ( name ) {
+        case "メタモン":
+            document.getElementById(`move0`).value = "へんしん"
+            setMove(0)
+            break
+
+        case "ドーブル":
+            document.getElementById(`move0`).value = "スケッチ"
+            setMove(0)
+            break
+
+        case "アンノーン":
+            document.getElementById(`move0`).value = "めざめるパワー"
+            setMove(0)
+            break
+
+        case "コスモッグ":
+            document.getElementById(`move0`).value = "はねる"
+            document.getElementById(`move1`).value = "テレポート"
+            setMove(0)
+            setMove(1)
+            break
+
+        case "コスモウム":
+            document.getElementById(`move0`).value = "はねる"
+            document.getElementById(`move1`).value = "テレポート"
+            document.getElementById(`move2`).value = "コスモパワー"
+            setMove(0)
+            setMove(1)
+            setMove(2)
+            break
+
+        default:
+            const moveNum = [0, 0, 0, 0]
+            while ( new Set(moveNum).size !== moveNum.length ) {
+                for ( let i = 0; i < 4; i++ ) {
+                    moveNum[i] = Math.floor( Math.random() * avalMove.move.length )
+                }
             }
-        }
-        for (let i = 0; i < 4; i++){
-            $("#move" + i).val(base_move_list[num[i]][0])
-            if (base_move_list[num[i]][0] == "めざめるパワー"){
-                $("#move" + i).val(base_move_list[num[i] - 1][0])
+            for ( let i = 0; i < 4; i ++ ) {
+                document.getElementById(`move${i}`).value = avalMove.move[moveNum[i]]
+                setMove(i)
             }
-            setMove(i)
-        }
-    } else if ($("#name").val() == "アンノーン"){
-        $("#move0").val("めざめるパワー")
-        setMove(0)
-    } else if ($("#name").val() == "コスモッグ"){
-        $("#move0").val("はねる")
-        setMove(0)
-        $("#move1").val("テレポート")
-        setMove(1)
-    } else if ($("#name").val() == "コスモウム"){
-        $("#move0").val("はねる")
-        setMove(0)
-        $("#move1").val("テレポート")
-        setMove(1)
-        $("#move2").val("コスモパワー")
-        setMove(2)
-    } else {
-        let list = ""
-        for (let i = 0; i < can_use_move.length; i++){
-            if ($("#name").val() == can_use_move[i][1]){
-                list = can_use_move[i][2]
-            }
-        }
-        let num = ["", "", "", ""]
-        while (num[0] == num[1] || num[0] == num[2] || num[0] == num[3] || num[1] == num[2] || num[1] == num[3] || num[2] == num[3]){
-            for (let i = 0; i < 4; i++){
-                num[i] = Math.floor(Math.random() * list.length)
-            }
-        }
-        for (let i = 0; i < 4; i++){
-            $("#move" + i).val(list[num[i]])
-            if (list[num[i]] == "めざめるパワー"){
-                $("#move" + i).val(list[num[i] - 1])
-            }
-            setMove(i)
-        }
     }
 }
 
 function setReset(){
-    $("#name").val("")
-    $("#type").text("")
-    for (const sex of ["male", "female", "not"]){
-        $("#" + sex).prop("disabled", false)
-        $("#" + sex).prop("checked", false)
+    document.getElementById(`name`).value = ""
+    document.getElementById(`type`).textContent = ""
+    for ( const gender of ["male", "female", "not"] ) {
+        document.getElementById(`${gender}`).disabled = false
+        document.getElementById(`${gender}`).checked = false
     }
-    $("#lv").val("50")
-    $("#ability").html("")
-    $("#item").val("")
-    for (const para of ["H", "A", "B", "C", "D", "S"]){
-        $("#" + para + "_BS").text("100")
-        $("#" + para + "_IV").val("31")
-        $("#" + para + "_EV").val("0")
+    document.getElementById(`lv`).value = "50"
+    document.getElementById(`ability`).html = ""
+    document.getElementById(`item`).value = ""
+
+    for ( const para of ["H", "A", "B", "C", "D", "S"] ) {
+        document.getElementById(`${para}_BS`).textContent = "100"
+        document.getElementById(`${para}_IV`).value = "31"
+        document.getElementById(`${para}_EV`).val = "0"
     }
-    $("#EVlast").text("510")
-    $("#naturePlus1").prop("checked", true)
-    $("#natureMinus1").prop("checked", true)
-    $("#nature").text("てれや")
+    document.getElementById(`EVlast`).textContent = "510"
+    document.getElementById(`naturePlus1`).checked = true
+    document.getElementById(`natureMinus1`).checked = true
+    document.getElementById(`nature`).textContent = "てれや"
     moveReset()
     AVcalc()
 }
@@ -224,44 +224,47 @@ function setReset(){
 
 
 function setIV(num, value){
-    const parameter = ["H_IV", "A_IV", "B_IV", "C_IV", "D_IV", "S_IV"]
-    $("#" + parameter[num]).val(value)
+    const para = ["H", "A", "B", "C", "D", "S"]
+    document.getElementById(`${para[num]}_IV`).value = value
 }
 
 function setEV(num, value){
-    const parameter = ["H_EV", "A_EV", "B_EV", "C_EV", "D_EV", "S_EV"]
-    const EV = Number($("#" + parameter[num]).val())
-    const last = Number($("#EVlast").text())
-    if (last + EV - value >= 0){
-        $("#" + parameter[num]).val(value)
-        $("#EVlast").text(last + EV - value)
+    const para = ["H", "A", "B", "C", "D", "S"]
+    const EV = Number(document.getElementById(`${para[num]}_EV`).value)
+    const last = Number(document.getElementById(`EVlast`).textContent)
+    if ( last + EV - value >= 0 ) {
+        document.getElementById(`${para[num]}_EV`).value = value
+        document.getElementById(`EVlast`).textContent = last + EV - value
     }
 }
 
 function EVchange(num, value){
     const para = ["H", "A", "B", "C", "D", "S"]
-    const EV = Number($("#" + para[num] + "_EV").val())
-    const last = Number($("#EVlast").text())
-    if (value == "▲"){
-        if (EV != 252 && last >= 4){
-            $("#" + para[num] + "_EV").val(EV + 4)
-            $("#EVlast").text(last - 4)
-        }
-    } else if (value == "▼"){
-        if (EV != 0){
-            $("#" + para[num] + "_EV").val(EV - 4)
-            $("#EVlast").text(last + 4)
-        }
+    const EV = Number(document.getElementById(`${para[num]}_EV`).value)
+    const last = Number(document.getElementById(`EVlast`).textContent)
+
+    switch ( value ) {
+        case "▲":
+            if ( EV == 252 || last < 4 ) break
+            document.getElementById(`${para[num]}_EV`).value = EV + 4
+            document.getElementById(`EVlast`).textContent = last - 4
+            break
+
+        case "▼":
+            if ( EV == 0 ) break
+            document.getElementById(`${para[num]}_EV`).value = EV - 4
+            document.getElementById(`EVlast`).textContent = last + 4
+            break
     }
 }
 
 function EVchangeStep(){
-    const parameter = ["H_EV", "A_EV", "B_EV", "C_EV", "D_EV", "S_EV"]
+    const parameter = ["H", "A", "B", "C", "D", "S"]
     let total = 0
-    for (const i of parameter){
-        total += Number($("#" + i).val())
+    for ( const para of parameter ) {
+        total += Number(document.getElementById(`${para}_EV`).value)
     }
-    $("#EVlast").text(510 - total)
+    document.getElementById(`EVlast`).textContent = 510 - total
 }
 
 function setNature(){
@@ -288,21 +291,42 @@ function setNature(){
 
 
 // アイテムによって姿が変わるポケモン
-function itemForm(item){
-    const poke = $("#name").val()
-    if (item == "くちたけん" && poke == "ザシアン(れきせんのゆうしゃ)"){
-        $("#name").val("ザシアン(けんのおう)")
-    } else if (item != "くちたけん" && poke == "ザシアン(けんのおう)"){
-        $("#name").val("ザシアン(れきせんのゆうしゃ)")
-    } else if (item == "くちたたて" && poke == "ザマゼンタ(れきせんのゆうしゃ)"){
-        $("#name").val("ザマゼンタ(たてのおう)")
-    } else if (item != "くちたたて" && poke == "ザマゼンタ(たてのおう)"){
-        $("#name").val("ザマゼンタ(れきせんのゆうしゃ)")
-    } else if (item == "はっきんだま" && poke == "ギラティナ(アナザーフォルム)"){
-        $("#name").val("ギラティナ(オリジンフォルム)")
-    } else if (item != "はっきんだま" && poke == "ギラティナ(オリジンフォルム)"){
-        $("#name").val("ギラティナ(アナザーフォルム)")
+function itemForm(){
+    const poke = document.getElementById(`name`).value
+    const item = document.getElementById(`item`).value
+
+    switch ( poke ) {
+        case "ザシアン(れきせんのゆうしゃ)":
+            if ( item != "くちたけん" ) break
+            document.getElementById(`name`).value = "ザシアン(けんのおう)"
+            break
+
+        case "ザシアン(けんのおう)":
+            if ( item == "くちたけん" ) break
+            document.getElementById(`name`).value = "ザシアン(れきせんのゆうしゃ)"
+            break
+
+        case "ザマゼンタ(れきせんのゆうしゃ)":
+            if ( item != "くちたたて" ) break
+            document.getElementById(`name`).value = "ザマゼンタ(たてのおう)"
+            break
+
+        case "ザマゼンタ(たてのおう)":
+            if ( item == "くちたたて" ) break
+            document.getElementById(`name`).value = "ザマゼンタ(れきせんのゆうしゃ)"
+            break
+
+        case "ギラティナ(アナザーフォルム)":
+            if ( item != "はっきんだま" ) break
+            document.getElementById(`name`).value = "ギラティナ(オリジンフォルム)"
+            break
+
+        case "ギラティナ(オリジンフォルム)":
+            if ( item == "はっきんだま" ) break
+            document.getElementById(`name`).value = "ギラティナ(アナザーフォルム)"
+            break
     }
+
     setID()
 }
 
@@ -414,7 +438,7 @@ function setPokemon(){
     party.myID        = Number(team)
     party.myParty     = "me"
     party.myName      = document.getElementById(`name`).value
-    party.myGender    = $("#" + team + "_sex").text()
+    party.myGender    = document.getElementById(`${team}_sex`).textContent
     party.myLevel     = Number(document.getElementById(`lv`).value)
     party.myType      = document.getElementById(`type`).textContent.split("、")
     party.myNature    = document.getElementById(`nature`).textContent
