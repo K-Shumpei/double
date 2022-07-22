@@ -66,35 +66,35 @@ function actAbilityEtc( poke ) {
     // 2.設置技: 技が使用された順に発動
     if ( !(poke.myItem == "あつぞこブーツ" && isItem(poke)) ) {
         // まきびし
-        if ( isField(poke).mySpikes && onGround(poke) ) {
-            const damage = Math.floor(poke.myFull_hp / (10 - (isField(poke).mySpikes * 2)))
+        if ( getMyField(poke).mySpikes && onGround(poke) ) {
+            const damage = Math.floor(poke.myFull_hp / (10 - (getMyField(poke).mySpikes * 2)))
             writeLog(`${poke.myTN} の ${poke.myName} は まきびしを 踏んづけた !`)
             changeHP(poke, damage, "-")
         }
         // どくびし
-        if ( isField(poke).myToxic_spikes && onGround(poke) ) {
+        if ( getMyField(poke).myToxic_spikes && onGround(poke) ) {
             if ( poke.myType.includes("どく") ) {
-                isField(poke).myToxic_spikes = 0
+                getMyField(poke).myToxic_spikes = 0
                 writeLog(`${poke.myTN} の場の どくびしが消え去った !`)
             } else {
-                if ( isField(poke).myToxic_spikes == 1 ) getAbnormal(poke, "どく")
-                else if ( isField(poke).myToxic_spikes == 2 ) getAbnormal(poke, "もうどく")
+                if ( getMyField(poke).myToxic_spikes == 1 ) getAbnormal(poke, "どく")
+                else if ( getMyField(poke).myToxic_spikes == 2 ) getAbnormal(poke, "もうどく")
             }
         }
         // ステルスロック
-        if ( isField(poke).myStealth_rock ) {
+        if ( getMyField(poke).myStealth_rock ) {
             const rate = 1 // compatibilityCheck()
             const damage = Math.max(Math.floor(poke.myFull_hp * rate / 8), 1)
             writeLog(`${poke.myTN} の ${poke.myName} に 尖った岩が食い込んだ !`)
             changeHP(poke, damage, "-")
         }
         // ねばねばネット
-        if ( isField(poke).mySticky_web && onGround(poke) ) {
+        if ( getMyField(poke).mySticky_web && onGround(poke) ) {
             writeLog(`${poke.myTN} の ${poke.myName} は ねばねばネットに引っかかった !`)
             changeRank(poke, "speed", -1, false)
         }
         // キョダイコウジン
-        if ( isField(poke).mySteelsurge ) {
+        if ( getMyField(poke).mySteelsurge ) {
             const rate = 1 // compatibilityCheck()
             const damage = Math.max(Math.floor(poke.myFull_hp * rate / 8), 1)
             writeLog(`${poke.myTN} の ${poke.myName} に 尖った鋼が食い込んだ !`)

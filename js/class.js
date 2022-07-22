@@ -48,7 +48,6 @@ class Party {
         this.emergency     = false // ききかいひ/にげごしが発動したらtrue
         this.red_card      = false // レッドカードが発動したらtrue
         this.switch        = false // とんぼがえり/ボルトチェンジ/クイックターンが発動すればtrue
-
     }
 
     //セッターメソッド
@@ -132,7 +131,7 @@ class Party {
     // 技の対象の数　0なら[]、1なら[true]、2なら[true, true]　全てfalseになると技は失敗
     set myTarget( value )      { this.target = value }
     // ポケモン特有のもの
-    set myDisguise( value ) { this.myDisguise = value } // ばけのかわが有効なら"ばけたすがた"、無効なら""ばれたすがた"
+    set myDisguise( value ) { this.disguise = value } // ばけのかわが有効なら"ばけたすがた"、無効なら""ばれたすがた"
     set myIce_face( value ) { this.ice_face = value }
     // 行動順
     set myOrder_fast( value )     { this.order_fast = value }
@@ -613,6 +612,7 @@ class Field {
 
         this.aurora_clay   = false // オーロラベール　ひかりのねんどならtrue
         this.aurora_veil   = false // オーロラベール経過ターン数
+        this.baton_pass    = false // バトンタッチ継承内容
         this.cannonade     = false // キョダイホウゲキ経過ターン数
         this.extender      = false // グランドコートが有効ならtrue
         this.fire_ocean    = false // ひのうみ経過ターン数
@@ -644,6 +644,7 @@ class Field {
 
     set myAurora_clay( value )   { this.aurora_clay = value }
     set myAurora_veil( value )   { this.aurora_veil = value }
+    set myBaton_pass( value )    { this.baton_pass = value }
     set myCannonade( value )     { this.cannonade = value }
     set myExtender( value )      { this.extender = value }
     set myFire_ocean( value )    { this.fire_ocean = value }
@@ -674,6 +675,7 @@ class Field {
 
     get myAurora_clay()   { return this.aurora_clay }
     get myAurora_veil()   { return this.aurora_veil }
+    get myBaton_pass()    { return this.Baton_pass }
     get myCannonade()     { return this.cannonade }
     get myExtender()      { return this.extender }
     get myFire_ocean()    { return this.fire_ocean }

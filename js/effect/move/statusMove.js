@@ -6,7 +6,7 @@ var statusMoveToChangeRankForAllOfUs = [
 ]
 
 // ランク変化させる変化技（対象が相手全体）
-var statusMoveToChangeRankForAllOfYou = [
+const statusMoveToChangeRankForAllOfYou = [
     {name: 'あまいかおり', rank: [{parameter: 'evasion', change: -2}]}, 
     {name: 'いとをはく', rank: [{parameter: 'speed', change: -2}]}, 
     {name: 'しっぽをふる', rank: [{parameter: 'def', change: -1}]}, 
@@ -18,7 +18,7 @@ var statusMoveToChangeRankForAllOfYou = [
 ]
 
 // ランク変化させる変化技（対象が1体選択）
-var statusMoveToChangeRankForOneOfThem = [
+const statusMoveToChangeRankForOneOfThem = [
     {name: 'あまえる', rank: [{parameter: 'atk', change: -2}]}, 
     {name: 'いやなおと', rank: [{parameter: 'def', change: -2}]}, 
     {name: 'いばる', rank: [{parameter: 'atk', change: 2}]}, 
@@ -86,7 +86,7 @@ var statusMoveToChangeRankForMe = [
 ]
 
 // 状態異常を付与する変化技（対象が1体選択）
-var statusMoveToMakeAbnormalForOneOfThem = [
+const statusMoveToMakeAbnormalForOneOfThem = [
     {name: 'あくまのキッス', ailment: 'ねむり'}, 
     {name: 'あやしいひかり', ailment: 'こんらん'}, 
     {name: 'いばる', ailment: 'こんらん'}, 
@@ -108,12 +108,22 @@ var statusMoveToMakeAbnormalForOneOfThem = [
 ]
 
 // 状態異常を付与する変化技（対象が相手全体）
-var statusMoveToMakeAbnormalForAllOfYou = [
+const statusMoveToMakeAbnormalForAllOfYou = [
     {name: 'ダークホール', ailment: 'ねむり'}, 
     {name: 'どくガス', ailment: 'どく'}
 ]
 
 // 状態異常を付与する変化技（対象が自分以外）
-var statusMoveToMakeAbnormalForExceptForme = [
+const statusMoveToMakeAbnormalForExceptForMe = [
     {name: 'フラフラダンス', ailment: 'こんらん'}
 ]
+
+// 状態変化を付与する変化技
+const moveList_status_ailment = []
+    .concat(statusMoveToMakeAbnormalForOneOfThem)   // 対象が1体選択
+    .concat(statusMoveToMakeAbnormalForAllOfYou)    // 対象が相手全体
+    .concat(statusMoveToMakeAbnormalForExceptForMe) // 対象が自分以外
+
+const moveList_status_rank_someone = []
+    .concat(statusMoveToChangeRankForOneOfThem) // 対象が1体選択
+    .concat(statusMoveToChangeRankForAllOfYou)  // 対象が相手全体

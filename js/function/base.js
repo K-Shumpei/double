@@ -1,14 +1,8 @@
-async function writeLog(txt){
+function writeLog( txt ) {
     document.getElementById("log").value += txt + "\n"
-
-    await sleep(2000)
 }
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function showHPbar(poke){
+function showHPbar( poke ) {
     // バトル画面のHPバー表示
     document.getElementById(`${poke.myParty}_${poke.myPosition}_HP_bar_in_battle`).value = poke.myRest_hp / poke.myFull_hp
     // 手持ち画面のHPバー表示
@@ -41,31 +35,33 @@ function getNextPoke( poke ) {
             return _poke
         }
     }
+    return false
 }
 
 // 5捨6入
-function fiveCut(number){
-    if ((number % 1) > 0.5){
+function fiveCut( number ) {
+    if ( (number % 1) > 0.5 ) {
         return Math.floor(number) + 1
     } else {
         return Math.floor(number)
     }
 }
 
-function moveSearchByName(name){
+function moveSearchByName( name ) {
     for ( const move of moveList ) {
         if ( name == move.name ) {
             return move
         }
     }
+    return false
 }
 
-function getParty(poke) {
+function getParty( poke ) {
     if ( poke.myParty == "me" )  return myParty
     if ( poke.myParty == "opp" ) return oppParty
 }
 
-function getOppParty(poke) {
+function getOppParty( poke ) {
     if ( poke.myParty == "me" )  return oppParty
     if ( poke.myParty == "opp" ) return myParty
 }
@@ -246,12 +242,12 @@ function enableToRecycle(poke){
 
 
 
-function isField(poke){
+function getMyField(poke){
     if ( poke.myParty == "me" )  return myField
     if ( poke.myParty == "opp" ) return oppField
 }
 
-function isOppField(poke){
+function getOppField(poke){
     if ( poke.myParty == "me" )  return oppField
     if ( poke.myParty == "opp" ) return myField
 }
@@ -346,22 +342,22 @@ function activateTerrain(poke, terrain) {
     resetTerrain()
     if ( terrain == "electric" ) {
         fieldStatus.myElectric = 1
-        if ( poke.myItem == "グランドコート" && isItem(poke) ) isField(poke).myExtender = true
+        if ( poke.myItem == "グランドコート" && isItem(poke) ) getMyField(poke).myExtender = true
         writeLog(`足元に電気が駆け巡る`)
     }
     if ( terrain == "grassy" ) {
         fieldStatus.myGrassy = 1
-        if ( poke.myItem == "グランドコート" && isItem(poke) ) isField(poke).myExtender = true
+        if ( poke.myItem == "グランドコート" && isItem(poke) ) getMyField(poke).myExtender = true
         writeLog(`足元に草が生い茂る`)
     }
     if ( terrain == "misty" ) {
         fieldStatus.myMisty = 1
-        if ( poke.myItem == "グランドコート" && isItem(poke) ) isField(poke).myExtender = true
+        if ( poke.myItem == "グランドコート" && isItem(poke) ) getMyField(poke).myExtender = true
         writeLog(`足元に霧が広がった`)
     }
     if ( terrain == "psychic" ) {
         fieldStatus.myPsychic = 1
-        if ( poke.myItem == "グランドコート" && isItem(poke) ) isField(poke).myExtender = true
+        if ( poke.myItem == "グランドコート" && isItem(poke) ) getMyField(poke).myExtender = true
         writeLog(`足元に不思議な感じが広がった`)
     }
 
@@ -377,22 +373,22 @@ function activateWeather(poke, weather) {
     resetWeather()
     if ( weather == "rainy" ) {
         fieldStatus.myRainy = 1
-        if ( poke.myItem == "しめったいわ" && isItem(poke) ) isField(poke).myWeather_long = true
+        if ( poke.myItem == "しめったいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
         writeLog(`雨が降り始めた`)
     }
     if ( weather == "graupel" ) {
         fieldStatus.myGraupel = 1
-        if ( poke.myItem == "つめたいいわ" && isItem(poke) ) isField(poke).myWeather_long = true
+        if ( poke.myItem == "つめたいいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
         writeLog(`あられが降り始めた`)
     }
     if ( weather == "sandstorm" ) {
         fieldStatus.mySandstorm = 1
-        if ( poke.myItem == "さらさらいわ" && isItem(poke) ) isField(poke).myWeather_long = true
+        if ( poke.myItem == "さらさらいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
         writeLog(`砂嵐が吹き始めた`)
     }
     if ( weather == "sunny" ) {
         fieldStatus.mySunny = 1
-        if ( poke.myItem == "あついいわ" && isItem(poke) ) isField(poke).myWeather_long = true
+        if ( poke.myItem == "あついいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
         writeLog(`日差しが強くなった`)
     }
 
@@ -650,7 +646,7 @@ function isTargetBySkyDrop(poke) {
 // 2.ちゅうもくのまと状態の敵
 function isTargetBySpotlight(poke) {
     // ちゅうもくのまと状態になった順に優先される
-    for ( const spot of isOppField(poke).mySpotlight ) {
+    for ( const spot of getOppField(poke).mySpotlight ) {
         if ( spot.move == "いかりのこな" ) {
             if ( poke.myType.includes("くさ") ) break
             if ( poke.myItem == "ぼうじんゴーグル" && isItem(poke) ) break

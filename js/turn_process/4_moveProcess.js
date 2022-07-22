@@ -236,8 +236,10 @@ function giveDamage(poke){
         }
 
         // ダメージを与える
-        tgt.poke.myRest_hp -= tgt.damage
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${tgt.damage} のダメージ !`)
+        if ( tgt.damage > 0 ) {
+            tgt.poke.myRest_hp -= tgt.damage
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${tgt.damage} のダメージ !`)
+        }
         // HPバーの表示
         showHPbar(tgt.poke)
 
@@ -473,9 +475,9 @@ function activateAdditionalEffectEtc(poke){
 // 9.ダメージが発生したときの効果
 function effectWithDamage(poke){
     for ( const tgt of poke.myTarget ) {
+        // ばけのかわ・アイスフェイス以外、1以上のダメージがある
         if ( !tgt.success )   continue // すでに失敗していないこと
         if ( tgt.substitute ) continue // みがわりが有効でないこと
-        if ( tgt.damage > 0 ) continue // ダメージが0以上であること
 
         // 1.コアパニッシャーによるとくせいなし
         if ( poke.myMove.name == "コアパニッシャー" ) {
@@ -869,7 +871,7 @@ function effectWithDamage(poke){
                 case "ばけのかわ":
                     if ( tgt.poke.myDisguise != "ばけたすがた" ) break
                     abilityDeclaration(tgt.poke)
-                    changeHP(tgt.poke, Math.floor(tgt.poke.full_HP / 8 * isDynamax(tgt.poke)), "-")
+                    changeHP(tgt.poke, Math.floor(tgt.poke.myFull_hp / 8 * isDynamax(tgt.poke)), "-")
                     tgt.poke.myDisguise = "ばれたすがた"
                     break
 
@@ -1175,24 +1177,24 @@ function activateMoveEffect(poke){
                 resetBind(poke)
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は バインドから 解放された`)
             }
-            if ( isField(poke).mySpikes > 0 ) {
-                isField(poke).mySpikes = 0
+            if ( getMyField(poke).mySpikes > 0 ) {
+                getMyField(poke).mySpikes = 0
                 writeLog(`${tgt.poke.myTN} の場の まきびしが 消え去った`)
             }
-            if ( isField(poke).myToxic_spikes > 0 ) {
-                isField(poke).myToxic_spikes = 0
+            if ( getMyField(poke).myToxic_spikes > 0 ) {
+                getMyField(poke).myToxic_spikes = 0
                 writeLog(`${tgt.poke.myTN} の場の どくびしが 消え去った`)
             }
-            if ( isField(poke).myStealth_rock ) {
-                isField(poke).myStealth_rock = false
+            if ( getMyField(poke).myStealth_rock ) {
+                getMyField(poke).myStealth_rock = false
                 writeLog(`${tgt.poke.myTN} の場の ステルスロックが 消え去った`)
             }
-            if ( isField(poke).mySticky_web ) {
-                isField(poke).mySticky_web = false
+            if ( getMyField(poke).mySticky_web ) {
+                getMyField(poke).mySticky_web = false
                 writeLog(`${tgt.poke.myTN} の場の ねばねばネットが 消え去った`)
             }
-            if ( isField(poke).mySteelsurge ) {
-                isField(poke).mySteelsurge = false
+            if ( getMyField(poke).mySteelsurge ) {
+                getMyField(poke).mySteelsurge = false
                 writeLog(`${tgt.poke.myTN} の場の キョダイコウジンが 消え去った`)
             }
         }
@@ -1350,7 +1352,7 @@ function defenseItemEffect(poke){
         if ( tgt.poke.myItem == "タラプのみ" && poke.myMove.nature == "特殊" ) {
             itemDeclaration(tgt.poke)
             enableToRecycle(tgt.poke)
-            changeRank(tgt.poke, "dp_def", isRipen(tgt.poke))
+            changeRank(tgt.poke, "sp_def", isRipen(tgt.poke))
         }
         // だっしゅつボタン/レッドカードによって手持ちに戻るまで
         if ( tgt.poke.myItem == "だっしゅつボタン" && isBench(tgt.poke) ) {

@@ -8,7 +8,7 @@ function toHand( poke ){
 
     if ( poke.myRest_hp == 0 ) {
         writeLog(`${poke.myTN} の ${poke.myName} は 倒れた !`)
-        for ( const _poke of allPokeInBattle() ){
+        for ( const _poke of allPokeInBattle() ) {
             if ( _poke.myAbility == "ソウルハート" && isAbility(_poke) ) {
                 abilityDeclaration(_poke)
                 changeRank(poke, "sp_atk", 1, false)
@@ -17,13 +17,38 @@ function toHand( poke ){
     }
     
     // フォルムを元に戻す
-    if ( poke.myName == "メテノ(コア)" ) formChange(poke, "メテノ(りゅうせいのすがた)", false)
-    if ( poke.myName == "チェリム(ポジフォルム)" ) formChange(poke, "チェリム", false)
-    if ( poke.myName == "ヒヒダルマ(ダルマモード)" ) formChange(poke, "ヒヒダルマ", false)
-    if ( poke.myName == "メロエッタ(ステップフォルム)" ) formChange(poke, "メロエッタ(ボイスフォルム)", false)
-    if ( poke.myName == "ギルガルド(ブレードフォルム)" ) formChange(poke, "ギルガルド(シールドフォルム)", false)
-    if ( poke.myName == "ヒヒダルマ(ダルマモード(ガラルのすがた))" ) formChange(poke, "ヒヒダルマ(ガラルのすがた)", false)
-    if ( poke.myName != "ポワルン" && poke.myName.includes("ポワルン") ) formChange(poke, "ポワルン", false)
+    switch ( poke.myName ) {
+        case "メテノ(コア)":
+            formChange(poke, "メテノ(りゅうせいのすがた)", false)
+            break
+
+        case "チェリム(ポジフォルム)":
+            formChange(poke, "チェリム", false)
+            break
+
+        case "ヒヒダルマ(ダルマモード)":
+            formChange(poke, "ヒヒダルマ", false)
+            break
+
+        case "メロエッタ(ステップフォルム)":
+            formChange(poke, "メロエッタ(ボイスフォルム)", false)
+            break
+
+        case "ギルガルド(ブレードフォルム)":
+            formChange(poke, "ギルガルド(シールドフォルム)", false)
+            break
+
+        case "ヒヒダルマ(ダルマモード(ガラルのすがた))":
+            formChange(poke, "ヒヒダルマ(ガラルのすがた)", false)
+            break
+
+        case "ポワルン":
+            break
+
+        default:
+            if ( poke.myName.includes("ポワルン") ) formChange(poke, "ポワルン", false)
+            break
+    }
 
     // 特性の発動
     if ( isAbility(poke) && poke.myRest_hp > 0 ) {
@@ -90,7 +115,7 @@ function toHand( poke ){
     }
 
     // 対象の注目の的状態を解除
-    isField(poke).mySpotlight = isField(poke).mySpotlight.filter( spot => spot.position != poke.myPosition )
+    getMyField(poke).mySpotlight = getMyField(poke).mySpotlight.filter( spot => spot.position != poke.myPosition )
     
     /*
     // ダイマックスポケモンを引っ込める時、ダイマックス権を失う
@@ -193,8 +218,7 @@ function toHand( poke ){
 function summon( poke, position ) {
     // バトル場の位置、控えならnull
     poke.myPosition = position
-    // 手持ちの一番前にする（イリュージョンのため）
-    // バトルの初めは行わない処理
+    // 手持ちの一番前にする（イリュージョン用、バトルの初めは行わない処理）
     const log = document.getElementById("log").value
     const turn = (log.match( /ターン目/g ) || []).length + 1
     if ( turn > 1 ) {
@@ -222,30 +246,30 @@ function summon( poke, position ) {
         [ poke.myDef, poke.mySp_def ] = [ poke.mySp_def, poke.myDef ]
     }
 
+    // もうどく
+    if ( poke.myBad_poison !== false ) poke.myBad_poison = 1
+
+    // バトンタッチ
+    const batonPass = getMyField(poke).myBaton_pass
+    if ( batonPass !== undefined ) {
+        for ( const rank in batonPass.rank ) {
+            poke[`myRank_${rank}`] = batonPass.rank[rank]
+        }
+        for ( const con in batonPass.condition ) {
+            poke.myCondition[`my${con}`] = batonPass.condition[con]
+        }
+        getMyField(poke).myBaton_pass = false
+
+        // バトン先が状態変化に耐性を持つ場合、引き継いだ状態変化が回復することがある。逆に、バトンタッチで引き継がれると本来耐性を持つ状態変化にかかってしまうこともある。
+            // 特性マイペースのポケモンにこんらん状態を引き継ぐと、第三世代・第四世代では場に出た直後にこんらんが治る。第五世代以降では直後ではなく、ポケモンやトレーナーが何かしらの行動を完了した後にマイペースが発動しこんらんが治る。
+            // とくせいなし状態を無効化する特性のポケモンにとくせいなし状態を引き継ぐ場合、とくせいなし状態は治る。
+            // テレキネシスにならない性質を持つポケモンの内、ディグダ・ダグトリオ・スナバァ・シロデスナに引き継ぐ場合はテレキネシス状態は治らない。メガゲンガーに引き継ぐときはテレキネシス状態が治る。
+            // 第六世代・第七世代では、ゴーストタイプに引き継がれたにげられない状態は治る。
+            // くさタイプ自体にやどりぎのタネ状態を回復する効果は無いので、やどりぎのタネ状態が引き継がれても状態は治らない。
+        // パワートリックを偶数回使ってこうげきとぼうぎょが元に戻ったポケモンがバトンタッチを使用した場合、第四世代まではバトン先のポケモンのこうげきとぼうぎょは入れ替わっていない。第五世代以降では、奇数回のパワートリックを引き継いだときと同様に、バトン先のポケモンのこうげきとぼうぎょは入れ替わる。
+    }
+
     /*
-    let con = me["con" + n]
-    removeText(me.f_con, "ひんし" + con.child)
-    removeText(me.f_con, "選択中" + con.child)
-
-    let num = con.com - 4
-
-    // 各パラメータを記述
-    for (const parameter of ["name", "sex", "level", "type", "ability", "item", "abnormal", "nature", "num", "full_HP", "last_HP", "A_AV", "B_AV", "C_AV", "D_AV", "S_AV", 
-        "move_0", "move_1", "move_2", "move_3", "PP_0", "PP_1", "PP_2", "PP_3", "last_0", "last_1", "last_2", "last_3"]){
-            con[parameter] = me["poke" + num][parameter]
-        }
-    for (const parameter of ["A_rank", "B_rank", "C_rank", "D_rank", "S_rank", "X_rank", "Y_rank"]){
-        con[parameter] = 0
-    }
-    con.result = ""
-
-    me["poke" + num].life = "戦闘中"
-
-    for (let i = 0; i < 4; i++){
-        if (me["poke" + i].life == "選択中" ) {
-            me["poke" + i].life = "控え"
-        }
-    }
 
     // 特性『イリュージョン』
     if (con.ability == "イリュージョン" ) {
@@ -261,43 +285,6 @@ function summon( poke, position ) {
             }
             con.p_con += "特性『イリュージョン』：" + num + "\n"
         }
-    }
-    // 特性『ばけのかわ』
-    if (con.ability == "ばけのかわ" && me["poke" + num].form == "" ) {
-        me["poke" + num].form = "ばけたすがた"
-    }
-    if (me["poke" + num].form == "ばけたすがた" ) {
-        con.p_con += "ばけたすがた" + "\n"
-    } else if (me["poke" + num].form == "ばれたすがた" ) {
-        con.p_con += "ばれたすがた" + "\n"
-    }
-    // 特性『はらぺこスイッチ』
-    if (con.ability == "はらぺこスイッチ" ) {
-        con.p_con += "まんぷくもよう" + "\n"
-    }
-    // 状態異常『ねむり』
-    if (con.abnormal.includes("ねむり") || con.abnormal.includes("ねむる")){
-        const turn = con.abnormal.slice(4)
-        con.abnormal = "ねむり"
-        con.p_con += "状態異常『ねむり』　" + turn + "\n"
-    } else if (con.abnormal == "もうどく" ) {
-        con.p_con += "状態異常『もうどく』　1ターン目" + "\n"
-    }
-    // バトンタッチの時、ランク変化を受け継ぐ
-    for (let i = 0; i < con.p_con.split("\n").length; i++){
-        if (con.p_con.split("\n")[i].includes("バトンタッチ")){
-            const rank = con.p_con.split("\n")[i].slice(7).split("/")
-            const para_rank = ["A_rank", "B_rank", "C_rank", "D_rank", "S_rank", "X_rank", "Y_rank"]
-            for (let j = 0; j < 7; j++){
-                con[para_rank[j]] = rank[j]
-            }
-        }
-    }
-    removeText(con.p_con, "バトンタッチ")
-    // 特性「かがくへんかガス」のポケモンがいる時
-    if (you.con0.ability == "かがくへんかガス" || you.con1.ability == "かがくへんかガス" ) {
-        con.p_con += "特性『かがくへんかガス』：" + con.ability + "\n"
-        con.ability = ""
     }
 
     // メガ進化、Z技、ダイマックスボタンの有効化

@@ -945,9 +945,9 @@ function dmgCorr_burn(poke) {
 function dmgCorr_wall(poke, tgt) {
     if ( tgt.critical ) return 1
     if ( poke.myAbility == "すりぬけ" && isAbility(poke) ) return 1
-    if ( isField(tgt.poke).myAurora_veil ) return 2732 / 4096
-    if ( isField(tgt.poke).myReflect  && poke.myMove.nature == "物理" ) return 2732 / 4096
-    if ( isField(tgt.poke).myLight_screen && poke.myMove.nature == "特殊" ) return 2732 / 4096
+    if ( getMyField(tgt.poke).myAurora_veil ) return 2732 / 4096
+    if ( getMyField(tgt.poke).myReflect  && poke.myMove.nature == "物理" ) return 2732 / 4096
+    if ( getMyField(tgt.poke).myLight_screen && poke.myMove.nature == "特殊" ) return 2732 / 4096
     return 1
 }
 

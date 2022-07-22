@@ -65,15 +65,15 @@ function moveSuccessJudge(poke) {
     // 28.マグニチュード使用時は威力が決定される
     magnitude(poke)
     // 29.姿を隠していることによる無効化
-    if ( hideInvalidation(poke) ) return false
+    if ( invalidByHide(poke) ) return false
     // 30.サイコフィールドによる無効化
-    if ( phschoFieldInvalidation(poke) ) return false
+    if ( invalidByTerrain1st(poke) ) return false
     // 31.0 シャドーダイブ・ゴーストダイブによるまもるの解除
     breakProtect(poke)
     // 31.ファストガード/ワイドガード/トリックガードによる無効化 (Zワザ/ダイマックスわざならダメージを75%カットする)
-    if ( otherProtectInvalidation(poke) ) return false
+    if ( invalidByProtect1st(poke) ) return false
     // 32.まもる/キングシールド/ブロッキング/ニードルガード/トーチカによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
-    if ( protectInvalidation(poke) ) return false
+    if ( invalidByProtect2nd(poke) ) return false
     // 33.たたみがえしによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
     if ( matBlock(poke) ) return false
     // 34.ダイウォールによる無効化
@@ -85,12 +85,12 @@ function moveSuccessJudge(poke) {
     // 38.特性による無効化(その1)
     if ( invalidByAbility1st(poke) ) return false
     // 39.相性による無効化
-    if ( invalidByCompatibility(poke) ) return false
+    if ( invalidByComp(poke) ) return false
     // 40,ふゆうによる無効化 41とまとまっている
     // 41.でんじふゆう/テレキネシス/ふうせんによる無効化
     if ( levitateInvalidation(poke) ) return false
     // 42.ぼうじんゴーグルによる無効化
-    if ( powderGoggleInvalidation(poke) ) return false
+    if ( invalidByPowderGoggle(poke) ) return false
     // 43.特性による無効化(その2)
     if ( invalidByAbility2nd(poke) ) return false
     // 44.タイプによる技の無効化(その1)
@@ -102,15 +102,15 @@ function moveSuccessJudge(poke) {
     // 47.タイプによる技の無効化(その2)
     if ( invalidByType2nd(poke) ) return false
     // 48.さわぐによるねむりの無効化
-    uproar(poke)
+    invalidByUproar(poke)
     // 49.しんぴのまもり状態による無効化
-    if ( safeguardInvalidation(poke) ) return false
+    if ( invalidBySafeguard(poke) ) return false
     // 50.エレキフィールド/ミストフィールド状態による状態異常の無効化
-    if ( fieldInvalidation(poke) ) return false
+    if ( invalidByTerrain2nd(poke) ) return false
     // 51.みがわり状態によるランク補正を下げる技/デコレーションの無効化
-    if ( substituteInvalidation1(poke) ) return false
+    if ( invalidBySub1st(poke) ) return false
     // 52.しろいきりによる無効化
-    if ( mistInvalidation(poke) ) return false
+    if ( invalidByMist(poke) ) return false
     // 53.特性による無効化(その3)
     if ( invalidByAbility3rd(poke) ) return false
     // 54.命中判定による技の無効化
@@ -124,7 +124,7 @@ function moveSuccessJudge(poke) {
     // 58. ポルターガイストで対象のもちものが表示される
     poltergeist(poke)
     // 59.みがわりによるランク補正を変動させる効果以外の無効化
-    if ( substituteInvalidation2(poke) ) return false
+    if ( invalidBySub2nd(poke) ) return false
     // 60.ミラーアーマー: ランクを下げる変化技の反射
     if ( millorArmer(poke) ) return false
     // 61.ほえる・ふきとばしの無効化
@@ -899,12 +899,12 @@ function remainEffectMove(poke) {
             }
             // 自分の場に攻撃する時
             if ( poke.myCmd_tgt == 0 || poke.myCmd_tgt == 1 ) {
-                futureSight.party = isField(poke).myParty
+                futureSight.party = getMyField(poke).myParty
                 futureSight.position = poke.myCmd_tgt
             }
             // 相手の場に攻撃する時
             if ( poke.myCmd_tgt == 2 || poke.myCmd_tgt == 3 ) {
-                futureSight.party = isOppField(poke).myParty
+                futureSight.party = getOppField(poke).myParty
                 futureSight.position = poke.myCmd_tgt - 2
             }
             fieldStatus.myFuture_sight.push(futureSight)
@@ -990,7 +990,7 @@ function accumulateOperation(poke) {
         poke.myCondition.mySky      = true
         tgt.myCondition.mySky_drop  = true
         // 対象の注目の的状態を解除
-        isField(tgt.poke).mySpotlight = isField(tgt.poke).mySpotlight.filter( spot => spot.position != tgt.poke.myPosition )
+        getMyField(tgt.poke).mySpotlight = getMyField(tgt.poke).mySpotlight.filter( spot => spot.position != tgt.poke.myPosition )
         return true
     }
     
@@ -1128,65 +1128,30 @@ function magnitude(poke) {
 }
 
 // 29.姿を隠していることによる無効化
-function hideInvalidation(poke) {
+function invalidByHide(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue
 
-        // 以下の状況では姿を隠していても当たる
-        if ( poke.myMove.name != "フリーフォール" ) {
-            if ( poke.myCondition.myLock_on ) continue
-            if ( poke.myAbility == "ノーガード" && isAbility(poke) ) continue
-            if ( tgt.poke.myAbility == "ノーガード" && isAbility(tgt.poke) ) continue
-        }
-        if ( poke.myMove.name == "どくどく" && poke.myType.includes("どく") ) continue
-        if ( poke.myMove.name == "アロマセラピー" ) continue
-        if ( poke.myMove.name == "いやしのすず" ) continue
-        if ( poke.myMove.name == "てだすけ" ) continue
-
-        if ( !isHide(tgt.poke) ) continue
-
-        // 以下の状況では当たらない
-        switch ( poke.myMove.name ) {
-            case "じしん":
-            case "マグニチュード":
-                if ( tgt.poke.myCondition.myDig ) continue
-                break
-
-            case "うちおとす":
-            case "かぜおこし":
-            case "かみなり":
-            case "サウザンアロー":
-            case "スカイアッパー":
-            case "たつまき":
-            case "ぼうふう":
-                if ( tgt.poke.myCondition.mySky ) continue
-                break
-
-            case "なみのり":
-            case "うずしお":
-                if ( tgt.poke.myCondition.myDive ) continue
-                break
-        }
-
-        tgt.success = false
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 当たらなかった !`)
+        // 姿を隠していることによる無効化
+        if ( invalidByHide_hide(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 当たらなかった !`)
+        }  
     }
 
     return checkMoveSuccess(poke)
 }
 
 // 30.サイコフィールドによる無効化
-function phschoFieldInvalidation(poke) {
-    if ( !fieldStatus.myPsychic )    return false // サイコフィールド状態であること
-    if ( poke.myMove.priority <= 0 ) return false // 技の優先度が1以上であること
-
+function invalidByTerrain1st(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )                     continue // すでに失敗していないこと
-        if ( poke.myParty == tgt.poke.myParty ) continue // 対象が相手のポケモンであること
-        if ( !onGround(tgt.poke) )              continue // 対象が接地していること
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
-        writeLog(`${tgt.poke.name} は サイコフィールドに 守られている !`)
-        tgt.success = false
+        if ( invalidByTerrain1st_psychic(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.name} は サイコフィールドに 守られている !`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)
@@ -1206,68 +1171,36 @@ function breakProtect(poke) {
         tgt.poke.myCondition.myProtect = false
         // 場に接地するまもるを解除
         for ( const _poke of myPokeInBattle(tgt.poke) ) {
-            isField(_poke).myMat_block     = false // たたみがえし
-            isField(_poke).myWide_guard    = false // ワイドガード
-            isField(_poke).myQuick_guard   = false // ファストガード
-            isField(_poke).myCrafty_shield = false // トリックガード
+            getMyField(_poke).myMat_block     = false // たたみがえし
+            getMyField(_poke).myWide_guard    = false // ワイドガード
+            getMyField(_poke).myQuick_guard   = false // ファストガード
+            getMyField(_poke).myCrafty_shield = false // トリックガード
         }
     }
 }
 
 // 31.ファストガード/ワイドガード/トリックガードによる無効化 (Zワザ/ダイマックスわざならダメージを75%カットする)
-function otherProtectInvalidation(poke) {
-    /*
-    if (atk.data.Z) {
-        return false
-    }
-    */
-
-    // ファストガード
-    const quick_guard = (poke, tgt) => {
-        if ( !isField(tgt).myQuick_guard ) return false // ファストガード状態であること
-        if ( poke.myMove.priority <= 0 )  return false // 優先度が1以上であること
-
-        return true
-    }
-    // ワイドガード
-    const wide_guard = (poke, tgt) => {
-        if ( !isField(tgt).myWide_guard )  return false // ワイドガード状態であること
-        if ( poke.myMove.target == "相手全体" )  return false
-        if ( poke.myMove.target == "自分以外" )  return false
-
-        return true
-    }
-    // トリックガード
-    const crafty_shield = (poke, tgt) => {
-        if ( !isField(tgt).myCrafty_shield ) return false   // トリックガード状態であること
-        if ( poke.myID == tgt.myID ) return false          // 対象が自分でないこと
-        if ( poke.myMove.nature != "変化" ) return false    // 変化技であること
-        if ( poke.myMove.target == "全体" ) return false    // 対象が全体でないこと
-        if ( poke.myMove.target == "味方全体" ) return false // 対象が味方全体でないこと
-        if ( poke.myMove.name == "コーチング" ) return false // コーチングは防げない
-        if ( poke.myMove.name == "さきどり" ) return false   // さきどりは防げない
-
-        return true
-    }
-
-
+function invalidByProtect1st(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
         // ファストガード
-        if ( quick_guard(poke, tgt.poke) ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ファストガードに 守られている !`)
+        if ( invalidByProtect1st_quick(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ファストガードに 守られている !`)
+            continue
         }
         // ワイドガード
-        if ( wide_guard(poke, tgt.poke) ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ワイドガードに 守られている !`)
+        if ( invalidByProtect1st_wide(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ワイドガードに 守られている !`)
+            continue
         }
         // トリックガード
-        if ( crafty_shield(poke, tgt.poke) ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は トリックガードに 守られている !`)
+        if ( invalidByProtect1st_crafty(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は トリックガードに 守られている !`)
+            continue
         }
     }
 
@@ -1275,22 +1208,13 @@ function otherProtectInvalidation(poke) {
 }
 
 // 32.まもる/キングシールド/ブロッキング/ニードルガード/トーチカによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
-function protectInvalidation(poke) {
-    /*if (((atk.data.Z && move.nature != "変化") || atk.data.dynaTxt.includes("3") || atk.data.gigaTxt.includes("3")) && !def.con.p_con.includes("ダイウォール")) {
-        return false 
-    }*/
-
+function invalidByProtect2nd(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success ) continue                      // すでに失敗していないこと
-        if ( cannotProtectByDynaWall.includes(poke.myMove.name) ) continue // ダイウォールでも防げない技
-        if ( !tgt.poke.myCondition.myMax_guard ) { // ダイウォール状態でない時
-            if ( poke.myMove.protect == "不能" ) continue
-            if ( poke.myAbility == "ふかしのこぶし" && isAbility(poke) && poke.myMove.direct == "直接" ) continue
-        }
-       
-        if ( tgt.poke.myCondition.myProtect || tgt.poke.myCondition.myMax_guard ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 攻撃を守った !`)
+        if ( !tgt.success ) continue // すでに失敗していないこと
+
+        if ( invalidByProtect2nd_protect(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 攻撃を守った !`)
 
             // 直接攻撃　かつ　ぼうごパットを持っていない　なら追加効果を受ける
             if ( poke.myMove.direct == "間接" ) continue
@@ -1389,17 +1313,14 @@ function invalidByAbility1st(poke) {
 }
 
 // 39.相性による無効化
-function invalidByCompatibility(poke) {
-    if ( poke.myMove.name == "わるあがき" ) return false // わるあがきにタイプ相性はない
-    if ( poke.myMove.nature == "変化" && poke.myMove.name != "でんじは" ) return false // でんじは以外の変化技にタイプ相性はない
-
+function invalidByComp(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        tgt.effective = compatibilityCheck(poke, tgt.poke)
-        if ( tgt.effective === 0 ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+        if( invalidByComp_comp(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+            continue
         }
     }
 
@@ -1431,15 +1352,15 @@ function levitateInvalidation(poke) {
 }
 
 // 42.ぼうじんゴーグルによる無効化
-function powderGoggleInvalidation(poke) {
+function invalidByPowderGoggle(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
-        if ( !isItem(tgt.poke) ) continue
-        if ( tgt.poke.myItem != "ぼうじんゴーグル" ) continue
-        if ( !powderMove.includes(poke.myMove.name) ) continue
-        
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ぼうじんゴーグルで ${poke.myMove.name} を 受けない !`)
-        tgt.success = false
+
+        if ( invalidByPowderGoggle_powderGoggle(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ぼうじんゴーグルで ${poke.myMove.name} を 受けない !`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)
@@ -1448,8 +1369,8 @@ function powderGoggleInvalidation(poke) {
 // 43.特性による無効化(その2)
 function invalidByAbility2nd(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )     continue // すでに失敗していないこと
-        if ( !isAbility(poke) ) continue // 対象の特性が有効であること
+        if ( !tgt.success )         continue // すでに失敗していないこと
+        if ( !isAbility(tgt.poke) ) continue // 対象の特性が有効であること
 
         // 特性による無効化
         if ( invalidByAbility2nd_ability(poke, tgt) ) {
@@ -1549,37 +1470,23 @@ function invalidByType2nd(poke) {
 }
 
 // 48.さわぐによるねむりの無効化
-function uproar(poke) {
-    if ( poke.myMove.name == "さわぐ" ) {
-        for ( const _poke of allPokeInBattle() ) {
-            // 騒ぎ始めた時のみ、目を覚ます
-            if ( !poke.myCondition.myUproar && _poke.myAilment == "ねむり" ) {
-                writeLog(`${_poke.myTN} の ${_poke.myName} は 騒がしくて 目を覚ました !`)
-                _poke.myAilment     = false // 状態異常
-                _poke.myRest        = false // ねむる経過ターン数
-                _poke.myAsleep      = false // ねむり経過ターン数
-                _poke.myAsleep_turn = false // ねむりから覚めるターン数
-            }
-        }
-    }
-    // さわぐ状態のポケモンがいる時、ねむり状態とねむけ状態にならない
-    if ( !isUproar() ) return // さわぐ状態のポケモンがいなければスルー
-
-    // ねむりの効果を持つ変化技ならtrue
-    let check = false
-    const abnormalMove = statusMoveToMakeAbnormalForOneOfThem.concat(statusMoveToMakeAbnormalForAllOfYou, statusMoveToMakeAbnormalForExceptForme)
-    for ( const element of abnormalMove ) {
-        if ( poke.myMove.name == element.name && element.ailment == "ねむり" ) {
-            check = true
-        }
+function invalidByUproar(poke) {
+    // 騒ぎ始めた時、眠っているポケモンは目を覚ます
+    for ( const _poke of allPokeInBattle() ) {
+        if ( poke.myMove.name != "さわぐ" ) break
+        if ( poke.myCondition.myUproar ) break
+        if ( _poke.myAilment != "ねむり" ) continue
+        resetAilment(_poke)
+        writeLog(`${_poke.myTN} の ${_poke.myName} は 騒がしくて 目を覚ました !`)
     }
     
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( check || poke.myMove.name == "ねむる") {
+        if ( invalidByUproar_uproar(poke, tgt) ) {
+            tgt.success = false
             writeLog(`${isUproar().myTN} の ${isUproar().myName} が 騒いでいて うまく決まらなかった....`)
-            return true
+            break
         }
     }
 
@@ -1587,21 +1494,14 @@ function uproar(poke) {
 }
 
 // 49.しんぴのまもり状態による無効化
-function safeguardInvalidation(poke) {
-    let check = true
-    const abnormalMove = statusMoveToMakeAbnormalForOneOfThem.concat(statusMoveToMakeAbnormalForAllOfYou, statusMoveToMakeAbnormalForExceptForme)
-    for ( const element of abnormalMove ) {
-        if ( poke.myMove.name == element.name ) check = false
-    }
-    // 対象の技であること(あくびは神秘の守りで防げない)
-    if ( check || poke.myMove.name == "あくび" ) return
-
+function invalidBySafeguard(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( isField(tgt.poke).mySafeguard && poke.myAbility != "すりぬけ" && poke.myParty != tgt.poke.myParty ) {
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しんぴのまもりに 守られている !`)
+        if ( invalidBySafeguard_safeguard(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しんぴのまもりに 守られている !`)
+            continue
         }
     }
 
@@ -1609,25 +1509,21 @@ function safeguardInvalidation(poke) {
 }
 
 // 50.エレキフィールド/ミストフィールド状態による状態異常の無効化
-function fieldInvalidation(poke) {
-    // 状態異常を付与する変化技
-    const abnormalMove = statusMoveToMakeAbnormalForOneOfThem.concat(statusMoveToMakeAbnormalForAllOfYou, statusMoveToMakeAbnormalForExceptForme)
-    for ( const element of abnormalMove ) {
-        if ( poke.myMove.name == element.name ) {
-            for ( const tgt of poke.myTarget ) {
-                if ( !tgt.success ) continue // すでに失敗していないこと
-                
-                // エレキフィールドはねむけ状態も防ぐ
-                if ( fieldStatus.myElectric && onGround(tgt.poke) && ( element.ailment == "ねむり" || poke.myMove.name == "あくび" ) ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は エレキフィールドに守られている !`)
-                    tgt.success = false
-                }
-                // ミストフィールドはねむけ状態を防がない
-                if ( fieldStatus.myMisty && onGround(tgt.poke) ) {
-                    writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ミストフィールドに守られている !`)
-                    tgt.success = false
-                }
-            }
+function invalidByTerrain2nd(poke) {
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success ) continue // すでに失敗していないこと
+        
+        // エレキフィールドはねむけ状態も防ぐ
+        if ( invalidByTerrain2nd_electric(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は エレキフィールドに守られている !`)
+            continue
+        }
+        // ミストフィールドはねむけ状態を防がない
+        if ( invalidByTerrain2nd_misty(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ミストフィールドに守られている !`)
+            continue
         }
     }
 
@@ -1635,43 +1531,30 @@ function fieldInvalidation(poke) {
 }
 
 // 51.みがわり状態によるランク補正を下げる技/デコレーションの無効化
-function substituteInvalidation1(poke) {
-    let check = false
-    const rankMove = statusMoveToChangeRankForOneOfThem.concat(statusMoveToChangeRankForAllOfYou)
-    for (const element of rankMove) {
-        if (poke.myMove.name == element.name ) check = true
-    }
-    // ランク変化を付与する変化技　または　つぼをつく　であること
-    if ( check && poke.myMove.name != "つぼをつく" ) return false
-
+function invalidBySub1st(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )    continue // すでに失敗していないこと
-        if ( !tgt.substitute ) continue // みがわり状態であること
-        if ( poke.myMove.name == "つぼをつく" && poke.myID == tgt.poke.myID ) continue // つぼをつくなら、対象が自分以外であること
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には うまく決まらなかった....`)
-        tgt.success = false
+        if ( invalidBySub1st_rank(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には うまく決まらなかった....`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)
 }
 
 // 52.しろいきりによる無効化
-function mistInvalidation(poke) {
-    let check = true
-    const rankMove = statusMoveToChangeRankForOneOfThem.concat(statusMoveToChangeRankForAllOfYou)
-    for (const line of rankMove) {
-        if ( poke.myMove.name == line[0] ) check = false
-    }
-    if ( check ) return // ランク変化を付与する変化技であること
-
+function invalidByMist(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( fieldStatus.myMist ) continue
-        if ( poke.myAbility == "すりぬけ" && isAbility(poke) ) continue
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しろいきりで能力が下がらない !`)
-        tgt.success = false
+        if ( invalidByMist_mist(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しろいきりで能力が下がらない !`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)
@@ -1727,11 +1610,18 @@ function invalidByAccuracy(poke) {
         if ( invalidByAccuracy_accuracy(poke, tgt.poke) ) {
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 当たらなかった....`)
             tgt.success = false
-            if ( poke.myItem == "からぶりほけん" && isItem(poke) && !oneShot.includes(poke.myMove.name) && poke.myRank_speed != 6) {
-                itemDeclaration(poke)
-                changeMyRank(poke, "speed", 2)
-                enableToRecycle(poke)
-            }
+
+            // 空振り保険
+            if ( !isItem(poke) ) continue
+            if ( poke.myItem != "からぶりほけん" ) continue
+            if ( !oneShot.includes(poke.myMove.name) ) continue
+            if ( poke.myRank_speed == 6 ) continue
+
+            itemDeclaration(poke)
+            changeMyRank(poke, "speed", 2)
+            enableToRecycle(poke)
+
+            continue
         }
     }
 
@@ -1781,7 +1671,7 @@ function wallBreak(poke) {
 
         for ( const tgt of poke.myTarget ) {
             if ( !tgt.success ) continue // すでに失敗していないこと
-            const field = isField(tgt.poke)
+            const field = getMyField(tgt.poke)
             if ( field.myAurora_veil ) {
                 field.myAurora_veil = false
                 field.myAurora_clay = false
@@ -1813,16 +1703,15 @@ function poltergeist(poke) {
 }
 
 // 59.みがわりによるランク補正を変動させる効果以外の無効化
-function substituteInvalidation2(poke) {
+function invalidBySub2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        // みがわり状態であり、変化技であり、音技でなく、身代わり貫通技でない
-        if ( !tgt.substitute ) continue // みがわり状態であること
-        if ( poke.myMove.nature != "変化" ) continue // 変化技であること
-            
-        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-        tgt.success = false
+        if ( invalidBySub2nd_other(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)

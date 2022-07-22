@@ -103,6 +103,9 @@ $(function () {
             party.myHand = i
             // 技の処理に関係するクラス
             party.myCondition = new Condition()
+            // ポケモン特有のもの
+            party.myDisguise = you[i].disguise
+            party.myIce_face = you[i].ice_face
             
             oppParty[i] = party
         }

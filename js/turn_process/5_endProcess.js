@@ -372,19 +372,19 @@ function fieldAbilityItemDamage(){
     // a. ひのうみ/キョダイベンタツ/キョダイゴクエン/キョダイホウゲキ/キョダイフンセキ(ダメージ): 技が使用された順に発動。
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         const damage = Math.floor(poke.myFull_hp / 6 * isDynamax(poke))
-        if ( isField(poke).myVine_lash && !poke.myType.includes("くさ") ) {
+        if ( getMyField(poke).myVine_lash && !poke.myType.includes("くさ") ) {
             writeLog(`${poke.myTN} の ${poke.myName} は キョダイベンタツに さらされている`)
             changeHP(poke, Math.max(damage, 1), "-")
         }
-        if ( isField(poke).myWildfire && !poke.myType.includes("ほのお")){
+        if ( getMyField(poke).myWildfire && !poke.myType.includes("ほのお")){
             writeLog(`${poke.myTN} の ${poke.myName} は キョダイゴクエンに さらされている`)
             changeHP(poke, Math.max(damage, 1), "-")
         }
-        if ( isField(poke).myCannonade && !poke.myType.includes("みず")){
+        if ( getMyField(poke).myCannonade && !poke.myType.includes("みず")){
             writeLog(`${poke.myTN} の ${poke.myName} は キョダイホウゲキに さらされている`)
             changeHP(poke, Math.max(damage, 1), "-")
         }
-        if ( isField(poke).myVolcalith && !poke.myType.includes("いわ")){
+        if ( getMyField(poke).myVolcalith && !poke.myType.includes("いわ")){
             writeLog(`${poke.myTN} の ${poke.myName} は キョダイフンセキに さらされている`)
             changeHP(poke, Math.max(damage, 1), "-")
         }
@@ -1085,10 +1085,11 @@ function schooling(){
 // 31.はらぺこスイッチ
 function hungerSwitch(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myAbility == "はらぺこスイッチ" && isAbility(poke) ) {
-            abilityDeclaration(poke)
-            if ( poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = false
-            else if ( !poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = true
-        }
+        if ( !isAbility(poke) ) continue
+        if ( poke.myAbility != "はらぺこスイッチ" ) continue
+
+        abilityDeclaration(poke)
+        if ( poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = false
+        else if ( !poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = true
     }
 }

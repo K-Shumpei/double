@@ -1,3 +1,5 @@
+const dispParmeter = ["H", "A", "B", "C", "D", "S"]
+
 // 技のリセット
 function moveReset() {
     for ( i = 0; i < 4; i++ ) {
@@ -71,9 +73,8 @@ function AVcalc(){
     const poke = pokeSearch(name)
     if ( !poke ) return
     const lv = Number(document.getElementById(`lv`).value)
-    const parameter = ["H", "A", "B", "C", "D", "S"]
 
-    for ( const para of parameter ) {
+    for ( const para of dispParmeter ) {
         const BS = document.getElementById(`${para}_BS`).textContent
         const IV = document.getElementById(`${para}_IV`).value
         const EV = document.getElementById(`${para}_EV`).value
@@ -208,7 +209,7 @@ function setReset(){
     document.getElementById(`ability`).html = ""
     document.getElementById(`item`).value = ""
 
-    for ( const para of ["H", "A", "B", "C", "D", "S"] ) {
+    for ( const para of dispParmeter ) {
         document.getElementById(`${para}_BS`).textContent = "100"
         document.getElementById(`${para}_IV`).value = "31"
         document.getElementById(`${para}_EV`).val = "0"
@@ -224,44 +225,40 @@ function setReset(){
 
 
 function setIV(num, value){
-    const para = ["H", "A", "B", "C", "D", "S"]
-    document.getElementById(`${para[num]}_IV`).value = value
+    document.getElementById(`${dispParmeter[num]}_IV`).value = value
 }
 
 function setEV(num, value){
-    const para = ["H", "A", "B", "C", "D", "S"]
-    const EV = Number(document.getElementById(`${para[num]}_EV`).value)
+    const EV = Number(document.getElementById(`${dispParmeter[num]}_EV`).value)
     const last = Number(document.getElementById(`EVlast`).textContent)
     if ( last + EV - value >= 0 ) {
-        document.getElementById(`${para[num]}_EV`).value = value
+        document.getElementById(`${dispParmeter[num]}_EV`).value = value
         document.getElementById(`EVlast`).textContent = last + EV - value
     }
 }
 
 function EVchange(num, value){
-    const para = ["H", "A", "B", "C", "D", "S"]
-    const EV = Number(document.getElementById(`${para[num]}_EV`).value)
+    const EV = Number(document.getElementById(`${dispParmeter[num]}_EV`).value)
     const last = Number(document.getElementById(`EVlast`).textContent)
 
     switch ( value ) {
         case "▲":
             if ( EV == 252 || last < 4 ) break
-            document.getElementById(`${para[num]}_EV`).value = EV + 4
+            document.getElementById(`${dispParmeter[num]}_EV`).value = EV + 4
             document.getElementById(`EVlast`).textContent = last - 4
             break
 
         case "▼":
             if ( EV == 0 ) break
-            document.getElementById(`${para[num]}_EV`).value = EV - 4
+            document.getElementById(`${dispParmeter[num]}_EV`).value = EV - 4
             document.getElementById(`EVlast`).textContent = last + 4
             break
     }
 }
 
 function EVchangeStep(){
-    const parameter = ["H", "A", "B", "C", "D", "S"]
     let total = 0
-    for ( const para of parameter ) {
+    for ( const para of dispParmeter ) {
         total += Number(document.getElementById(`${para}_EV`).value)
     }
     document.getElementById(`EVlast`).textContent = 510 - total
@@ -330,37 +327,36 @@ function itemForm(){
     setID()
 }
 
-function setMove(num){
-    for (i = 0; i < base_move_list.length; i++){
-        if ($("#move" + num).val() == base_move_list[i][0]){
-            $("#type" + num).text(base_move_list[i][1])
-            $("#power" + num).text(base_move_list[i][3])
-            $("#accuracy" + num).text(base_move_list[i][4])
-            $("#PP" + num).text(base_move_list[i][5])
-            $("#discription" + num).text(base_move_list[i][9])
+function setMove(num) {
+    for ( const move of moveList ) {
+        if ( document.getElementById(`move${num}`).value == move.name ) {
+            document.getElementById(`type${num}`).textContent        = move.type
+            document.getElementById(`power${num}`).textContent       = move.power
+            document.getElementById(`accuracy${num}`).textContent    = move.accuracy
+            document.getElementById(`PP${num}`).textContent          = move.PP
+            document.getElementById(`discription${num}`).textContent = move.discription
         }
     }
 }
 
 
 
-function PPchange(num, value){
-    const name = $("#move" + num).val()
-    const PP = Number($("#PP" + num).text())
-    for (i = 0; i < base_move_list.length; i++){
-        if (name == base_move_list[i][0]){
-            const min = base_move_list[i][5]
-            const max = min + (min / 5) * 3
-            if (value == "▲"){
-                if (PP != max){
-                    $("#PP" + num).text(PP + (min / 5))
-                }
-            } else if (value == "▼"){
-                if (PP != min){
-                    $("#PP" + num).text(PP - (min / 5))
-                }
-            }
-        }
+function PPchange(num, value) {
+    const name = document.getElementById(`move${num}`).value
+    const PP = Number(document.getElementById(`PP${num}`).textContent)
+    const move = moveSearchByName(name)
+    const minPP = move.PP
+    const maxPP = move.PP + ( move.PP / 5 ) * 3
+
+    switch ( value ) {
+        case "▲":
+            if ( PP == maxPP ) break
+            document.getElementById(`PP${num}`).textContent = PP + ( minPP / 5 )
+            break
+        case "▼":
+            if ( PP == minPP ) break
+            document.getElementById(`PP${num}`).textContent = PP - ( minPP / 5 )
+            break
     }
 }
 
@@ -492,6 +488,9 @@ function setPokemon(){
     party.myHand = Number(team)
     // 技の処理に関係するクラス
     party.myCondition = new Condition()
+    // ポケモン特有のもの
+    if ( party.myAbility == "ばけのかわ" ) party.myDisguise = "ばけたすがた"
+    if ( party.myAbility == "アイスフェイス" ) party.myIce_face = "アイスフェイス"
     // 手持ちにセット
     myParty[team] = party
 
@@ -544,26 +543,6 @@ function setAll(){
         setPokemon()
     }
 }
-
-function selectPoke(){
-    for (let i = 0; i < 6; i++){
-        if (document.getElementById("first" + i).checked){
-            document.getElementById("second" + i).disabled = true
-            document.getElementById("third" + i).disabled = true
-        } else if (document.getElementById("second" + i).checked){
-            document.getElementById("first" + i).disabled = true
-            document.getElementById("third" + i).disabled = true
-        } else if (document.getElementById("third" + i).checked){
-            document.getElementById("second" + i).disabled = true
-            document.getElementById("first" + i).disabled = true
-        } else {
-            document.getElementById("first" + i).disabled = false
-            document.getElementById("second" + i).disabled = false
-            document.getElementById("third" + i).disabled = false
-        }
-    }
-}
-
 
 // Z技ボタンの有効化
 function Zable(){

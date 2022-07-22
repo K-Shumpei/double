@@ -331,7 +331,7 @@ function getCritical(poke, tgt){
         if ( poke.myMove.name == element.name ) critical += element.critical
     }
 
-    if ( isField(tgt.poke).myLucky_chant ) return false // おまじない
+    if ( getMyField(tgt.poke).myLucky_chant ) return false // おまじない
     if ( tgt.poke.myAbility == "カブトアーマー" && isAbility(tgt.poke) ) return false
     if ( tgt.poke.myAbility == "シェルアーマー" && isAbility(tgt.poke) ) return false
 

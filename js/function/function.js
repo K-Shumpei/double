@@ -643,6 +643,9 @@ function formChange(poke, name, declaration) {
     // タイプの書き換え
     poke.myType     = next.type
     poke.myType_org = [].concat(poke.myType)
+    // 画像の設定
+    document.getElementById(`${poke.myParty}_${poke.myHand}`).src               = "poke_figure/" + next.number + ".gif"
+    document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = "poke_figure/" + next.number + ".gif"
 
     // 特性の発動
     activateAbility(poke)

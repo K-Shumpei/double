@@ -189,10 +189,10 @@ function speedAV(poke, type){
     //if (con.item.includes("パワー") && isItem(me, con)){
       //  correction = Math.round(correction * 2048 / 4096)
     //}
-    if ( isField(poke).myTailwind ){
+    if ( getMyField(poke).myTailwind ){
         correction = Math.round(correction * 8192 / 4096)
     }
-    if ( isField(poke).myWetland ){
+    if ( getMyField(poke).myWetland ){
         correction = Math.round(correction * 1024 / 4096)
     }
 
