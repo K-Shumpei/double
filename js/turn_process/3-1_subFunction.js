@@ -373,14 +373,14 @@ function invalidByTerrain1st_psychic(poke, tgt) {
 // ファストガード
 function invalidByProtect1st_quick(poke, tgt) {
     if ( poke.myMove.priority <= 0 ) return false      // 優先度が1以上であること
-    if ( !getMyField(tgt).myQuick_guard ) return false // ファストガード状態であること
+    if ( !getMyField(tgt.poke).myQuick_guard ) return false // ファストガード状態であること
 
     return true
 }
 
 // ワイドガード
 function invalidByProtect1st_wide(poke, tgt) {
-    if ( !getMyField(tgt).myWide_guard ) return false  // ワイドガード状態であること
+    if ( !getMyField(tgt.poke).myWide_guard ) return false  // ワイドガード状態であること
     if ( poke.myMove.target == "相手全体" ) return false
     if ( poke.myMove.target == "自分以外" ) return false
 
@@ -389,7 +389,7 @@ function invalidByProtect1st_wide(poke, tgt) {
 
 // トリックガード
 function invalidByProtect1st_crafty(poke, tgt) {
-    if ( !getMyField(tgt).myCrafty_shield ) return false   // トリックガード状態であること
+    if ( !getMyField(tgt.poke).myCrafty_shield ) return false   // トリックガード状態であること
     if ( poke.myID == tgt.myID ) return false          // 対象が自分でないこと
     if ( poke.myMove.nature != "変化" ) return false    // 変化技であること
     if ( poke.myMove.target == "全体" ) return false    // 対象が全体でないこと
@@ -423,11 +423,49 @@ function invalidByProtect2nd_protect(poke, tgt) {
 }
 
 //**************************************************
+// 33.たたみがえしによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
+//**************************************************
+
+function invalidByMatBlock_matBlock(poke, tgt) {
+    if ( poke.myAbility == "ふかしのこぶし" && isAbility(poke) && poke.myMove.direct == "直接" ) return false
+    if (/*atk.data.Z &&*/ poke.myMove.nature != "変化" ) return false
+    if ( !getMyField(tgt.poke).myMat_block ) return false
+
+    return true
+}
+
+//**************************************************
+// 36.テレキネシスの場合、対象がディグダ/ダグトリオ/スナバァ/シロデスナ/メガゲンガー/うちおとす状態/ねをはる状態であることによる失敗
+//**************************************************
+
+function failureByTK_TK(poke, tgt) {
+    if ( poke.myMove.name != "テレキネシス" ) return false // テレキネシスを使用していること
+
+    // 特定のポケモンには効果がない
+    switch ( poke.myName ) {
+        case "ディグダ":
+        case "ダグトリオ":
+        case "スナバァ":
+        case "シロデスナ":
+        case "メガゲンガー":
+            return true
+    }
+
+    if ( tgt.poke.myCondition.mySmack_down ) return true // うちおとす状態には効果がない
+    if ( tgt.poke.myCondition.myIngrain )    return true // ねをはる状態には効果がない
+
+    return false
+}
+
+//**************************************************
 // 38.特性による無効化(その1)
 //**************************************************
 
 // 特性による無効化
 function invalidByAbility1st_ability(poke, tgt) {
+    if ( !isAbility(tgt.poke) ) return false       // 対象の特性が有効であること
+    if ( poke.myID == tgt.poke.myID ) return false // 対象が自分でないこと
+
     switch ( tgt.poke.myAbility ) {
         case "そうしょく":
             if ( poke.myMove.type != "くさ" ) return false
@@ -533,6 +571,34 @@ function invalidByComp_comp(poke, tgt) {
 }
 
 //**************************************************
+// 40,ふゆうによる無効化
+//**************************************************
+
+function invalidByLevitate1st_levitate(poke, tgt) {
+    if ( poke.myMove.type != "じめん" ) return false
+    if ( poke.myMove.nature == "変化" ) return false
+    if ( poke.myMove.name == "サウザンアロー" ) return false
+    if ( onGround(tgt.poke) ) return false                 // 接地していないこと
+    if ( !isAbility(tgt.poke) ) return false               // 特性が有効であること
+    if ( tgt.poke.myAbility != "ふゆう" ) return false      // 特性「ふゆう」であること
+
+    return true
+}
+
+//**************************************************
+// 41.でんじふゆう/テレキネシス/ふうせんによる無効化
+//**************************************************
+
+function invalidByLevitate2nd_other(poke, tgt) {
+    if ( poke.myMove.type != "じめん" ) return false
+    if ( poke.myMove.nature == "変化" ) return false
+    if ( poke.myMove.name == "サウザンアロー" ) return false
+    if ( onGround(tgt.poke) ) return false                 // 接地していないこと
+
+    return true
+}
+
+//**************************************************
 // 42.ぼうじんゴーグルによる無効化
 //**************************************************
 
@@ -549,6 +615,8 @@ function invalidByPowderGoggle_powderGoggle(poke, tgt) {
 //**************************************************
 
 function invalidByAbility2nd_ability(poke, tgt) {
+    if ( !isAbility(tgt.poke) ) return false // 対象の特性が有効であること
+
     switch ( tgt.poke.myAbility ) {
         case "ぼうだん":
             if ( ballMove.includes(poke.myMove.name) ) return true

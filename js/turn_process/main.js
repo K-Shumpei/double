@@ -122,16 +122,20 @@ function becomeToDynaMax(firstOrder){
 // 5.きあいパンチ/トラップシェル/くちばしキャノンの準備行動
 function preliminaryAction(secondOrder) {
     for ( const poke of secondOrder ) {
-        if ( poke.myMove == "きあいパンチ" ) {
-            writeLog(`${poke.myTN} の ${poke.myName} は 集中力を高めている！`)
-        }
-        if ( poke.myMove == "トラップシェル" ) {
-            poke.myCondition.myShell_trap = "set"
-            writeLog(`${poke.myTN} の ${poke.myName} は トラップシェルを仕掛けた！`)
-        }
-        if ( poke.myMove == "くちばしキャノン" ) {
-            poke.myCondition.myBeak_blast = true
-            writeLog(`${poke.myTN} の ${poke.myName} は くちばしを加熱し始めた！`)
+        switch ( poke.myMove.name ) {
+            case "きあいパンチ":
+                writeLog(`${poke.myTN} の ${poke.myName} は 集中力を高めている！`)
+                break
+
+            case "トラップシェル":
+                poke.myCondition.myShell_trap = "set"
+                writeLog(`${poke.myTN} の ${poke.myName} は トラップシェルを仕掛けた！`)
+                break
+
+            case "くちばしキャノン":
+                poke.myCondition.myBeak_blast = true
+                writeLog(`${poke.myTN} の ${poke.myName} は くちばしを加熱し始めた！`)
+                break
         }
     }
 }
@@ -155,7 +159,7 @@ function moveUsedEachPokemon() {
 
         if ( judge ) {
             poke.myMove.success = true
-            moveEffect(poke)
+            processOfAdditionalEffect(poke)
             if ( fieldStatus.mySwitch_me ) break
             if ( fieldStatus.mySwitch_opp ) break
         } else {

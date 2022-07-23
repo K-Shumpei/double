@@ -3,7 +3,7 @@
 // 自分以外全員・相手全員を対象にする範囲攻撃技は、1は敵味方同時に、2~11は味方のポケモンに対する処理を行ってから敵のポケモンの処理を、防御側から見て左側のポケモンから行う(味方2-1~2-9→使用者3→味方4→...→味方11→敵の左側2-1~2-9→右側2-1~2-9→左側3→右側3→...右側11の順)。
 // トリプルバトル・群れバトルで相手の場に3匹以上のポケモンが並んでいる場合も、防御側から見て左側のポケモンから処理される。
 
-function moveEffect(poke){
+function processOfAdditionalEffect(poke){
     if ( poke.myMove.nature == "変化" ) {
         statusMoveEffect(poke)
     } else {
@@ -34,7 +34,7 @@ function moveEffect(poke){
     continuousMove(poke)
     // 13.HP20%以下(赤ゲージ)になったとき、なかよし度4以上で「ピンチで なきそう...」のメッセージ
     // 14.技の効果
-    activateMoveEffect(poke)
+    moveEff(poke)
     // 15.特性の効果
     abilityEffect(poke)
     // 16.防御側のもちものの効果
@@ -385,59 +385,83 @@ function activateAdditionalEffectEtc(poke){
             }
         }
         // それ以外の追加効果
-        if ( poke.myMove.name == "アンカーショット" || poke.myMove.name == "かげぬい" ) {
-            if ( !tgt.poke.myType.includes("ゴースト") ) {
+        switch ( poke.myMove.name ) {
+            case "アンカーショット":
+            case "かげぬい":
+                if ( tgt.poke.myType.includes("ゴースト") ) break
                 tgt.poke.myCondition.myCant_escape = poke.myID
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 逃げられなくなった !`)
-            }
-        }
-        if ( poke.myMove.name == "しっとのほのお" ) {
-            if ( tgt.poke.myCondition.myRank_up ) {
+                break
+
+            case "しっとのほのお":
+                if ( !tgt.poke.myCondition.myRank_up ) break
                 getAbnormal(tgt.poke, "やけど")
-            }
-        }
-        if ( poke.myMove.name == "じごくづき" ) {
-            if ( !tgt.poke.myCondition.myThroat_chop ) tgt.poke.myCondition.myThroat_chop += 1
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 音技が出せなくなった !`)
-        }
-        if ( poke.myMove.name == "トライアタック" ) {
-            if ( getRandom() * 100 >= 30 * grace ) {
+                break
+
+            case "じごくづき":
+                if ( !tgt.poke.myCondition.myThroat_chop ) tgt.poke.myCondition.myThroat_chop += 1
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 音技が出せなくなった !`)
+                break
+
+            case "トライアタック":
+                if ( getRandom() * 100 < 30 * isGrace(poke) ) break
                 const random = getRandom()
                 if ( random < 1 / 3 ) getAbnormal(tgt.poke, "まひ")
                 else if ( random < 2 / 3 ) getAbnormal(tgt.poke, "こおり")
                 else if ( random < 1 ) getAbnormal(tgt.poke, "やけど")
-            }
-        }
-        if ( poke.myMove.name == "なげつける" ) {
-            if ( poke.myItem == "でんきだま" ) getAbnormal(tgt.poke, "まひ")
-            if ( poke.myItem == "かえんだま" ) getAbnormal(tgt.poke, "やけど")
-            if ( poke.myItem == "どくバリ" ) getAbnormal(tgt.poke, "どく")
-            if ( poke.myItem == "どくどくだま" ) getAbnormal(tgt.poke, "もうどく")
-            if ( poke.myItem == "おうじゃのしるし" || poke.myItem == "するどいキバ" ) {
-                if ( tgt.poke.myAbility == "せいしんりょく" && isAbility(tgt.poke) ) {
-                    tgt.poke.myCondition.myFlinch = true
+                break
+
+            case "なげつける":
+                // きのみの場合
+                if ( itemList_berry.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
+                // それ以外の場合
+                switch ( poke.myItem ) {
+                    case "でんきだま":
+                        getAbnormal(tgt.poke, "まひ")
+                        break
+
+                    case "かえんだま":
+                        getAbnormal(tgt.poke, "やけど")
+                        break
+
+                    case "どくバリ":
+                        getAbnormal(tgt.poke, "どく")
+                        break
+
+                    case "どくどくだま":
+                        getAbnormal(tgt.poke, "もうどく")
+                        break
+
+                    case "おうじゃのしるし":
+                    case "するどいキバ":
+                        if ( tgt.poke.myAbility == "せいしんりょく" && isAbility(tgt.poke) ) break
+                        tgt.poke.myCondition.myFlinch = true
+                        break
+
+                    case "メンタルハーブ":
+                        /*
+                        removeText(tgt.p_con, "状態変化『アンコール』")
+                        removeText(tgt.p_con, "状態変化『いちゃもん』")
+                        removeText(tgt.p_con, "状態変化『かいふくふうじ』")
+                        removeText(tgt.p_con, "状態変化『かなしばり』")
+                        removeText(tgt.p_con, "状態変化『ちょうはつ』")
+                        removeText(tgt.p_con, "状態変化『メロメロ』")
+                        */
+                        break
+
+                    case "しろいハーブ":
+                        const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
+                        for ( const para of parameter ) {
+                            tgt.poke[`myRank_${para}`] = Math.max(0, tgt.poke[`myRank_${para}`])
+                        }
+                        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 下がっていた能力変化が 元に戻った`)
+                        break
                 }
+
+                // どの持ち物でも行う処理
+                enableToRecycle(poke)
+                break
             }
-            if ( poke.myItem == "メンタルハーブ" ) {
-                /*
-                removeText(tgt.p_con, "状態変化『アンコール』")
-                removeText(tgt.p_con, "状態変化『いちゃもん』")
-                removeText(tgt.p_con, "状態変化『かいふくふうじ』")
-                removeText(tgt.p_con, "状態変化『かなしばり』")
-                removeText(tgt.p_con, "状態変化『ちょうはつ』")
-                removeText(tgt.p_con, "状態変化『メロメロ』")
-                */
-            }
-            if ( poke.myItem == "しろいハーブ" ) {
-                const parameter = ["atk", "def", "sp_atk", "sp_def", "speed", "accuracy", "evasion"]
-                for ( const para of parameter ) {
-                    tgt.poke[`myRank_${para}`] = Math.max(0, tgt.poke[`myRank_${para}`])
-                }
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 下がっていた能力変化が 元に戻った`)
-            }
-            if ( itemList_berry.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
-            enableToRecycle(poke)
-        }
     }
     // 自分のランクが下がる技の効果
     for ( const element of downMyRank ) {
@@ -734,6 +758,7 @@ function effectWithDamage(poke){
                         case "むし":
                             abilityDeclaration(tgt.poke)
                             changeMyRank(tgt.poke, "speed", 1)
+                            break
                     }
                     break
 
@@ -744,6 +769,7 @@ function effectWithDamage(poke){
                         case "ほのお":
                             abilityDeclaration(tgt.poke)
                             changeMyRank(tgt.poke, "speed", 6)
+                            break
                     }
                     break
 
@@ -995,7 +1021,7 @@ function continuousMove(poke){
 }
 
 // 14.技の効果
-function activateMoveEffect(poke){
+function moveEff(poke){
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 

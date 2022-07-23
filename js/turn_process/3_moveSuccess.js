@@ -75,20 +75,21 @@ function moveSuccessJudge(poke) {
     // 32.まもる/キングシールド/ブロッキング/ニードルガード/トーチカによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
     if ( invalidByProtect2nd(poke) ) return false
     // 33.たたみがえしによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
-    if ( matBlock(poke) ) return false
+    if ( invalidByMatBlock(poke) ) return false
     // 34.ダイウォールによる無効化
     // 35.マジックコート状態による反射
     magicCoatReflection(poke)
     // 36.テレキネシスの場合、対象がディグダ/ダグトリオ/スナバァ/シロデスナ/メガゲンガー/うちおとす状態/ねをはる状態であることによる失敗
-    if ( telekinesisFailure(poke) ) return false
+    if ( failureByTK(poke) ) return false
     // 37.マジックミラーによる反射　35との区別はないので35と同じにした(wiki通りではない)
     // 38.特性による無効化(その1)
     if ( invalidByAbility1st(poke) ) return false
     // 39.相性による無効化
     if ( invalidByComp(poke) ) return false
-    // 40,ふゆうによる無効化 41とまとまっている
+    // 40,ふゆうによる無効化
+    if ( invalidByLevitate1st(poke) ) return false
     // 41.でんじふゆう/テレキネシス/ふうせんによる無効化
-    if ( levitateInvalidation(poke) ) return false
+    if ( invalidByLevitate2nd(poke) ) return false
     // 42.ぼうじんゴーグルによる無効化
     if ( invalidByPowderGoggle(poke) ) return false
     // 43.特性による無効化(その2)
@@ -1036,7 +1037,7 @@ function accumulateOperation(poke) {
     }
     
     // パワフルハーブを持つ場合は使用する。それ以外の場合は次のターンまで行動を中断する(失敗したとは見なされない)
-    if ( (poke.myMove.name == "ソーラービーム" || poke.myMove.name == "ソーラーブレード" ) && isSunny(poke) ) {
+    if ( ( poke.myMove.name == "ソーラービーム" || poke.myMove.name == "ソーラーブレード" ) && isSunny(poke) ) {
         resetFilling(poke)
         return false
     }
@@ -1245,16 +1246,14 @@ function invalidByProtect2nd(poke) {
 }
 
 // 33.たたみがえしによる無効化 (Zワザ/ダイマックスわざなら75%をカットする)
-function matBlock(poke) {
-    if ( poke.myAbility == "ふかしのこぶし" && isAbility(poke) && poke.myMove.direct == "直接" ) return
-    if (/*atk.data.Z &&*/ poke.myMove.nature != "変化" ) return false
-
+function invalidByMatBlock(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( tgt.poke.myCondition.myMat_block ) {
-            writeLog(`${tgt.poke.myName} は たたみがえし で攻撃から 身を守った !`)
+        if ( invalidByMatBlock_matBlock(poke, tgt) ) {
             tgt.success = false
+            writeLog(`${tgt.poke.myName} は たたみがえし で攻撃から 身を守った !`)
+            continue
         }
     }
 
@@ -1275,18 +1274,15 @@ function magicCoatReflection(poke) {
 }
 
 // 36.テレキネシスの場合、対象がディグダ/ダグトリオ/スナバァ/シロデスナ/メガゲンガー/うちおとす状態/ねをはる状態であることによる失敗
-function telekinesisFailure(poke) {
-    if ( poke.myMove.name != "テレキネシス" ) return // テレキネシスを使用していること
-
-    const nameList = ["ディグダ", "ダグトリオ", "スナバァ", "シロデスナ", "メガゲンガー"]
+function failureByTK(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )       continue // すでに失敗していないこと
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( nameList.includes(tgt.poke.myName) ) tgt.success = false // 特定のポケモンには効果がない
-        if ( tgt.poke.myCondition.mySmack_down )  tgt.success = false // うちおとす状態には効果がない
-        if ( tgt.poke.myCondition.myIngrain )     tgt.success = false // ねをはる状態には効果がない
-
-        if ( tgt.success == false ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.name} には　効果がないようだ....`)
+        if ( failureByTK_TK(poke, tgt) ) {
+            tgt.success = false
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.name} には　効果がないようだ....`)
+            continue
+        }
     }
 
     return checkMoveSuccess(poke)
@@ -1295,9 +1291,7 @@ function telekinesisFailure(poke) {
 // 38.特性による無効化(その1)
 function invalidByAbility1st(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )               continue // すでに失敗していないこと
-        if ( !isAbility(tgt.poke) )       continue // 対象の特性が有効であること
-        if ( poke.myID == tgt.poke.myID ) continue // 対象が自分でないこと
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
         // 特性による無効化
         if ( invalidByAbility1st_ability(poke, tgt) ) {
@@ -1328,23 +1322,30 @@ function invalidByComp(poke) {
 }
 
 // 40,ふゆうによる無効化
-// 41.でんじふゆう/テレキネシス/ふうせんによる無効化
-function levitateInvalidation(poke) {
-    if ( poke.myMove.type != "じめん" ) return false
-    if ( poke.myMove.nature == "変化" ) return false
-    if ( poke.myMove.name == "サウザンアロー" ) return false
-
+function invalidByLevitate1st(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )   continue // すでに失敗していないこと
-        if ( onGround(tgt.poke) ) continue // 接地していないこと
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
-        if ( tgt.poke.myAbility == "ふゆう" && isAbility(tgt.poke) ) {
+        if ( invalidByLevitate1st_levitate(poke, tgt) ) {
+            tgt.success = false
             abilityDeclaration(tgt.poke)
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
+            continue
+        }
+    }
+
+    return checkMoveSuccess(poke)
+}
+
+// 41.でんじふゆう/テレキネシス/ふうせんによる無効化
+function invalidByLevitate2nd(poke) {
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success ) continue // すでに失敗していないこと
+
+        if ( invalidByLevitate2nd_other(poke, tgt) ) {
             tgt.success = false
-        } else {
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            tgt.success = false
+            continue
         }
     }
 
@@ -1369,8 +1370,7 @@ function invalidByPowderGoggle(poke) {
 // 43.特性による無効化(その2)
 function invalidByAbility2nd(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )         continue // すでに失敗していないこと
-        if ( !isAbility(tgt.poke) ) continue // 対象の特性が有効であること
+        if ( !tgt.success ) continue // すでに失敗していないこと
 
         // 特性による無効化
         if ( invalidByAbility2nd_ability(poke, tgt) ) {
