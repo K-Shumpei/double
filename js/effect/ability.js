@@ -184,7 +184,7 @@ var disableByNeutralizingGas = [
     'バトルスイッチ'
 ]
 
-// いえきが失敗する相手の特性
+// いえきが失敗する（特性なし状態にできない）相手の特性
 const abilityList_disable_gastro = [
     'ARシステム', 
     'アイスフェイス', 

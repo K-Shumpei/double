@@ -54,7 +54,7 @@ var priorityDegreeList = [
 ]
 
 // 追加効果のある技（対象のランク変化）
-var additionalEffectToChangeYourRank = [
+const additionalEffectToChangeYourRank = [
     {name: 'アイアンテール', probability: 30, rank: [{parameter: 'def', change: -1}]}, 
     {name: 'アクアブレイク', probability: 20, rank: [{parameter: 'def', change: -1}]}, 
     {name: 'アシッドボム', probability: 100, rank: [{parameter: 'sp_def', change: -2}]}, 
@@ -110,7 +110,7 @@ var additionalEffectToChangeYourRank = [
 ]
 
 // 追加効果のある技（自分のランク変化）
-var additionalEffectToChangeMyRank = [
+const additionalEffectToChangeMyRank = [
     {name: 'あやしいかぜ', probability: 10, rank: [{parameter: 'atk', change: 1}, {parameter: 'def', change: 1}, {parameter: 'sp_atk', change: 1}, {parameter: 'sp_def', change: 1}, {parameter: 'speed', change: 1}]}, 
     {name: 'オーラぐるま', probability: 100, rank: [{parameter: 'speed', change: 1}]}, 
     {name: 'ぎんいろのかぜ', probability: 10, rank: [{parameter: 'atk', change: 1}, {parameter: 'def', change: 1}, {parameter: 'sp_atk', change: 1}, {parameter: 'sp_def', change: 1}, {parameter: 'speed', change: 1}]}, 
@@ -127,7 +127,7 @@ var additionalEffectToChangeMyRank = [
 ]
 
 // 追加効果のある技（対象に状態異常を付与する）
-var additionalEffectToMakeAbnormal = [
+const additionalEffectToMakeAbnormal = [
     {name: 'あおいほのお', probability: 20, ailment: 'やけど'}, 
     {name: 'いてつくしせん', probability: 10, ailment: 'こおり'}, 
     {name: 'いにしえのうた', probability: 10, ailment: 'ねむり'}, 
@@ -202,7 +202,7 @@ var additionalEffectToMakeAbnormal = [
 ]
 
 // 追加効果のある技（対象をひるみ状態にする）
-var additionalEffectToMakeFlinch = [
+const additionalEffectToMakeFlinch = [
     {name: 'アイアンヘッド', probability: 30}, 
     {name: 'あくのはどう', probability: 20}, 
     {name: 'いびき', probability: 30}, 
@@ -328,7 +328,7 @@ var criticalMove= [
 ]
 
 // 反動ダメージを受ける技
-var recoil = [
+const moveList_recoil = [
     {name: 'アフロブレイク', rate: 0.25}, 
     {name: 'ウッドハンマー', rate: 0.33}, 
     {name: 'じごくぐるま', rate: 0.25}, 

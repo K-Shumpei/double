@@ -92,11 +92,9 @@ function aheadCheck(poke){
 
 // 4.こうこうのしっぽ・まんぷくおこう・あとだし - 同じ優先度内で最後に行動する
 function rearCheck(poke){
-    /*
-    if (con.item == "こうこうのしっぽ" && isItem(me, con)) return 0
-    if (con.item == "まんぷくのおこう" && isItem(me, con)) return 0
-    if ( poke.myAbility == "あとだし" && isAbility(poke)) return 0
-    */
+    if ( poke.myItem == "こうこうのしっぽ" && isItem(poke) ) return 0
+    if ( poke.myItem == "まんぷくのおこう" && isItem(poke) ) return 0
+    if ( poke.myAbility == "あとだし" && isAbility(poke) ) return 0
     
     return 1
 }

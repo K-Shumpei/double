@@ -11,7 +11,7 @@ function toHand( poke ){
         for ( const _poke of allPokeInBattle() ) {
             if ( _poke.myAbility == "ソウルハート" && isAbility(_poke) ) {
                 abilityDeclaration(_poke)
-                changeRank(poke, "sp_atk", 1, false)
+                changeRank(_poke, "sp_atk", 1, false)
             }
         }
     }
@@ -314,7 +314,7 @@ function onField() {
         unnerve( poke )
     }
     // 3.1~2.状態/ 3.特性/ 4.持ち物の発動
-    for (const poke of order ) {
+    for ( const poke of order ) {
         actAbilityEtc( poke )
     }
     // 4.一部の特性(1)/場の状態による持ち物(2)/ゲンシカイキ(3)の発動
