@@ -174,12 +174,243 @@ function additionalEffect_flameBurst(poke, tgt) {
     const tgtPokeList = allPokeInBattle().filter( _poke => _poke.myParty == party && _poke.myPosition == position )
 
     if ( tgtPokeList.length === 0 ) return
-    
+
     const tgtPoke = tgtPokeList[0]
     const damage = Math.floor(tgtPoke.myfull_hp / 16 * isDynamax(tgtPoke))
     changeHP(tgtPoke, damage, "-")
 
     return
+}
+
+// ダイマックス技の効果
+function additionalEffect_dynamax(poke, tgt) {
+    switch ( poke.myMove.name ) {
+        case "ダイナックル":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                changeRank(_poke, "atk", 1, false)
+            }
+            return
+
+        case "ダイスチル":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                changeRank(_poke, "def", 1, false)
+            }
+            return
+
+        case "ダイアシッド":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                changeRank(_poke, "sp_atk", 1, false)
+            }
+            return
+
+        case "ダイアース":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                changeRank(_poke, "sp_def", 1, false)
+            }
+            return
+
+        case "ダイジェット":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                changeRank(_poke, "speed", 1, false)
+            }
+            return
+
+        case "ダイドラグーン":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                changeRank(_poke, "atk", -1, isSpirit(poke, _poke))
+            }
+            return
+
+        case "ダイホロウ":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                changeRank(_poke, "def", -1, isSpirit(poke, _poke))
+            }
+            return
+
+        case "ダイワーム":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                changeRank(_poke, "sp_atk", -1, isSpirit(poke, _poke))
+            }
+            return
+
+        case "ダイアーク":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                changeRank(_poke, "sp_def", -1, isSpirit(poke, _poke))
+            }
+            return
+
+        case "ダイアタック":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                changeRank(_poke, "speed", -1, isSpirit(poke, _poke))
+            }
+            return
+
+        case "ダイバーン":
+            if ( fieldStatus.mySunny ) return
+            activateWeather(poke, "sunny")
+            return
+
+        case "ダイストリーム":
+            if ( fieldStatus.myRainy ) return
+            activateWeather(poke, "rainy")
+            return
+
+        case "ダイロック":
+            if ( fieldStatus.mySandstorm ) return
+            activateWeather(poke, "sandstorm")
+            return
+
+        case "ダイアイス":
+            if ( fieldStatus.myGraupel ) return
+            activateWeather(poke, "graupel")
+            return
+
+        case "ダイサンダー":
+            if ( fieldStatus.myElectric ) return
+            activateWeather(poke, "electric")
+            return
+
+        case "ダイソウゲン":
+            if ( fieldStatus.myGrassy ) return
+            activateWeather(poke, "grassy")
+            return
+
+        case "ダイサイコ":
+            if ( fieldStatus.myPsychic ) return
+            activateWeather(poke, "psychic")
+            return
+
+        case "ダイフェアリー":
+            if ( fieldStatus.myMisty ) return
+            activateWeather(poke, "misty")
+            return
+
+        case "キョダイカンデン":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                const ailment = ( getRandom() < 0.5 )? "まひ" : "どく"
+                getAbnormal(_poke, ailment)
+            }
+            return
+
+        case "キョダイカンロ":
+            for ( const _poke of myPokeInBattle(poke) ) {
+                if ( !_poke.myAilment ) continue
+                resetAilment(_poke)
+                writeLog(`${_poke.myTN} の ${_poke.myName} の 状態異常が治った !`)
+            }
+            return
+
+        case "キョダイガンジン":
+            if ( getOppField(poke).myStealth_rock ) return
+            getOppField(poke).myStealth_rock = true
+            writeLog(`${getOppField(poke).myTN} の場に とがった岩がただよいはじめた`)
+            return
+
+        case "キョダイゲンエイ":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                if ( _poke.myCondition.myCant_escape ) continue
+                
+            }
+            if (  tgt.p_con.includes("逃げられない") && !tgt.type.includes("ゴースト")) {
+        tgt.p_con += "逃げられない" + "\n"
+        writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　逃げられなくなった" + "\n")
+    } else if (move.name == "キョダイゲンスイ" &&  tgt.used != "" && tgt.last_HP > 0) {
+        for (let i = 0; i < 4; i++) {
+            if (def.con["move_" + i] == tgt.used && def.con["last_" + i] > 0) {
+                writeLog(me, you, tgt.TN + "　の　" + tgt.name + "の　" + tgt.used + "　の　PPが減った" + "\n")
+                def.con["last_" + i] = Math.max(def.con["last_" + i] - 2, 0)
+            }
+        }
+    } else if (move.name == "キョダイコウジン" && !tgt.f_con.includes("キョダイコウジン")) {
+        tgt.f_con += "キョダイコウジン" + "\n"
+        writeLog(me, you, tgt.TN + "　の　の場に尖った鉄が漂い始めた" + "\n")
+    } else if (move.name == "キョダイコバン" && tgt.last_HP > 0) {
+        getAbnormal(me, you, con, "こんらん", 100, move)
+    } else if (move.name == "キョダイコワク" && tgt.last_HP > 0) {
+        if (getRandom() < 1 / 3) {
+            getAbnormal(me, you, con, "まひ", 100, move)
+        } else if (getRandom() < 1 / 2) {
+            getAbnormal(me, you, con, "どく", 100, move)
+        } else {
+            getAbnormal(me, you, con, "ねむり", 100, move)
+        }
+    } else if (move.name == "キョダイサイセイ" && con.item == "" && itemEff.berryList().includes(atk["poke" + cfn.battleNum(atk)].recycle) && getRandom()) {
+        con.item = atk["poke" + cfn.battleNum(atk)].recycle
+        atk["poke" + cfn.battleNum(atk)].recycle = ""
+        writeLog(me, you, con.TN + "　の　" + con.name + "　は　" + con.item + "　を　拾ってきた" + "\n")
+    } else if (move.name == "キョダイサンゲキ" && tgt.last_HP > 0) {
+        afn.rankChange(def, atk, "Y", -1, 100, move, true)
+    } else if (move.name == "キョダイシュウキ" && tgt.last_HP > 0) {
+        getAbnormal(me, you, con, "どく", 100, move)
+    } else if (move.name == "キョダイシンゲキ") {
+        writeLog(me, you, con.TN + "　の　" + con.name + "　は　張り切っている!" + "\n")
+        if (!con.p_con.includes("キョダイシンゲキ")) {
+            con.p_con += "キョダイシンゲキ　+1"
+        } else {
+            let list = con.p_con.split("\n")
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] == "キョダイシンゲキ　+1") {
+                    list[i] = "キョダイシンゲキ　+2"
+                } else if (list[i] == "キョダイシンゲキ　+2") {
+                    list[i] = "キョダイシンゲキ　+3"
+                }
+            }
+            con.p_con = list.join("\n")
+        }
+    } else if (move.name == "キョダイスイマ" && !tgt.p_con.includes("ねむけ") && getRandom() < 0.5 && tgt.last_HP > 0) {
+        writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　眠気を誘われた" + "\n")
+        tgt.p_con += "ねむけ　宣言ターン" + "\n"
+    } else if (move.name == "キョダイセンリツ" && !con.f_con.includes("オーロラベール")) {
+        writeLog(me, you, con.TN + "　の　場にオーロラベールが現れた!" + "\n")
+        if (con.item == "ひかりのねんど") {
+            con.p_con += "オーロラベール　8/8" + "\n"
+        } else {
+            con.p_con += "オーロラベール　5/5" + "\n"
+        }
+    } else if (move.name == "キョダイダンエン") {
+        changeHP(me, you, con, Math.floor(con.full_HP / 6), "+", move)
+    } else if (move.name == "キョダイテンドウ" && !con.f_con.includes("じゅうりょく")) {
+        writeLog(me, you, "重力が強くなった!" + "\n")
+        con.f_con += "じゅうりょく　5/5" + "\n"
+        tgt.f_con += "じゅうりょく　5/5" + "\n"
+    } else if (move.name == "キョダイテンバツ" && tgt.last_HP > 0) {
+        getAbnormal(me, you, con, "こんらん", 100, move)
+    } else if (move.name == "キョダイバンライ" && tgt.last_HP > 0) {
+        getAbnormal(me, you, con, "まひ", 100, move)
+    } else if (move.name == "キョダイフウゲキ") {
+        writeLog(me, you, "お互いの場のものが飛び去った" + "\n")
+        cfn.conditionRemove(def.con, "field", "しろいきり")
+        cfn.conditionRemove(def.con, "field", "しんぴのまもり")
+        cfn.conditionRemove(def.con, "field", "リフレクター")
+        cfn.conditionRemove(def.con, "field", "ひかりのかべ")
+        cfn.conditionRemove(def.con, "field", "オーロラベール")
+        for (const team of [atk, def]) {
+            cfn.conditionRemove(team.con, "field", "まきびし")
+            cfn.conditionRemove(team.con, "field", "どくびし")
+            cfn.conditionRemove(team.con, "field", "ステルスロック")
+            cfn.conditionRemove(team.con, "field", "ねばねばネット")
+            cfn.conditionRemove(team.con, "field", "キョダイコウジン")
+            cfn.conditionRemove(team.con, "field", "フィールド")
+        }
+
+    } else if (move.name == "キョダイホーヨー" && !tgt.p_con.includes("メロメロ") && tgt.last_HP > 0 && ((con.sex == " ♂ " && tgt.sex == " ♀ ") || (con.sex == " ♀ " && tgt.sex == " ♂ "))) {
+        writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　メロメロになった" + "\n")
+        tgt.p_con += "メロメロ" + "\n"
+    } else if (move.name == "キョダイホウマツ" && tgt.last_HP > 0) {
+        afn.rankChange(def, atk, "S", -2, 100, move, true)
+    } else if ((move.name == "キョダイベンタツ" || move.name == "キョダイゴクエン" || move.name == "キョダイホウゲキ" || move.name == "キョダイフンセキ") && !tgt.f_con.includes(move.name)) {
+        tgt.f_con += move.name + " 4/4" + "\n"
+        writeLog(me, you, tgt.TN + "　の場が　" + move.name + "　で囲まれた" + "\n")
+    } else if ((move.name == "キョダイサジン" || move.name == "キョダイヒャッカ") && !tgt.p_con.includes("バインド") && !damage.substitute && tgt.last_HP > 0) {
+        writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　しめつけられた!" + "\n")
+        if (con.item == "ねばりのかぎづめ") {
+            tgt.p_con += "バインド（長）　0ターン目" + "\n"
+        } else if (con.item == "しめつけバンド") {
+            tgt.p_con += "バインド（強）　0ターン目" + "\n"
+        } else {
+            tgt.p_con += "バインド　0ターン目" + "\n"
+        }
+    }
 }
 
 //**************************************************

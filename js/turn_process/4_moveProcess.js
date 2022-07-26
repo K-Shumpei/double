@@ -374,36 +374,20 @@ function additionalEffect(poke) {
         additionalEffect_other(poke, tgt)
     }
 
-    // 自分のランクが下がる技の効果
-    for ( const element of downMyRank ) {
-        if ( poke.myMove.name == element.name && poke.myMove.name != "スケイルショット" ) {
-            for ( const rank of element.rank ){
-                changeMyRank(poke, rank.parameter, rank.change)
-            }
-        }
-    }
+
     // それ以外の効果
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
+        if ( tgt.poke.myRest_hp == 0 ) continue
 
+        // 自分のランクが下がる技の効果
+        additionalEffect_downMyRank(poke, tgt)
         // HP吸収技の吸収効果/ヘドロえきのダメージ効果
-        for (const element of recoverMyHP){
-            if ( poke.myMove.name == element.name ) {
-                const damage = fiveCut(Math.round(tgt.damage * element.rate) * isBig_root(poke))
-                changeHP(poke, damage, isOoze(tgt.poke))
-            }
-        }
-        /*
+        additionalEffect_recover(poke, tgt)
         // はじけるほのおによる火花のダメージ
-        (tgt.child == 0)? child = 1 : child = 0
-        const _con = isCon(me, you, user[0], child)
-        if (!user[0].f_con.includes("ひんし" + child)){
-            const damage = Math.floor(user[0]["poke" + _con.num].full_HP / 16)
-            changeHP(user[0], user[1], _con, damage, "-")
-        }
+        additionalEffect_flameBurst(poke, tgt)
         // ダイマックスわざの効果
-        dynamaxMoveEffect(poke)
-        */
+        additionalEffect_dynamax(poke, tgt)
     }
 }
 
@@ -473,7 +457,7 @@ function dyingJudge(poke){
         // 手持ちに戻る
         toHand(tgt.poke)
     }
-    
+
     // 3.みちづれによる攻撃側のひんし
     if ( destiny ) {
         writeLog(`${destiny.myTN} の ${destiny.myName} は ${poke.myTN} の ${poke.myName} を みちづれにした !`)

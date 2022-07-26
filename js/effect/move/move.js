@@ -265,7 +265,7 @@ var additionalEffectForOtherEffect = [
 // 12.ダイマックス技
 // 13.その他の技
 
-var recoverMyHP = [
+const moveList_recover = [
     {name: 'いきいきバブル', rate: 0.5}, 
     {name: 'ウッドホーン', rate: 0.5}, 
     {name: 'きゅうけつ', rate: 0.5}, 
@@ -279,7 +279,7 @@ var recoverMyHP = [
     {name: 'ゆめくい', rate: 0.5}
 ]
 
-var downMyRank = [
+const moveList_downMyRank = [
     {name: 'アームハンマー', rank: [{parameter: 'speed', change: -1}]}, 
     {name: 'アイスハンマー', rank: [{parameter: 'speed', change: -1}]}, 
     {name: 'いじげんラッシュ', rank: [{parameter: 'def', change: -1}]}, 
