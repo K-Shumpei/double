@@ -321,7 +321,7 @@ function getCritical(poke, tgt){
 
     if ( poke.myCondition.myCritical ) critical += 2 // きゅうしょアップ
     if ( poke.myCondition.Laser_focus == 2 ) critical += 3 // とぎすます
-    if ( poke.myCondition.myChi_strike ) critical += poke.myCondition.myChi_strike // キョダイシンゲキ
+    critical += poke.myCondition.myChi_strike // キョダイシンゲキ
     if ( poke.myAbility == "きょううん" && isAbility(poke) ) critical += 1
     if ( ( poke.myItem == "ピントレンズ" || poke.myItem == "するどいツメ" ) && isItem(poke) ) critical += 1
     if ( poke.myName == "ラッキー" && poke.myItem == "ラッキーパンチ" && isItem(poke) ) critical += 2

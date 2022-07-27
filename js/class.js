@@ -281,7 +281,7 @@ class Condition {
         this.cant_escape   = false // 逃げられない状態を付与したポケモンのID
         this.cant_move     = false // 反動で次のターン動けなくなる 
         this.charge        = false // じゅうでん経過ターン数(1ターン目で特防アップ、2ターン目で電気技の威力アップ)
-        this.chi_strike    = false // キョダイシンゲキ成功回数
+        this.chi_strike    = 0     // キョダイシンゲキ成功回数
         this.choice        = false // 拘っている技
         this.confusion     = false // こんらん経過ターン数
         this.curse         = false // のろい状態ならtrue
@@ -762,7 +762,7 @@ class allField {
     set myTurn_end( value )      { this.turn_end = value }
     set myWater_sport( value )   { this.water_sport = value }
     set myWonder_room( value )   { this.wonder_room = value }
-    // 途中応対
+    // 途中交代
     set mySwitch_me( value )     { this.switch_me = value }
     set mySwitch_opp( value )    { this.switch_opp = value }
 
