@@ -294,7 +294,7 @@ function summon( poke, position ) {
     writeLog( `${poke.myTN} は ${poke.myName} を 繰り出した !`)
 }
 
-// 戦闘に出す時の特性の発動 summon_poke
+// 戦闘に出す時の特性の発動
 function landing() {
     let pokeLanding = []
     for ( const poke of allPokeInBattle() ) {
