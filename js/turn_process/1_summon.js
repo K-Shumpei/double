@@ -295,7 +295,7 @@ function summon( poke, position ) {
 }
 
 // 戦闘に出す時の特性の発動 summon_poke
-function onField() {
+function landing() {
     let pokeLanding = []
     for ( const poke of allPokeInBattle() ) {
         if ( poke.myCondition.myLanding ) {
@@ -307,31 +307,31 @@ function onField() {
 
     // 1.かがくへんかガスの発動
     for ( const poke of order ) {
-        neutralizingGas( poke )
+        landing_neutralizingGas( poke )
     }
     // 2.きんちょうかん/じんばいったいの発動
     for ( const poke of order ) {
-        unnerve( poke )
+        landing_unnerve( poke )
     }
     // 3.1~2.状態/ 3.特性/ 4.持ち物の発動
     for ( const poke of order ) {
-        actAbilityEtc( poke )
+        landing_other1st( poke )
     }
     // 4.一部の特性(1)/場の状態による持ち物(2)/ゲンシカイキ(3)の発動
     for ( const poke of order ) {
-        abilityToChangeForm( poke )
+        landing_other2nd( poke )
     }
     // 5.フラワーギフト/てんきや/アイスフェイス
     for ( const poke of order ) {
-        weatherAbility( poke )
+        landing_weather( poke )
     }
     // 6.しろいハーブ
     for ( const poke of order ) {
-        whiteHerb( poke )
+        landing_whiteHerb( poke )
     }
     // 7.だっしゅつパックによる交代、交代先の繰り出し
     for ( const poke of order ) {
-        ejectPack( poke )
+        landing_ejectPack( poke )
     }
 
     // すばやさが高い順に発動する。トリックルームの影響を受ける。

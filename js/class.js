@@ -621,6 +621,7 @@ class Field {
         this.lucky_chant   = false // おまじない経過ターン数
         this.mat_block     = false // たたみがえし状態ならtrue
         this.mist          = false // しろいきり状態ならtrue
+        this.pray          = [{name: false, position: 0}, {name: false, position: 1}] // 技名(いやしのねがい、みかづきのまいなど)、場所
         this.quick_guard   = false // ファストガード状態ならtrue
         this.rainbow       = false // にじ経過ターン数
         this.reflect       = false // リフレクター経過ターン数
@@ -653,6 +654,7 @@ class Field {
     set myLucky_chant( value )   { this.lucky_chant = value }
     set myMat_block( value )     { this.mat_block = value }
     set myMist( value )          { this.mist = value }
+    set myPray( value )          { this.pray = value }
     set myQuick_guard( value )   { this.quick_guard = value }
     set myRainbow( value )       { this.rainbow = value }
     set myReflect( value )       { this.reflect = value }
@@ -684,6 +686,7 @@ class Field {
     get myLucky_chant()   { return this.lucky_chant }
     get myMat_block()     { return this.mat_block }
     get myMist()          { return this.mist }
+    get myPray()          { return this.pray }
     get myQuick_guard()   { return this.quick_guard }
     get myRainbow()       { return this.rainbow }
     get myReflect()       { return this.reflect }

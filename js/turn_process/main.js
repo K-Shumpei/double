@@ -106,7 +106,7 @@ function changePokemon(firstOrder) {
         writeLog(`${poke.myTN} は ${poke.myName} を 引っ込めた！`)
         toHand(poke)
         summon(next, position)
-        // onField(me, you, con)
+        landing()
     }
 }
 

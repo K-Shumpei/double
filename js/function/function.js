@@ -648,7 +648,7 @@ function formChange(poke, name, declaration) {
     document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = "poke_figure/" + next.number + ".gif"
 
     // 特性の発動
-    activateAbility(poke)
+    landing_other1st_ability(poke)
 }
 
 function selectedMove(poke) {

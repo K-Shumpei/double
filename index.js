@@ -224,7 +224,7 @@ $(function () {
         summon(oppParty[1], 1)
 
         // 場に出た時の処理
-        onField()
+        landing()
 
         $("#headline").text("対戦が始まりました")
 
@@ -385,7 +385,7 @@ $(function () {
         resetSwitch()
 
         // 場に出た時の処理
-        onField()
+        landing()
         // 現在の状態を画面に表示
         showNowCondition()
 

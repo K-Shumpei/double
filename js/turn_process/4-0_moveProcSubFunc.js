@@ -246,43 +246,55 @@ function additionalEffect_dynamax(poke, tgt) {
             return
 
         case "ダイバーン":
-            if ( fieldStatus.mySunny ) return
-            activateWeather(poke, "sunny")
+            if ( fieldStatus.mySunny )      return // 晴れ状態
+            if ( fieldStatus.myDrought )    return // 大日照り状態
+            if ( fieldStatus.myHeavy_rain ) return // 大雨状態
+            if ( fieldStatus.myTurbulence ) return // 乱気流状態
+            activateWeather(poke, "にほんばれ")
             return
 
         case "ダイストリーム":
-            if ( fieldStatus.myRainy ) return
-            activateWeather(poke, "rainy")
+            if ( fieldStatus.myRainy )      return // 雨状態
+            if ( fieldStatus.myDrought )    return // 大日照り状態
+            if ( fieldStatus.myHeavy_rain ) return // 大雨状態
+            if ( fieldStatus.myTurbulence ) return // 乱気流状態
+            activateWeather(poke, "あめ")
             return
 
         case "ダイロック":
-            if ( fieldStatus.mySandstorm ) return
-            activateWeather(poke, "sandstorm")
+            if ( fieldStatus.mySandstorm )  return // 砂嵐状態
+            if ( fieldStatus.myDrought )    return // 大日照り状態
+            if ( fieldStatus.myHeavy_rain ) return // 大雨状態
+            if ( fieldStatus.myTurbulence ) return // 乱気流状態
+            activateWeather(poke, "すなあらし")
             return
 
         case "ダイアイス":
-            if ( fieldStatus.myGraupel ) return
-            activateWeather(poke, "graupel")
+            if ( fieldStatus.myGraupel )    return // 霰状態
+            if ( fieldStatus.myDrought )    return // 大日照り状態
+            if ( fieldStatus.myHeavy_rain ) return // 大雨状態
+            if ( fieldStatus.myTurbulence ) return // 乱気流状態
+            activateWeather(poke, "あられ")
             return
 
         case "ダイサンダー":
             if ( fieldStatus.myElectric ) return
-            activateWeather(poke, "electric")
+            activateTerrain(poke, "electric")
             return
 
         case "ダイソウゲン":
             if ( fieldStatus.myGrassy ) return
-            activateWeather(poke, "grassy")
+            activateTerrain(poke, "grassy")
             return
 
         case "ダイサイコ":
             if ( fieldStatus.myPsychic ) return
-            activateWeather(poke, "psychic")
+            activateTerrain(poke, "psychic")
             return
 
         case "ダイフェアリー":
             if ( fieldStatus.myMisty ) return
-            activateWeather(poke, "misty")
+            activateTerrain(poke, "misty")
             return
 
         case "キョダイカンデン":
@@ -502,18 +514,45 @@ function additionalEffect_dynamax(poke, tgt) {
             getMyField(tgt.poke).myVine_lash = 1
             writeLog(`${tgt.poke.myTN} の場が ${poke.myMove.name}で囲まれた`)
             return
+
+        case "キョダイゴクエン":
+            if ( getMyField(tgt.poke).myWildfire ) return
+            getMyField(tgt.poke).myWildfire = 1
+            writeLog(`${tgt.poke.myTN} の場が ${poke.myMove.name}で囲まれた`)
+            return
+
+        case "キョダイホウゲキ":
+            if ( getMyField(tgt.poke).myCannonade ) return
+            getMyField(tgt.poke).myCannonade = 1
+            writeLog(`${tgt.poke.myTN} の場が ${poke.myMove.name}で囲まれた`)
+            return
+
+        case "キョダイフンセキ":
+            if ( getMyField(tgt.poke).myVolcalith ) return
+            getMyField(tgt.poke).myVolcalith = 1
+            writeLog(`${tgt.poke.myTN} の場が ${poke.myMove.name}で囲まれた`)
+            return
+
+        case "キョダイサジン":
+        case "キョダイヒャッカ":
+            for ( const _poke of myPokeInBattle(tgt.poke) ) {
+                if ( !_poke.myCondition.myBind_ID ) continue
+                _poke.myCondition.myBind_ID   = poke.myID
+                _poke.myCondition.myBind_turn = 1
+                writeLog(`${_poke.myTN} の ${_poke.myName} は しめつけられた !`)
             
-        || move.name == "キョダイゴクエン" || move.name == "キョダイホウゲキ" || move.name == "キョダイフンセキ") && !tgt.f_con.includes(move.name)) {
-        tgt.f_con += move.name + " 4/4" + "\n"
-        writeLog(me, you, tgt.TN + "　の場が　" + move.name + "　で囲まれた" + "\n")
-    } else if ((move.name == "キョダイサジン" || move.name == "キョダイヒャッカ") && !tgt.p_con.includes("バインド") && !damage.substitute && tgt.last_HP > 0) {
-        writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　は　しめつけられた!" + "\n")
-        if (con.item == "ねばりのかぎづめ") {
-            tgt.p_con += "バインド（長）　0ターン目" + "\n"
-        } else if (con.item == "しめつけバンド") {
-            tgt.p_con += "バインド（強）　0ターン目" + "\n"
-        } else {
-            tgt.p_con += "バインド　0ターン目" + "\n"
+                if ( !isItem(poke) ) return
+                switch ( poke.myItem ) {
+                    case "ねばりのかぎづめ":
+                        _poke.myCondition.myBind_lone = true
+                        return
+            
+                    case "しめつけバンド":
+                        _poke.myCondition.myBind_strong = true
+                        return
+                }
+            
+                return
         }
     }
 }
@@ -761,10 +800,10 @@ function effectWithDmg_defAbility(poke, tgt) {
             return
 
         case "すなはき":
-            if ( fieldStatus.mySandstorm ) return
-            if ( fieldStatus.myHeavy_rain ) return
-            if ( fieldStatus.myDrought ) return
-            if ( fieldStatus.myTurbulence ) return
+            if ( fieldStatus.mySandstorm )  return // 砂嵐状態
+            if ( fieldStatus.myDrought )    return // 大日照り状態
+            if ( fieldStatus.myHeavy_rain ) return // 大雨状態
+            if ( fieldStatus.myTurbulence ) return // 乱気流状態
             abilityDeclaration(tgt.poke)
             activateWeather(tgt.poke, "sandstorm")
             return
@@ -800,7 +839,7 @@ function effectWithDmg_defAbility(poke, tgt) {
             abilityDeclaration(tgt.poke)
             changeMyRank(tgt.poke, "def", -1)
             changeMyRank(tgt.poke, "speed", 2)
-            whiteHerb(poke)
+            landing_whiteHerb(poke)
             return
 
         case "みずがため":

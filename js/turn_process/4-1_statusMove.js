@@ -111,11 +111,11 @@ function statusMoveToChangeYourField(poke) {
 function statusMoveToChangeAllField(poke) {
     switch ( poke.myMove.name ) {
         case "あまごい":
-            activateWeather(poke, "rainy")
+            activateWeather(poke, "あめ")
             break
         
         case "あられ":
-            activateWeather(poke, "graupel")
+            activateWeather(poke, "あられ")
             break
         
         case "エレキフィールド":
@@ -160,7 +160,7 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "すなあらし":
-            activateWeather(poke, "sandstorm")
+            activateWeather(poke, "すなあらし")
             break
         
         case "トリックルーム":
@@ -185,7 +185,7 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "にほんばれ":
-            activateWeather(poke, "sunny")
+            activateWeather(poke, "にほんばれ")
             break
         
         case "フェアリーロック":
@@ -721,8 +721,8 @@ function statusMoveForOneOfThem(poke) {
             [poke.myAbility, tgt.poke.myAbility] = [tgt.poke.myAbility, poke.myAbility]
             writeLog(`${poke.myTN} の ${poke.myName} は　特性『${poke.myAbility}』 になった`)
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった`)
-            activateAbility(poke)
-            activateAbility(tgt.poke)
+            landing_other1st_ability(poke)
+            landing_other1st_ability(tgt.poke)
             break
         
         case "スケッチ":
@@ -827,7 +827,7 @@ function statusMoveForOneOfThem(poke) {
         case "なりきり":
             poke.myAbility = tgt.poke.myAbility
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 特性『${tgt.poke.myAbility}』 を コピーした !`)
-            activateAbility(poke)
+            landing_other1st_ability(poke)
             break
 
         case "のろい":
@@ -1006,9 +1006,10 @@ function statusMoveForMe(poke) {
             break
         
         case "いやしのねがい":
-            return
-            me.f_con += "いやしのねがい：" + con.child + "\n"
-            con.last_HP = 0
+        case "みかづきのまい":
+            getMyField(poke).myPray[poke.myPosition].name = poke.myMove.name
+            poke.myRest_hp = 0
+            toHand(poke)
             break
 
         case "おいわい":
@@ -1294,13 +1295,6 @@ function statusMoveForMe(poke) {
 
         case "まるくなる":
             poke.myCondition.myDefense_curl = true
-            break
-
-        case "みかづきのまい":
-            /*
-            me.f_con += "みかづきのまい" + "\n"
-            con.last_HP = 0
-            */
             break
 
         case "みがわり":

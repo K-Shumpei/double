@@ -273,16 +273,14 @@ function isSubstitute(poke, target){
 }
 
 function resetWeather() {
-    fieldStatus.myRainy     = false // あめ
-    fieldStatus.mySunny     = false // にほんばれ
-    fieldStatus.mySandstorm = false // すなあらし
-    fieldStatus.myGraupel   = false // あられ
+    fieldStatus.myRainy      = false // あめ
+    fieldStatus.mySunny      = false // にほんばれ
+    fieldStatus.mySandstorm  = false // すなあらし
+    fieldStatus.myGraupel    = false // あられ
 
-    myField.myWeather_long  = false // 持続ターン増加アイテム
-    oppField.myWeather_long = false // 持続ターン増加アイテム
-}
+    myField.myWeather_long   = false // 持続ターン増加アイテム
+    oppField.myWeather_long  = false // 持続ターン増加アイテム
 
-function resetSuperWeather() {
     fieldStatus.myDrought    = false // おおひでり
     fieldStatus.myHeavy_rain = false // おおあめ
     fieldStatus.myTurbulence = false // らんきりゅう
@@ -363,52 +361,72 @@ function activateTerrain(poke, terrain) {
 
     const order = speedOrder(allPokeInBattle())
     for ( const poke of order ) {
-        activateSeed( poke ) // シード系の持ち物
+        landing_other2nd_seed( poke ) // シード系の持ち物
         //mimicry() // 特性『ぎたい』
     }
 }
 
 // 天候展開
 function activateWeather(poke, weather) {
+
     resetWeather()
-    if ( weather == "rainy" ) {
-        fieldStatus.myRainy = 1
-        if ( poke.myItem == "しめったいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
-        writeLog(`雨が降り始めた`)
-    }
-    if ( weather == "graupel" ) {
-        fieldStatus.myGraupel = 1
-        if ( poke.myItem == "つめたいいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
-        writeLog(`あられが降り始めた`)
-    }
-    if ( weather == "sandstorm" ) {
-        fieldStatus.mySandstorm = 1
-        if ( poke.myItem == "さらさらいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
-        writeLog(`砂嵐が吹き始めた`)
-    }
-    if ( weather == "sunny" ) {
-        fieldStatus.mySunny = 1
-        if ( poke.myItem == "あついいわ" && isItem(poke) ) getMyField(poke).myWeather_long = true
-        writeLog(`日差しが強くなった`)
+
+    switch ( weather ) {
+        case "あめ":
+            fieldStatus.myRainy = 1
+            writeLog(`雨が降り始めた`)
+
+            if ( !isItem(poke) ) break
+            if ( poke.myItem != "しめったいわ" ) break
+            getMyField(poke).myWeather_long = true
+            break
+
+        case "にほんばれ":
+            fieldStatus.mySunny = 1
+            writeLog(`日差しが強くなった`)
+            
+            if ( !isItem(poke) ) break
+            if ( poke.myItem != "あついいわ" ) break
+            getMyField(poke).myWeather_long = true
+            break
+
+        case "すなあらし":
+            fieldStatus.mySandstorm = 1
+            writeLog(`砂嵐が吹き始めた`)
+            
+            if ( !isItem(poke) ) break
+            if ( poke.myItem != "さらさらいわ" ) break
+            getMyField(poke).myWeather_long = true
+            break
+
+        case "あられ":
+            fieldStatus.myGraupel = 1
+            writeLog(`あられが降り始めた`)
+            
+            if ( !isItem(poke) ) break
+            if ( poke.myItem != "つめたいいわ" ) break
+            getMyField(poke).myWeather_long = true
+            break
+
+        case "おおあめ":
+            fieldStatus.myHeavy_rain = true
+            writeLog(`雨がとても強くなった !`)
+            break
+
+        case "おおひでり":
+            fieldStatus.myDrought = true
+            writeLog(`日差しがとても強くなった !`)
+            break
+
+        case "らんきりゅう":
+            fieldStatus.myTurbulence = true
+            writeLog(`乱気流が発生した !`)
+            break
+
     }
 
     // てんきや
-
-    resetSuperWeather()
-    if ( weather == "drought" ) {
-        writeLog(`日差しがとても強くなった !`)
-        fieldStatus.myDrought = true
-    }
-    if ( weather == "heavy_rain" ) {
-        writeLog(`雨がとても強くなった !`)
-        fieldStatus.myHeavy_rain = true
-    }
-    if ( weather == "turbulence" ) {
-        writeLog(`乱気流が発生した !`)
-        fieldStatus.myTurbulence = true
-    }
-
-    // てんきや
+    landing_weather_forecast(poke)
 }
 
 // ぎたい
@@ -857,7 +875,7 @@ function isBench(poke){
 
 
 // ランク補正ありの実数値
-function isValueIncludingRank(AV, rank, critical){
+function isValueIncludingRank(AV, rank, critical) {
     //急所に当たった時
     if ( critical == true ) {
         const this_rank = Math.max(rank, 0) 
@@ -1005,27 +1023,381 @@ function natureRate(nature){
     }
 }
 
-var compatibilityTable = [
-    ['ノーマル', 'ほのお', 'みず', 'でんき', 'くさ', 'こおり', 'かくとう', 'どく', 'じめん', 'ひこう', 'エスパー', 'むし', 'いわ', 'ゴースト', 'ドラゴン', 'あく', 'はがね', 'フェアリー'], 
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 1.0, 1.0, 0.5, 1.0], 
-    [1.0, 0.5, 0.5, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 1.0, 2.0, 1.0], 
-    [1.0, 2.0, 0.5, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 1.0, 1.0], 
-    [1.0, 1.0, 2.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0], 
-    [1.0, 0.5, 2.0, 1.0, 0.5, 1.0, 1.0, 0.5, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 0.5, 1.0, 0.5, 1.0], 
-    [1.0, 0.5, 0.5, 1.0, 2.0, 0.5, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0], 
-    [2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 0.5, 0.5, 0.5, 2.0, 0.0, 1.0, 2.0, 2.0, 0.5], 
-    [1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 1.0, 0.5, 0.5, 1.0, 1.0, 0.0, 2.0], 
-    [1.0, 2.0, 1.0, 2.0, 0.5, 1.0, 1.0, 2.0, 1.0, 0.0, 1.0, 0.5, 2.0, 1.0, 1.0, 1.0, 2.0, 1.0], 
-    [1.0, 1.0, 1.0, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 0.5, 1.0], 
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 0.0, 0.5, 1.0], 
-    [1.0, 0.5, 1.0, 1.0, 2.0, 1.0, 0.5, 0.5, 1.0, 0.5, 2.0, 1.0, 1.0, 0.5, 1.0, 2.0, 0.5, 0.5], 
-    [1.0, 2.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 0.5, 2.0, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0], 
-    [0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 1.0], 
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 0.5, 0.0], 
-    [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 2.0, 1.0, 0.5, 1.0, 0.5], 
-    [1.0, 0.5, 0.5, 0.5, 1.0, 2.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 1.0, 1.0, 1.0, 0.5, 2.0], 
-    [1.0, 0.5, 1.0, 1.0, 1.0, 1.0, 2.0, 0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 0.5, 1.0], 
-]
+const compatibilityTable = {
+    ノーマル: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 0.5, 
+        ゴースト: 0.0, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    ほのお: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 0.5, 
+        でんき: 1.0, 
+        くさ: 2.0, 
+        こおり: 2.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 2.0, 
+        いわ: 0.5, 
+        ゴースト: 1.0, 
+        ドラゴン: 0.5, 
+        あく: 1.0, 
+        はがね: 2.0, 
+        フェアリー: 1.0
+    }, 
+    みず: {
+        ノーマル: 1.0, 
+        ほのお: 2.0, 
+        みず: 0.5, 
+        でんき: 1.0, 
+        くさ: 0.5, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 2.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 2.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 0.5, 
+        あく: 1.0, 
+        はがね: 1.0, 
+        フェアリー: 1.0
+    }, 
+    でんき: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 2.0, 
+        でんき: 0.5, 
+        くさ: 0.5, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 0.0, 
+        ひこう: 2.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 0.5, 
+        あく: 1.0, 
+        はがね: 1.0, 
+        フェアリー: 1.0
+    }, 
+    くさ: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 2.0, 
+        でんき: 1.0, 
+        くさ: 0.5, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 0.5, 
+        じめん: 2.0, 
+        ひこう: 0.5, 
+        エスパー: 1.0, 
+        むし: 0.5, 
+        いわ: 2.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 0.5, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    こおり: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 0.5, 
+        でんき: 1.0, 
+        くさ: 2.0, 
+        こおり: 0.5, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 2.0, 
+        ひこう: 2.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 2.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    かくとう: {
+        ノーマル: 2.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 2.0, 
+        かくとう: 1.0, 
+        どく: 0.5, 
+        じめん: 1.0, 
+        ひこう: 0.5, 
+        エスパー: 0.5, 
+        むし: 0.5, 
+        いわ: 2.0, 
+        ゴースト: 0.0, 
+        ドラゴン: 1.0, 
+        あく: 2.0, 
+        はがね: 2.0, 
+        フェアリー: 0.5
+    }, 
+    どく: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 2.0, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 0.5, 
+        じめん: 0.5, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 0.5, 
+        ゴースト: 0.5, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 0.0, 
+        フェアリー: 2.0
+    }, 
+    じめん: {
+        ノーマル: 1.0, 
+        ほのお: 2.0, 
+        みず: 1.0, 
+        でんき: 2.0, 
+        くさ: 0.5, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 2.0, 
+        じめん: 1.0, 
+        ひこう: 0.0, 
+        エスパー: 1.0, 
+        むし: 0.5, 
+        いわ: 2.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 2.0, 
+        フェアリー: 1.0
+    }, 
+    ひこう: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 0.5, 
+        くさ: 2.0, 
+        こおり: 1.0, 
+        かくとう: 2.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 2.0, 
+        いわ: 0.5, 
+        ゴースト: 1.0, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    エスパー: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 2.0, 
+        どく: 2.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 0.5, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 1.0, 
+        あく: 0.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    むし: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 2.0, 
+        こおり: 1.0, 
+        かくとう: 0.5, 
+        どく: 0.5, 
+        じめん: 1.0, 
+        ひこう: 0.5, 
+        エスパー: 2.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 0.5, 
+        ドラゴン: 1.0, 
+        あく: 2.0, 
+        はがね: 0.5, 
+        フェアリー: 0.5
+    }, 
+    いわ: {
+        ノーマル: 1.0, 
+        ほのお: 2.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 2.0, 
+        かくとう: 0.5, 
+        どく: 1.0, 
+        じめん: 0.5, 
+        ひこう: 2.0, 
+        エスパー: 1.0, 
+        むし: 2.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }, 
+    ゴースト: {
+        ノーマル: 0.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 2.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 2.0, 
+        ドラゴン: 1.0, 
+        あく: 0.5, 
+        はがね: 1.0, 
+        フェアリー: 1.0
+    }, 
+    ドラゴン: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 2.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 0.0
+    }, 
+    あく: {
+        ノーマル: 1.0, 
+        ほのお: 1.0, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 0.5, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 2.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 2.0, 
+        ドラゴン: 1.0, 
+        あく: 0.5, 
+        はがね: 1.0, 
+        フェアリー: 0.5
+    }, 
+    はがね: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 0.5, 
+        でんき: 0.5, 
+        くさ: 1.0, 
+        こおり: 2.0, 
+        かくとう: 1.0, 
+        どく: 1.0, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 2.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 1.0, 
+        あく: 1.0, 
+        はがね: 0.5, 
+        フェアリー: 2.0 
+    }, 
+    フェアリー: {
+        ノーマル: 1.0, 
+        ほのお: 0.5, 
+        みず: 1.0, 
+        でんき: 1.0, 
+        くさ: 1.0, 
+        こおり: 1.0, 
+        かくとう: 2.0, 
+        どく: 0.5, 
+        じめん: 1.0, 
+        ひこう: 1.0, 
+        エスパー: 1.0, 
+        むし: 1.0, 
+        いわ: 1.0, 
+        ゴースト: 1.0, 
+        ドラゴン: 2.0, 
+        あく: 2.0, 
+        はがね: 0.5, 
+        フェアリー: 1.0
+    }
+}
+
+// タイプ相性
+function compatibilityRate(atkType, defType, ringTarget) {
+    let rate = 1.0
+
+    for ( const type of defType ) {
+        const value = compatibilityTable[`${atkType}`][`${type}`]
+        if ( ringTarget && value == 0 ) rate *= 1.0
+        else rate *= value
+    }
+
+    return rate
+}
 
 // me.con が you.tgt に move で攻撃した時の倍率
 function compatibilityCheck(poke, tgt){
@@ -1052,37 +1424,16 @@ function compatibilityCheck(poke, tgt){
         }
     }
 
-    for ( let i = 0; i < 18; i++ ){
-        if ( poke.myMove.type == compatibilityTable[0][i] ){
-            for (let j = 0; j < 18; j++){
-                if ( type.includes(compatibilityTable[0][j]) ){
-                    if ( tgt.myItem == "ねらいのまと" && isItem(tgt) && compatibilityTable[i+1][j] == 0 ){
-                        rate *= 1
-                    } else {
-                        rate *= compatibilityTable[i+1][j]
-                    }
-                }
-            }
-        }
-    }
+    // タイプ相性
+    const ringTarget = ( tgt.myItem == "ねらいのまと" && isItem(tgt) )? true : false
+    rate *= compatibilityRate(poke.myMove.type, type, ringTarget)
 
     // タールショット
     if ( tgt.myCondition.myTar_shot && poke.myMove.type == "ほのお" ) rate *= 2
     // フリーズドライ
     if ( poke.myMove.name == "フリーズドライ" && poke.myMove.type == "こおり" && type.includes("みず") ) rate *= 4
     // フラインングプレス
-    if ( poke.myMove.name == "フライングプレス" ){
-        for ( let j = 0; j < 18; j++ ){
-            if ( type.includes(compatibilityTable[0][j]) ){
-                if ( tgt.myItem == "ねらいのまと" && isItem(tgt) && compatibilityTable[9][j] == 0 ){
-                    rate *= 1
-                } else {
-                    rate *= compatibilityTable[9][j]
-                }
-            }
-        }
-    }
-
+    if ( poke.myMove.name == "フライングプレス" ) rate *= compatibilityRate("ひこう", type, ringTarget)
 
     return rate
 }

@@ -334,22 +334,32 @@ function additionalEffect(poke) {
     if ( cannotMoveByRecoil.includes(poke.myMove.name) ) {
         poke.myCondition.myCant_move = poke.myMove.name
     }
-    if ( poke.myMove.name == "あばれる" || poke.myMove.name == "はなびらのまい" || poke.myMove.name == "げきりん" ) {
-        poke.myCondition.Thrash_move = poke.myMove.name
-        poke.myCondition.Thrash_move += 1
-    }
-    if ( poke.myMove.name == "さわぐ" ) {
-        poke.myCondition.myUproar += 1
-    }
-    if ( poke.myMove.name == "なみのり" && poke.myAbility == "うのミサイル" && isability(poke) && !poke.myCondition.myGulp_missile ) {
-        if ( poke.myRest_hp > poke.myFull_hp / 2 ) {
-            poke.myCondition.myGulp_missile = "うのみのすがた"
-            writeLog(`${poke.myTN} の ${poke.myName} は うのみのすがたに 姿を変えた !`)
-        } else {
-            poke.myCondition.myGulp_missile = "まるのみのすがた"
-            writeLog(`${poke.myTN} の ${poke.myName} は まるのみのすがたに 姿を変えた !`)
+
+    switch ( poke.myMove.name ) {
+        case "あばれる":
+        case "はなびらのまい":
+        case "げきりん":
+            poke.myCondition.Thrash_move = poke.myMove.name
+            poke.myCondition.Thrash_move += 1
+            break
+
+        case "さわぐ":
+            poke.myCondition.myUproar += 1
+            break
+
+        case "なみのり":
+            if ( !isAbility(poke) ) break
+            if ( poke.myAbility != "うのミサイル" ) break
+            if ( poke.myCondition.myGulp_missile ) break
+
+            if ( poke.myRest_hp > poke.myFull_hp / 2 ) {
+                poke.myCondition.myGulp_missile = "うのみのすがた"
+                writeLog(`${poke.myTN} の ${poke.myName} は うのみのすがたに 姿を変えた !`)
+            } else {
+                poke.myCondition.myGulp_missile = "まるのみのすがた"
+                writeLog(`${poke.myTN} の ${poke.myName} は まるのみのすがたに 姿を変えた !`)
+            }
         }
-    }
     // removeText(con.p_con, "状態変化『がまん』")
 
     // 追加効果 (ひみつのちから/オリジンズスーパーノヴァ/ぶきみなじゅもんを除く)
@@ -375,7 +385,7 @@ function additionalEffect(poke) {
     }
 
 
-    // それ以外の効果
+    // 追加効果以外の効果
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 ) continue
@@ -811,11 +821,11 @@ function someItemEffect(poke){
         }
     }
     // しろいハーブ
-    whiteHerb(poke) // 自分用
+    landing_whiteHerb(poke) // 自分用
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success )            continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
-        whiteHerb(tgt.poke)
+        landing_whiteHerb(tgt.poke)
     }
     // のどスプレー/からぶりほけん
     if ( poke.myItem == "のどスプレー" && isItem(poke) ) {
