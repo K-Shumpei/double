@@ -835,8 +835,10 @@ function showCommand() {
                 // 選択中のポケモン名を表示
                 document.getElementById(`com_log_${poke.myPosition}`).style.display = "block"
                 document.getElementById(`com_log_name_${poke.myPosition}`).textContent = `${poke.myName}は `
-                // 「攻撃」か「交代」のボタン　を見せる
-                document.getElementById(`choise_${poke.myPosition}`).style.display = "block"
+                // 選択可能なら「攻撃」か「交代」のボタン　を見せる
+                if ( disableChoiseAction(poke) ) {
+                    document.getElementById(`choise_${poke.myPosition}`).style.display = "block"
+                }
                 // 戻るボタンを見せる
                 document.getElementById(`back_command`).style.display = "block"
                 
@@ -844,6 +846,11 @@ function showCommand() {
             }
         }
     }
+}
+
+// 行動の選択不可化
+function disableChoiseAction(poke) {
+    
 }
 
 // 「攻撃」を選んだ時
@@ -856,14 +863,108 @@ function choiseMove(position){
             // 技を見せる
             for ( let i = 0; i < 4; i++ ) {
                 if ( poke[`myMove_${i}`] != null ) {
+                    // 表示
                     document.getElementById(`com_move_${poke.myPosition}${i}`).style.display = "block"
                     document.getElementById(`com_pp_${poke.myPosition}${i}`).style.display = "block"
+                    // 着色
                     document.getElementById(`com_move_${poke.myPosition}${i}`).style.background = getColorCode(moveSearchByName(poke[`myMove_${i}`]).type)
                     document.getElementById(`com_pp_${poke.myPosition}${i}`).style.background = getColorCode(moveSearchByName(poke[`myMove_${i}`]).type)
                     document.getElementById(`move_${poke.myPosition}${i}`).textContent = poke[`myMove_${i}`]
+                    // テキスト
                     document.getElementById(`rest_pp_${poke.myPosition}${i}`).textContent = poke[`myRest_pp_${i}`]
                     document.getElementById(`full_pp_${poke.myPosition}${i}`).textContent = poke[`myFull_pp_${i}`]
+                    // 選択不可化
+                    if ( disableChoiseMove(poke, i) ) {
+                        document.getElementById(`move_radio_${poke.myPosition}${i}`).disabled = true
+                    }
                 }
+            }
+        }
+    }
+}
+
+// 技の選択不可化
+function disableChoiseMove(poke, num) {
+    const move = moveSearchByName(poke[`myMove_${num}`])
+    const history = poke.myCondition.myHistory
+
+    // いちゃもん
+    if ( poke.myCondition.myTorment ) {
+        if ( history.length > 0 && history[0].name == move.name ) return true
+    }
+    // ゲップ
+    if ( move.name == "ゲップ" ) {
+        if ( !poke.myBelch ) return true
+    }
+    // こだわり
+    if ( poke.myCondition.myChoice.item && isItem(poke) ) {
+        if ( poke.myCondition.myChoice.item == move.name ) return true
+    }
+    if ( poke.myCondition.myChoice.ability && isAbility(poke) ) {
+        if ( poke.myCondition.myChoice.ability == move.name ) return true
+    }
+    // じゅうりょく
+    if ( fieldStatus.myGravity ) {
+        if ( moveList_disable_gravity.includes(move.name) ) return true
+    }
+    // ちょうはつ
+    if ( poke.myCondition.myTaunt ) {
+        if ( move.nature == "変化" ) return true
+    }
+    // とつげきチョッキ
+    if ( poke.myItem == "とつげきチョッキ" && isItem(poke) ) {
+        if ( move.nature == "変化" ) return true
+    }
+    // ほおばる
+    if ( move.name == "ほおばる" ) {
+        if ( !itemList_berry.includes(poke.myItem) ) return true
+    }
+
+    return false
+}
+
+
+// D.次ターンの、選択ボタンの無効化
+function cannot_choose_action(order, reverse){
+    for (const team of [order, reverse]){
+        // 全ての選択ボタンのチェックを外す
+        for (let i = 0; i < 3; i++){
+            document.getElementById(team[0] + "_" + i + "_button").checked = false
+        }
+        for (let i = 0; i < 4; i++){
+            document.getElementById(team[0] + "_radio_" + i).checked = false
+        }
+
+        // 逃げられない状態、バインド状態による交換ボタンの無効化
+        if (new get(team[0]).p_con.includes("逃げられない") || new get(team[0]).p_con.includes("バインド") || new get(team[0]).p_con.includes("ねをはる") || new get(team[0]).f_con.includes("フェアリーロック") 
+        || (new get(team[1]).ability == "ありじごく" && grounded_check(team[0])) 
+        || (new get(team[1]).ability == "かげふみ" && new get(team[0]).ability != "かげふみ") 
+        || (new get(team[1]).ability == "じりょく" && new get(team[0]).type.includes("はがね"))){
+            if (new get(team[0]).item != "きれいなぬけがら" && !new get(team[0]).type.includes("ゴースト")){
+                for (let i = 0; i < 3; i++){
+                    document.getElementById(team[0] + "_" + i + "_button").disabled = true
+                    document.getElementById(team[0] + "_" + i + "_button").checked = false
+                }
+            }
+        }
+        // 反動で動けなくなる技の反動ターン
+        // 溜め技の攻撃ターン
+        // 数ターン行動する技の使用中
+        if (new get(team[0]).p_con.includes("反動で動けない") || new get(team[0]).p_con.includes("溜め技") || new get(team[0]).p_con.includes("あばれる") 
+        || new get(team[0]).p_con.includes("アイスボール") || new get(team[0]).p_con.includes("ころがる") || new get(team[0]).p_con.includes("がまん")){
+            for (let i = 0; i < 3; i++){
+                document.getElementById(team[0] + "_" + i + "_button").disabled = true
+                document.getElementById(team[0] + "_" + i + "_button").checked = false
+            }
+            for (let i = 0; i < 4; i++){
+                document.getElementById(team[0] + "_radio_" + i).disabled = true
+                document.getElementById(team[0] + "_radio_" + i).checked = false
+            }
+        }
+        if (new get(team[0]).p_con.includes("姿を隠す：フリーフォール（防御）")){
+            for (let i = 0; i < 3; i++){
+                document.getElementById(team[0] + "_" + i + "_button").disabled = true
+                document.getElementById(team[0] + "_" + i + "_button").checked = false
             }
         }
     }
@@ -1058,8 +1159,8 @@ function back(){
             document.getElementById(`move_${i}${j}`).textContent = ""
             document.getElementById(`rest_pp_${i}${j}`).textContent = ""
             document.getElementById(`full_pp_${i}${j}`).textContent = ""
-            const radio_move = document.querySelectorAll(`input[name=move${i}]`)
-            for ( const element of radio_move ) element.checked = false
+            document.getElementById(`move_radio_${i}${j}`).checked = false
+            document.getElementById(`move_radio_${i}${j}`).disabled = false
             // 攻撃対象　を隠す
             document.getElementById(`com_tgt_${i}${j}`).style.display = "none"
             document.getElementById(`tgt_${i}${j}`).textContent = ""

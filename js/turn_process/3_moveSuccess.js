@@ -260,7 +260,7 @@ function actionFailure(poke) {
         return true
     }
     // 8.じゅうりょくで技が出せない
-    if ( fieldStatus.myGravity && disableInGravity.includes(poke.myMove.name) ) {
+    if ( fieldStatus.myGravity && moveList_disable_gravity.includes(poke.myMove.name) ) {
         writeLog(`${poke.myTN} の ${poke.myName} は じゅうりょくが 強くて ${poke.myMove.name} が 出せない !`)
         return true
     }
@@ -275,7 +275,8 @@ function actionFailure(poke) {
         return true
     }
     // 11.こだわっていない技が出せない (ダイマックスポケモンを除く)
-    if ( poke.myCondition.myChoice && poke.myCondition.myChoice != poke.myMove.name ) { //  && (atk.data.dynaTxt.includes("3") || atk.data.gigaTxt.includes("3"))
+    if ( ( poke.myCondition.myChoice.item && poke.myCondition.myChoice.item != poke.myMove.name ) || 
+    ( poke.myCondition.myChoice.ability && poke.myCondition.myChoice.item.ability != poke.myMove.name ) ) { //  && (atk.data.dynaTxt.includes("3") || atk.data.gigaTxt.includes("3"))
         writeLog(`${poke.myTN} の ${poke.myName} は こだわっているせいで 技が出せなかった !`)
         return true
     }
@@ -538,12 +539,12 @@ function moveReplace(poke) {
     if ( moveName ) {
         poke.myMove.success = true
         const orgMoveName = poke.myMove.name
-        poke.myCondition.history.unshift(poke.myMove)
+        poke.myCondition.myHistory.unshift(poke.myMove)
         const move = moveConfig(poke, moveSearchByName(moveName))
         poke.myMove = Object.assign({}, move)
 
         // 8.じゅうりょくで技が出せない
-        if ( fieldStatus.myGravity && disableInGravity.includes(poke.myMove.name) ) {
+        if ( fieldStatus.myGravity && moveList_disable_gravity.includes(poke.myMove.name) ) {
             writeLog(`${poke.myTN} の ${poke.myName} は じゅうりょくが 強くて ${poke.myMove.name} が 出せない !`)
             return true
         }
@@ -794,15 +795,23 @@ function commitmentRock(poke) {
     if ( poke.myCondition.myChoice )  return // すでにこだわっている時
     if ( poke.myCondition.myDynamax ) return // ダイマックス状態
     // こだわる
-    switch ( true ) {
-        case isItem(poke) && poke.myItem == "こだわりはちまき":
-        case isItem(poke) && poke.myItem == "こだわりメガネ":
-        case isItem(poke) && poke.myItem == "こだわりスカーフ":
-        case isAbility(poke) && poke.myAbility == "ごりむちゅう":
-            const move = poke.myMove.name
-            poke.myCondition.myChoice = move
-            // 他の技が出る技の時、元の技でこだわる
-            if ( poke.myCondition.myOther_move ) poke.myCondition.myChoice = poke.myCondition.myOther_move
+    if ( isItem(poke) && !poke.myCondition.myChoice.item ) {
+        switch ( poke.myItem ) {
+            case "こだわりハチマキ":
+            case "こだわりメガネ":
+            case "こだわりスカーフ":
+                // 他の技が出る技の時、元の技でこだわる
+                const move = ( poke.myCondition.myOther_move )? poke.myCondition.myOther_move : poke.myMove.name
+                poke.myCondition.myChoice.item = move
+        }
+    }
+    if ( isAbility(poke) && !poke.myCondition.myChoice.ability ) {
+        switch ( poke.myAbility ) {
+            case "ごりむちゅう":
+                // 他の技が出る技の時、元の技でこだわる
+                const move = ( poke.myCondition.myOther_move )? poke.myCondition.myOther_move : poke.myMove.name
+                poke.myCondition.myChoice.ability = move
+        }
     }
 }
 

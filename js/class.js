@@ -282,7 +282,7 @@ class Condition {
         this.cant_move     = false // 反動で次のターン動けなくなる 
         this.charge        = false // じゅうでん経過ターン数(1ターン目で特防アップ、2ターン目で電気技の威力アップ)
         this.chi_strike    = 0     // キョダイシンゲキ成功回数
-        this.choice        = false // 拘っている技
+        this.choice        = {item: false, ability: false} // 拘っている技
         this.confusion     = false // こんらん経過ターン数
         this.curse         = false // のろい状態ならtrue
         this.critical      = false // きゅうしょアップ状態ならtrue

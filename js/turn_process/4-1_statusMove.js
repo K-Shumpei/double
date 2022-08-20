@@ -755,10 +755,17 @@ function statusMoveForOneOfThem(poke) {
         case "すりかえ":
         case "トリック":
             [poke.myItem, tgt.poke.myItem] = [tgt.poke.myItem, poke.myItem]
-            if ( !poke.myItem )     writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を 手に入れた`)
-            if ( !tgt.poke.myItem ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は ${tgt.poke.myIitem} を 手に入れた`)
-            if ( poke.myAbility == "かるわざ" && isAbility(poke) && !poke.myItem )        poke.myCondition.myUnburden = true
-            if ( tgt.poke.myAbility == "かるわざ" && isAbility(tgt) && !tgt.poke.myItem ) tgt.poke.myCondition.myUnburden = true
+            for ( const _poke of [poke, tgt.poke] ) {
+                if ( _poke.myItem ) {
+                    writeLog(`${_poke.myTN} の ${_poke.myName} は ${_poke.myItem} を 手に入れた`)
+                }
+                // こだわり解除
+                _poke.myCondition.myChoice = {item: false, ability: false}
+                // かるわざ
+                if ( _poke.myAbility == "かるわざ" && isAbility(_poke) && !_poke.myItem ) {
+                    _poke.myCondition.myUnburden = true
+                }
+            }
             break
         
         case "そうでん":
@@ -1166,6 +1173,7 @@ function statusMoveForMe(poke) {
             changeMyRank(poke, "atk", 1)
             changeMyRank(poke, "def", 1)
             changeMyRank(poke, "speed", -1)
+            break
 
         case "はいすいのじん":
             if ( poke.myCondition.myNo_retreat ) return

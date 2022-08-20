@@ -359,7 +359,7 @@
             // 技選択
             document.write(`<table>`)
             for ( let j = 0; j < 4; j++ ) {
-                document.write(`<tr><td align"left" width="160"><div id="com_move_${i}${j}"><input type="radio" name="move${i}" value="${j}" onclick="decideMoveCommand(${i}, ${j})"><font color="white"><span id="move_${i}${j}"></span></font></div></td>`)
+                document.write(`<tr><td align"left" width="160"><div id="com_move_${i}${j}"><input type="radio" id="move_radio_${i}${j}" name="move${i}" value="${j}" onclick="decideMoveCommand(${i}, ${j})"><font color="white"><span id="move_${i}${j}"></span></font></div></td>`)
                 document.write(`<td align="right" width="60"><div id="com_pp_${i}${j}"><font color="white"><span id="rest_pp_${i}${j}"></span>/<span id="full_pp_${i}${j}"></span></font></div></td></tr>`)
             }
             document.write(`</table>`)

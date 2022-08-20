@@ -160,7 +160,7 @@ var powderMove = [
 ]
 
 // じゅうりょく状態で禁止（飛技）
-var disableInGravity = [
+const moveList_disable_gravity = [
     'はねる', 
     'とびげり', 
     'とびひざげり', 

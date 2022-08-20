@@ -86,7 +86,6 @@ function additionalEffect_other(poke, tgt) {
             return
 
         case "なげつける":
-            writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を 投げつけた !`)
             // きのみの場合
             if ( itemList_berry.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
             // それ以外の場合
@@ -132,6 +131,8 @@ function additionalEffect_other(poke, tgt) {
                     return
             }
 
+            // こだわり解除
+            poke.myCondition.myChoice = {item: false, ability: false}
             // どの持ち物でも行う処理
             enableToRecycle(poke)
             return
@@ -1173,6 +1174,7 @@ function moveEffect_item(poke, tgt) {
         case "はたきおとす":
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} を はたき落とした !`)
             tgt.poke.myItem = ""
+            tgt.poke.myCondition.myChoice = {item: false, ability: false}
             if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true
             return
 
@@ -1182,6 +1184,7 @@ function moveEffect_item(poke, tgt) {
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} を 奪った !`)
             poke.myItem = tgt.poke.myItem
             tgt.poke.myItem = ""
+            tgt.poke.myCondition.myChoice = {item: false, ability: false}
             if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true
             eatBerryInAbnormal(poke)
             eatBerryInPinch(poke)
