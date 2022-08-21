@@ -499,8 +499,8 @@ function statusMoveForOneOfThem(poke) {
             break
         
         case "アンコール":
-            tgt.poke.myCondition.myEncore_turn = 1
-            tgt.poke.myCondition.myEncore_move = tgt.poke.myCondition.myHistory[0].name
+            tgt.poke.myCondition.myEncore.turn = 1
+            tgt.poke.myCondition.myEncore.name = tgt.poke.myCondition.myHistory[0].name
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は アンコールを受けた`)
             break
         
@@ -552,8 +552,8 @@ function statusMoveForOneOfThem(poke) {
             break
         
         case "かなしばり":
-            tgt.poke.myCondition.myDisable_move = tgt.poke.myCondition.myHistory[0].name
-            tgt.poke.myCondition.myDisable_turn = 1
+            tgt.poke.myCondition.myDisable.name = tgt.poke.myCondition.myHistory[0].name
+            tgt.poke.myCondition.myDisable.turn = 1
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 金縛りを受けた`)
             break
         

@@ -101,7 +101,7 @@ function toHand( poke ){
             _poke.myCondition.myAttract = false
         }
         // バインド状態の解除
-        if ( _poke.myCondition.myBind_ID == poke.myID ) {
+        if ( _poke.myCondition.myBind.ID == poke.myID ) {
             resetBind(_poke)
         }
         // たこがため

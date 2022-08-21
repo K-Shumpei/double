@@ -142,11 +142,11 @@ function moveSuccessJudge(poke) {
 // 0.技の決定　その他
 function decideMove(poke) {
     // かなしばりのターン消費
-    if ( poke.myCondition.myDisable_turn > 0 ) poke.myCondition.myDisable_turn -= 1
+    if ( poke.myCondition.myDisable.turn > 0 ) poke.myCondition.myDisable.turn += 1
     // ちょうはつターンの消費
     if ( poke.myCondition.myTaunt ) poke.myCondition.myTaunt += 1
     // アンコールターンの消費
-    if ( poke.myCondition.Encore_turn ) poke.myCondition.Encore_turn += 1
+    if ( poke.myCondition.Encore.turn ) poke.myCondition.Encore.turn += 1
 }
 
 
@@ -255,7 +255,7 @@ function actionFailure(poke) {
         return true
     }
     // 7.かなしばりで技が出せない (Zワザを除く)
-    if ( poke.myCondition.myDisable_move == poke.myMove.name ) { //  && !atk.data.Z
+    if ( poke.myCondition.myDisable.name == poke.myMove.name ) { //  && !atk.data.Z
         writeLog(`${poke.myTN} の ${poke.myName} は かなしばりで 技が出せなかった !`)
         return true
     }

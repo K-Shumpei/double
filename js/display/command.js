@@ -7,23 +7,26 @@ function showCommand() {
     const poke1 = myParty.filter( poke => poke.myPosition == 1 )
 
     if ( poke0.length === 1 ) {
-        const available = showCommand_each(poke0[0])
+        const available = showCommand_move(poke0[0])
         if ( available ) {
             document.getElementById(`choise_${poke0[0].myPosition}`).style.display = "block"
+            document.getElementById(`change_btn_${poke0[0].myPosition}`).disabled = showCommand_choice(poke0[0])
             return
         }
     }
 
     if ( poke1.length === 1 ) {
-        const available = showCommand_each(poke1[0])
+        const available = showCommand_move(poke1[0])
         if ( available ) {
             document.getElementById(`choise_${poke1[0].myPosition}`).style.display = "block"
+            document.getElementById(`change_btn_${poke0[0].myPosition}`).disabled = showCommand_choice(poke0[0])
             return
         }
     }
 }
 
-function showCommand_each(poke) {
+// 行動選択の不可化
+function showCommand_move(poke) {
     // 選択中のポケモン名を表示
     document.getElementById(`com_log_${poke.myPosition}`).style.display = "block"
     document.getElementById(`com_log_name_${poke.myPosition}`).textContent = `${poke.myName}は `
@@ -77,6 +80,33 @@ function showCommand_each(poke) {
     return true
 }
 
+// 交代の不可化
+function showCommand_choice(poke) {
+    // 以下の状況では逃げられる
+    if ( poke.myType.includes("ゴースト") ) return false
+    if ( poke.myItem == "きれいなぬけがら" && isItem(poke) ) return false
+
+    // 逃げられない
+    if ( poke.myCondition.myCant_escape !== false ) return true
+    // バインド
+    if ( poke.myCondition.myBind.turn ) return true
+    // ねをはる
+    if ( poke.myCondition.myIngrain ) return true
+    // フェアリーロック
+    if ( fieldStatus.myFairy_lock == 2 ) return true
+    // ありじごく
+    const arenaTrap = oppPokeInBattle(poke).filter( _poke => _poke.myAbility == "ありじごく" && isAbility(_poke) )
+    if ( arenaTrap.length > 0 && onGround(poke) ) return true
+    // かげふみ
+    const shadowTag = oppPokeInBattle(poke).filter( _poke => _poke.myAbility == "かげふみ" && isAbility(_poke) )
+    if ( shadowTag.length > 0 && !( poke.myAbility == "かげふみ" && isAbility(poke) ) ) return true
+    // じりょく
+    const magnetPull = oppPokeInBattle(poke).filter( _poke => _poke.myAbility == "じりょく" && isAbility(_poke) )
+    if ( magnetPull.length > 0 && poke.myType.includes("はがね") ) return true
+
+    return false
+}
+
 // 「攻撃」を選んだ時
 function choiseMove(position){
     // 「攻撃」か「交代」のボタン　を隠す
@@ -110,9 +140,17 @@ function disableChoiseMove(poke, num) {
     const move = moveSearchByName(poke[`myMove_${num}`])
     const history = poke.myCondition.myHistory
 
+    // アンコール
+    if ( poke.myCondition.myEncore.name ) {
+        if ( move.name != poke.myCondition.myEncore.name ) return true
+    }
     // いちゃもん
     if ( poke.myCondition.myTorment ) {
         if ( history.length > 0 && history[0].name == move.name ) return true
+    }
+    // かなしばり
+    if ( poke.myCondition.myDisable.name ) {
+        if ( move.name == poke.myCondition.myDisable.name ) return true
     }
     // ゲップ
     if ( move.name == "ゲップ" ) {
@@ -143,25 +181,6 @@ function disableChoiseMove(poke, num) {
     }
 
     return false
-}
-
-
-// D.次ターンの、選択ボタンの無効化
-function cannot_choose_action(order, reverse){
-    for (const team of [order, reverse]){
-        // 逃げられない状態、バインド状態による交換ボタンの無効化
-        if (new get(team[0]).p_con.includes("逃げられない") || new get(team[0]).p_con.includes("バインド") || new get(team[0]).p_con.includes("ねをはる") || new get(team[0]).f_con.includes("フェアリーロック") 
-        || (new get(team[1]).ability == "ありじごく" && grounded_check(team[0])) 
-        || (new get(team[1]).ability == "かげふみ" && new get(team[0]).ability != "かげふみ") 
-        || (new get(team[1]).ability == "じりょく" && new get(team[0]).type.includes("はがね"))){
-            if (new get(team[0]).item != "きれいなぬけがら" && !new get(team[0]).type.includes("ゴースト")){
-                for (let i = 0; i < 3; i++){
-                    document.getElementById(team[0] + "_" + i + "_button").disabled = true
-                    document.getElementById(team[0] + "_" + i + "_button").checked = false
-                }
-            }
-        }
-    }
 }
 
 // 技を選んだ時
@@ -324,6 +343,7 @@ function back(){
     for ( let i = 0; i < 2; i++ ) {
         // 「攻撃」か「交代」のボタン　を隠す
         document.getElementById(`choise_${i}`).style.display = "none"
+        document.getElementById(`change_btn_${i}`).disabled = false
         // 「攻撃対象」の文字をを隠す
         document.getElementById(`target_comment_${i}`).style.display = "none"
         // 「交代先」の文字をを隠す

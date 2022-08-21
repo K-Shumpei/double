@@ -537,19 +537,19 @@ function additionalEffect_dynamax(poke, tgt) {
         case "キョダイサジン":
         case "キョダイヒャッカ":
             for ( const _poke of myPokeInBattle(tgt.poke) ) {
-                if ( !_poke.myCondition.myBind_ID ) continue
-                _poke.myCondition.myBind_ID   = poke.myID
-                _poke.myCondition.myBind_turn = 1
+                if ( _poke.myCondition.myBind.ID === false ) continue
+                _poke.myCondition.myBind.ID   = poke.myID
+                _poke.myCondition.myBind.turn = 1
                 writeLog(`${_poke.myTN} の ${_poke.myName} は しめつけられた !`)
             
                 if ( !isItem(poke) ) return
                 switch ( poke.myItem ) {
                     case "ねばりのかぎづめ":
-                        _poke.myCondition.myBind_lone = true
+                        _poke.myCondition.myBind.lone = true
                         return
             
                     case "しめつけバンド":
-                        _poke.myCondition.myBind_strong = true
+                        _poke.myCondition.myBind.strong = true
                         return
                 }
             
@@ -784,10 +784,10 @@ function effectWithDmg_defAbility(poke, tgt) {
 
         case "のろわれボディ":
             if ( random >= 0.3 ) return
-            if ( poke.myCondition.myDisable_move ) return
+            if ( poke.myCondition.myDisable.name ) return
             abilityDeclaration(tgt.poke)
-            poke.myCondition.myDisable_move = poke.myMove.name
-            poke.myCondition.myDisable_turn = 1
+            poke.myCondition.myDisable.name = poke.myMove.name
+            poke.myCondition.myDisable.turn = 1
             mentalHerb(poke)
             return
 
@@ -1075,20 +1075,20 @@ function moveEffect_bind(poke, tgt) {
     if ( !bind.includes(poke.myMove.name) ) return // バインド技であること
     if ( tgt.substitute )                   return // みがわりが有効でないこと
     if ( tgt.poke.myRest_hp == 0 )          return // ひんし状態でないこと
-    if ( tgt.poke.myCondition.myBind_turn ) return // すでにバインド状態でないこと
+    if ( tgt.poke.myCondition.myBind.turn ) return // すでにバインド状態でないこと
 
-    tgt.poke.myCondition.myBind_ID   = poke.myID
-    tgt.poke.myCondition.myBind_turn = 1
+    tgt.poke.myCondition.myBind.ID   = poke.myID
+    tgt.poke.myCondition.myBind.turn = 1
     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は しめつけられた !`)
 
     if ( !isItem(poke) ) return
     switch ( poke.myItem ) {
         case "ねばりのかぎづめ":
-            tgt.poke.myCondition.myBind_lone = true
+            tgt.poke.myCondition.myBind.lone = true
             return
 
         case "しめつけバンド":
-            tgt.poke.myCondition.myBind_strong = true
+            tgt.poke.myCondition.myBind.strong = true
             return
     }
 
@@ -1303,7 +1303,7 @@ function moveEffect_clearField(poke, tgt) {
                 poke.myCondition.myLeech_seed = false
                 writeLog(`${poke.myTN} の ${poke.myName} の やどりぎのタネが 消え去った`)
             }
-            if ( poke.myCondition.myBind_turn ) {
+            if ( poke.myCondition.myBind.turn ) {
                 resetBind(poke)
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドから 解放された`)
             }

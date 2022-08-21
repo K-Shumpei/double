@@ -527,28 +527,28 @@ function curse(){
 // 12.バインド
 function bindCheck(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( !poke.myCondition.myBind_turn ) continue // バインド状態であること
+        if ( !poke.myCondition.myBind.turn ) continue // バインド状態であること
 
-        const strong = ( poke.myCondition.myBind_strong )? 1 / 6 : 1 / 8 // しめつけバンド
+        const strong = ( poke.myCondition.myBind.strong )? 1 / 6 : 1 / 8 // しめつけバンド
         const damage = Math.floor(poke.myFull_hp * strong * isDynamax(poke))
         
-        if ( poke.myCondition.myBind_long ) { // ねばりのかぎづめ
-            if ( poke.myCondition.myBind_turn == 8 ) {
+        if ( poke.myCondition.myBind.long ) { // ねばりのかぎづめ
+            if ( poke.myCondition.myBind.turn == 8 ) {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドから解放された`)
                 resetBind(poke)
             } else {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドのダメージを受けている`)
                 changeHP(poke, Math.max(damage, 1), "-")
-                poke.myCondition.myBind_turn += 1
+                poke.myCondition.myBind.turn += 1
             }
         } else {
-            if ( poke.myCondition.myBind_turn == 5 && getRandom() < 0.5 ) {
+            if ( poke.myCondition.myBind.turn == 5 && getRandom() < 0.5 ) {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドから解放された`)
                 resetBind(poke)
             } else {
                 writeLog(`${poke.myTN} の ${poke.myName} は バインドのダメージを受けている`)
                 changeHP(poke, Math.max(damage, 1), "-")
-                poke.myCondition.myBind_turn += 1
+                poke.myCondition.myBind.turn += 1
             }
         }
     }
@@ -581,9 +581,9 @@ function tauntEnd(){
 // 15.アンコールの終了
 function encoreEnd(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myCondition.myEncore_turn == 4 ){
-            poke.myCondition.myEncore_move = false
-            poke.myCondition.myEncore_turn = false
+        if ( poke.myCondition.myEncore.turn == 4 ){
+            poke.myCondition.myEncore.name = false
+            poke.myCondition.myEncore.turn = 0
             writeLog(`${poke.myTN} の ${poke.myName} の アンコールが とけた !`)
         }
     }
@@ -592,9 +592,9 @@ function encoreEnd(){
 // 16.かなしばりの終了
 function disableEnd(){
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myCondition.myDisable_turn == 4 ){
-            poke.myCondition.myDisable_move = false
-            poke.myCondition.myDisable_turn = false
+        if ( poke.myCondition.myDisable.turn == 4 ){
+            poke.myCondition.myDisable.name = false
+            poke.myCondition.myDisable.turn = 0
             writeLog(`${poke.myTN} の ${poke.myName} の かなしばりが　とけた !`)
         }
     }

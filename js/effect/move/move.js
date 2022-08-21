@@ -760,7 +760,7 @@ var Z_status_move = [
 ]
 
 // アンコールできない技
-var cannotEncore = [
+const moveList_disable_encore = [
     'へんしん', 
     'ものまね', 
     'スケッチ', 

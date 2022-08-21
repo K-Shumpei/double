@@ -892,7 +892,7 @@ function checkCondition(position) {
     if ( condition.myAqua_ring )          text += `アクアリング\n`
     if ( condition.myAtrract ) {}
     if ( condition.myAutotomize )         text += `ボディパージ：${condition.myAutotomize}回\n`
-    if ( condition.myBind_turn )          text += `バインド ${condition.myBind_turn}ターン目\n`
+    if ( condition.myBind.turn )          text += `バインド ${condition.myBind.turn}ターン目\n`
     if ( condition.myCant_escape )        text += `逃げられない\n`
     if ( condition.myCant_move )          text += `反動で動けない\n`
     if ( condition.myCharge == 2 )        text += `じゅうでん\n`
@@ -900,9 +900,9 @@ function checkCondition(position) {
     if ( condition.myConfusion )          text += `こんらん：${condition.myConfusion}ターン目\n`
     if ( condition.myCritical )           text += `きゅうしょアップ\n`
     if ( condition.myDefense_curl )       text += `まるくなる\n`
-    if ( condition.myDisable_turn )       text += `かなしばり：残り${condition.myDisable_turn}ターン\n`
+    if ( condition.myDisable.turn )       text += `かなしばり：残り${condition.myDisable.turn}ターン\n`
     if ( condition.myEmbargo )            text += `さしおさえ：残り${condition.myEmbargo}ターン\n`
-    if ( condition.myEncore_turn )        text += `アンコール：残り${condition.myEncore_turn}ターン\n`
+    if ( condition.myEncore.turn )        text += `アンコール：残り${condition.myEncore.turn}ターン\n`
     if ( condition.muFlush_fire )         text += `もらいび\n`
     if ( condition.myForesight )          text += `みやぶられている\n`
     if ( condition.myHeal_block )         text += `回復封じ：${condition.myHeal_block}ターン目\n`

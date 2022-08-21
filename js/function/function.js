@@ -659,7 +659,7 @@ function selectedMove(poke) {
     if ( poke.myCondition.myThrash.name )  move_org = moveSearchByName(poke.myCondition.myThrash.name)  // あばれる状態
     if ( poke.myCondition.myFilling.name ) move_org = moveSearchByName(poke.myCondition.myFilling.name) // ため技
     if ( poke.myCondition.myCant_move )    move_org = moveSearchByName(poke.myCondition.myCant_move)    // 反動で動けない
-    if ( poke.myCondition.myEncore_move )  move_org = moveSearchByName(poke.myCondition.myEncore_move)  // アンコール状態
+    if ( poke.myCondition.myEncore.name )  move_org = moveSearchByName(poke.myCondition.myEncore.name)  // アンコール状態
     if ( poke.myCondition.myRollout.name ) move_org = moveSearchByName(poke.myCondition.myRollout.name)
     if ( poke.myCondition.myBide.turn )    move_org = moveSearchByName("がまん")
     if ( poke.myCondition.myUproar )       move_org = moveSearchByName("さわぐ")

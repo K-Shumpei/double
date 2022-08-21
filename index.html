@@ -356,7 +356,7 @@
         }
         document.write(`</td></tr><tr><td>`)
         for ( let i = 0; i < 2; i++ ) {
-            document.write(`<div id="choise_${i}"><input type="button" value="戦う" onclick="choiseMove(${i})"><input type="button" value="交代" onclick="choiseHand(${i})"></div>`)
+            document.write(`<div id="choise_${i}"><input type="button" value="戦う" onclick="choiseMove(${i})"><input type="button" id="change_btn_${i}" value="交代" onclick="choiseHand(${i})"></div>`)
             // 技選択
             document.write(`<table>`)
             for ( let j = 0; j < 4; j++ ) {

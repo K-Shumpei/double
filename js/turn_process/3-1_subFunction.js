@@ -1592,11 +1592,11 @@ function invalidBySpec3rd_other(poke, tgt) {
         case  "アンコール":
             if ( !history )                           return true // 対象が技を使用していない
             if ( isDynamax(tgt.poke) )                return true // 相手がダイマックス
-            if ( tgt.poke.myCondition.myEncore_move ) return true // すでにアンコール状態
+            if ( tgt.poke.myCondition.myEncore.name ) return true // すでにアンコール状態
             for ( let i = 0; i < 4; i++ ) {
                 if ( tgt.poke[`myMove_${i}`] == history[0].name ) {
                     if ( tgt.poke[`myRest_pp_${i}`] == 0 )                return true // 技のPPが残っていない
-                    if ( cannotEncore.includes(tgt.poke[`myMove_${i}`]) ) return true // アンコールできない技
+                    if ( moveList_disable_encore.includes(tgt.poke[`myMove_${i}`]) ) return true // アンコールできない技
                 }
             }
             return false
@@ -1604,7 +1604,7 @@ function invalidBySpec3rd_other(poke, tgt) {
         case "かなしばり":
             if ( !history ) return true // 対象が技を使用していない
             if ( history[0].name == "わるあがき" ) return true // 最後のわざがわるあがき
-            if ( tgt.poke.myCondition.myDisable_move ) return true // すでにかなしばり状態
+            if ( tgt.poke.myCondition.myDisable.name ) return true // すでにかなしばり状態
             // ダイマックスわざ　の記述がまだ
             return false
 

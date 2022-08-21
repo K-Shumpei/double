@@ -305,10 +305,10 @@ function resetAilment(poke) {
 }
 
 function resetBind(poke) {
-    poke.myCondition.myBind_ID     = false // バインドを付与したポケモンのID
-    poke.myCondition.myBind_long   = false // ねばりのかぎづめ
-    poke.myCondition.myBind_turn   = false // バインド経過ターン数
-    poke.myCondition.myBind_strong = false // しめつけバンド
+    poke.myCondition.myBind.ID     = false // バインドを付与したポケモンのID
+    poke.myCondition.myBind.turn   = 0     // バインド経過ターン数
+    poke.myCondition.myBind.long   = false // ねばりのかぎづめ
+    poke.myCondition.myBind.strong = false // しめつけバンド
 }
 
 function resetFilling(poke) {
@@ -550,8 +550,8 @@ function getContinuous(poke) {
 function mentalHerb(poke){
     if ( poke.myItem == "メンタルハーブ" && isItem(poke) ) {
         poke.myCondition.myAttract = false      // メロメロ
-        poke.myCondition.myDisable_move = false // かなしばり
-        poke.myCondition.myDisable_turn = false // かなしばり
+        poke.myCondition.myDisable.name = false // かなしばり
+        poke.myCondition.myDisable.turn = 0     // かなしばり
         enableToRecycle(poke)
         writeLog(`${poke.myTN} の ${poke.myName} の メンタルハーブが発動した`)
     }

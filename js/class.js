@@ -273,10 +273,7 @@ class Condition {
         this.belch         = false // ゲップ使用可能ならtrue
         this.berserk       = false // ぎゃくじょうが発動したらtrue
         this.bide          = {damage: 0, turn: 0, tgt: false} // がまんで受けたダメージ(ここでは2倍されていない)、経過ターン数(1~2)、放つときは3、対象（最後に攻撃してきたポケモン）
-        this.bind_ID       = false // バインド状態を付与したポケモンのID
-        this.bind_long     = false // ねばりのかぎづめが有効ならtrue
-        this.bind_turn     = false // バインド経過ターン数
-        this.bind_strong   = false // しめつけバンドが有効ならtrue
+        this.bind          = {ID: false, turn: 0, long: false, strong: false} // バインド状態を付与したポケモンのID、経過ターン数、ねばりのかぎづめ、しめつけバンド
         this.cant_escape   = false // 逃げられない状態を付与したポケモンのID
         this.cant_move     = false // 反動で次のターン動けなくなる技
         this.charge        = false // じゅうでん経過ターン数(1ターン目で特防アップ、2ターン目で電気技の威力アップ)
@@ -289,14 +286,12 @@ class Condition {
         this.defense_curl  = false // まるくなる状態ならtrue
         this.destiny_bond  = false // みちづれ みちづれ状態ならtrue、それ以外ならfalse
         this.dig           = false // あなをほる状態ならtrue
-        this.disable_move  = false // かなしばりされている技
-        this.disable_turn  = false // かなしばり　効果があるときは残りターン数(0~4)
+        this.disable       = {name: false, turn: 0} // かなしばりされている技、経過ターン数(0~4)
         this.dive          = false // ダイビング状態ならtrue
         this.dynamax       = false // ダイマックス経過ターン数
         this.electrify     = false // そうでん状態ならtrue
         this.embargo       = false // さしおさえ経過ターン数(1~5)
-        this.encore_turn   = false // アンコール残りターン数(3~0)
-        this.encore_move   = false // アンコールされた技
+        this.encore        = {name: false, turn: 0} // アンコールされた技、経過ターン数
         this.endure        = false // こらえる状態ならtrue
         this.explosion     = false // 爆発系の技のHP消費が確約されたらtrue
         this.filling       = {name: false, tgt: false} // ためている技
@@ -384,10 +379,7 @@ class Condition {
     set myBelch( value )         { this.belch = value }
     set myBerserk( value )       { this.berserk = value }
     set myBide( value )          { this.bide = value }
-    set myBind_ID( value )       { this.bind_ID = value }
-    set myBind_long( value )     { this.bind_long = value }
-    set myBind_turn( value )     { this.bind_turn = value }
-    set myBind_strong( value )   { this.bind_strong = value }
+    set myBind( value )          { this.bind = value }
     set myCant_escape( value )   { this.cant_escape = value }
     set myCant_move( value )     { this.cant_move = value }
     set myCharge( value )        { this.charge = value }
@@ -400,14 +392,12 @@ class Condition {
     set myDefense_curl( value )  { this.defense_curl = value }
     set myDestiny_bond( value )  { this.destiny_bond = value }
     set myDig( value )           { this.dig = value }
-    set myDisable_move( value )  { this.disable_move = value }
-    set myDisable_turn( value )  { this.disable_turn = value }
+    set myDisable( value )       { this.disable = value }
     set myDive( value )          { this.dive = value }
     set myDynamax( value )       { this.dynamax = value }
     set myElectrify( value )     { this.electrify = value }
     set myEmbargo( value )       { this.embargo = value }
-    set myEncore_move( value )   { this.encore_move = value }
-    set myEncore_turn( value )   { this.encore_turn = value }
+    set myEncore( value )        { this.encore = value }
     set myEndure( value )        { this.endure = value }
     set myExplosion( value )     { this.explosion = value }
     set myFilling( value )       { this.filling = value }
@@ -494,10 +484,7 @@ class Condition {
     get myBelch()         { return this.belch }
     get myBerserk()       { return this.berserk }
     get myBide()          { return this.bide }
-    get myBind_ID()       { return this.bind_ID }
-    get myBind_long()     { return this.bind_long }
-    get myBind_turn()     { return this.bind_turn }
-    get myBind_strong()   { return this.bind_strong }
+    get myBind()          { return this.bind }
     get myCant_escape()   { return this.cant_escape }
     get myCant_move()     { return this.cant_move }
     get myCharge()        { return this.charge }
@@ -510,14 +497,12 @@ class Condition {
     get myDefense_curl()  { return this.defense_curl }
     get myDestiny_bond()  { return this.destiny_bond }
     get myDig()           { return this.dig }
-    get myDisable_move()  { return this.disable_move }
-    get myDisable_turn()  { return this.disable_turn }
+    get myDisable()       { return this.disable }
     get myDive()          { return this.dive }
     get myDynamax()       { return this.dynamax }
     get myElectrify()     { return this.electrify }
     get myEmbargo()       { return this.embargo }
-    get myEncore_move()   { return this.encore_move }
-    get myEncore_turn()   { return this.encore_turn }
+    get myEncore()        { return this.encore }
     get myEndure()        { return this.endure }
     get myExplosion()     { return this.explosion }
     get myFilling()       { return this.filling }
