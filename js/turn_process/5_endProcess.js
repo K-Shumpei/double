@@ -89,10 +89,8 @@ function otherEnd(){
     for ( const poke of allPokeInBattle() ) {
         // 攻撃対象の削除
         poke.myTarget = []
-        // アイスボール
-        if ( poke.myCondition.myIce_ball == 5 ) poke.myCondition.myIce_ball = 0
-        // ころがる
-        if ( poke.myCondition.myRollout == 5 ) poke.myCondition.myRollout = 0
+        // アイスボール/ころがる
+        if ( poke.myCondition.myRollout.turn == 5 ) poke.myCondition.myRollout = {name: false, turn: 0, tgt: false}
         // くちばしキャノン
         poke.myCondition.myBeak_blast = false
         // ロックオン

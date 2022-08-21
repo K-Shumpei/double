@@ -159,9 +159,8 @@ function changeBasePower(poke, tgt) {
         case "アイスボール":
         case "ころがる":
             const defenseCurl = ( poke.myCondition.myDefense_curl )? 2 : 1
-            const ice = poke.myCondition.myIce_ball
-            const roll = poke.myCondition.myRollout
-            return poke.myMove.power * defenseCurl * Math.pow(2, Math.max(ice, roll) - 1)
+            const turn = poke.myCondition.myRollout.turn
+            return poke.myMove.power * defenseCurl * Math.pow(2, turn - 1)
 
         case "エコーボイス":
             return Math.min(40 * (fieldStatus.myEchoed_voice), 200)

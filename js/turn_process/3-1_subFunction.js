@@ -127,8 +127,8 @@ function failureBySpec_spec(poke) {
             return true
         
         case "がまん":
-            if ( poke.myCondition.myBide_damage ) return false // 解き放つダメージが無い
-            poke.myCondition.myBide_turn = false
+            if ( !poke.myCondition.myBide.damage ) return false // 解き放つダメージが無い
+            poke.myCondition.myBide.turn = 0
             return true
 
         case "カウンター":
@@ -1635,7 +1635,7 @@ function invalidBySpec3rd_other(poke, tgt) {
             if ( !history ) return true
             // if ( tgt.poke.myCondition.myFree_fall ) tgt.success = false
             if ( moveList_disable_instruct.includes(history[0].name)) return true
-            if ( cannotMoveByRecoil.includes(history[0].name))        return true
+            if ( moveList_cannotMove.includes(history[0].name))       return true
             if ( accumulationMove.includes(history[0].name))          return true
             return false
         

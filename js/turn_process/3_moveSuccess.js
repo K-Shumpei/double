@@ -226,7 +226,7 @@ function actionFailure(poke) {
     }
 
     // 3.PPが残っていない
-    if ( poke["myRest_pp_" + poke.myCmd_move] == 0 && !poke.myCondition.myFilling ) {
+    if ( poke["myRest_pp_" + poke.myCmd_move] == 0 && !poke.myCondition.myFilling.name ) {
         writeLog(`${poke.myTN} の ${poke.myName} は PPがなくて技が出せない !`)
         return true
     }
@@ -603,14 +603,19 @@ function attackDeclaration(poke) {
     }
     */
 
-    writeLog(`${poke.myTN} の ${poke.myName} の ${poke.myMove.name} !`)    
+    writeLog(`${poke.myTN} の ${poke.myName} の ${poke.myMove.name} !`)
 
-    // れんぞくぎりの記録
-    if ( poke.myMove.name == "れんぞくぎり" ) poke.myCondition.myFury_cutter += 1
+    switch ( poke.myMove.name ) {
+        case "れんぞくぎり":
+            poke.myCondition.myFury_cutter += 1
+            break
 
-    // アイスボール、ころがるのターン開始
-    if ( poke.myMove.name == "アイスボール" ) poke.myCondition.myIce_ball += 1
-    if ( poke.myMove.name == "ころがる" ) poke.myCondition.myRollout += 1
+        case "アイスボール":
+        case "ころがる":
+            poke.myCondition.myRollout.turn += 1
+            if ( !poke.myCondition.myRollout.tgt ) poke.myCondition.myRollout.tgt = poke.myCmd_tgt
+            break
+    }
 
     
     /*
@@ -760,11 +765,10 @@ function decideTarget(poke) {
 // 11.PPが適切な量引かれる (プレッシャーの効果が考慮される)
 function PPDecrease(poke) {
     // 以下の場合はPPが減らない
-    if ( poke.myCondition.myThrash_move )    return // あばれる状態
-    if ( poke.myCondition.myFilling )        return // ため技を放つ時
-    if ( poke.myCondition.myIce_ball >= 2 )  return // アイスボールの2回目以降
-    if ( poke.myCondition.myRollout >= 2 )   return // ころがるの2回目以降
-    if ( poke.myCondition.myBide_turn >= 2 ) return // がまんの2ターン目と放つ時
+    if ( poke.myCondition.myThrash.name )       return // あばれる状態
+    if ( poke.myCondition.myFilling.name )      return // ため技を放つ時
+    if ( poke.myCondition.myRollout.turn >= 2 ) return // ころがる/アイスボールの2回目以降
+    if ( poke.myCondition.myBide.turn >= 2 )    return // がまんの2ターン目と放つ時
 
     const PP = poke[`myRest_pp_${poke.myCmd_move}`]
     let count = 1
@@ -960,7 +964,7 @@ function accumulateOperation(poke) {
     if ( !accumulationMove.includes(poke.myMove.name) ) return
     
     //行動ターン
-    if ( poke.myCondition.myFilling ) { 
+    if ( poke.myCondition.myFilling.name ) { 
         resetFilling(poke)
         if ( poke.myMove.name == "フリーフォール" ) {
             if ( !poke.myTarget ) return false
@@ -978,34 +982,34 @@ function accumulateOperation(poke) {
     // フリーフォール
     if ( poke.myMove.name == "フリーフォール" ) {
         if ( !poke.myTarget ) return false
-        const tgt = poke.myTarget[0].poke
+        const tgt = poke.myTarget[0]
         // 1.対象が姿を隠していることによる失敗
-        if ( isHide(tgt) ) {
+        if ( isHide(tgt.poke) ) {
             writeLog(`しかし うまく決まらなかった....`)
             return true
         }
         // 2.対象がみがわり状態であることによる失敗
-        if ( tgt.myCondition.mySubstitute ) {
+        if ( tgt.poke.myCondition.mySubstitute ) {
             writeLog(`しかし うまく決まらなかった....`)
             return true
         }
         // 3.対象のおもさが200.0kg以上あることによる失敗
-        if ( isWeight(tgt) >= 200 ) {
+        if ( isWeight(tgt.poke) >= 200 ) {
             writeLog(`しかし うまく決まらなかった....`)
             return true
         }
         // 4.相手を空中に連れ去る
-        writeLog(`${tgt.myTN} の ${tgt.myName} を 空へ連れ去った !`)
-        poke.myCondition.myFilling  = poke.myMove.name
-        poke.myCondition.mySky      = true
-        tgt.myCondition.mySky_drop  = true
+        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} を 空へ連れ去った !`)
+        poke.myCondition.myFilling.name = poke.myMove.name
+        poke.myCondition.myFilling.tgt  = poke.myCmd_tgt
+        poke.myCondition.mySky          = true
+        tgt.poke.myCondition.mySky_drop = true
         // 対象の注目の的状態を解除
         getMyField(tgt.poke).mySpotlight = getMyField(tgt.poke).mySpotlight.filter( spot => spot.position != tgt.poke.myPosition )
         return true
     }
     
     // フリーフォール以外
-    poke.myCondition.myFilling = poke.myMove.name
 
     // 姿を隠すため技
     switch ( poke.myMove.name ) {
@@ -1057,7 +1061,10 @@ function accumulateOperation(poke) {
         return false
     }
 
-    return true    
+    poke.myCondition.myFilling.name = poke.myMove.name
+    poke.myCondition.myFilling.tgt  = poke.myCmd_tgt
+
+    return true
 }
 
 // 23

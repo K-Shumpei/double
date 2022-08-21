@@ -272,14 +272,13 @@ class Condition {
         this.beak_blast    = false // くちばしキャノン 行動待ちならtrue, それ以外ならfalse
         this.belch         = false // ゲップ使用可能ならtrue
         this.berserk       = false // ぎゃくじょうが発動したらtrue
-        this.bide_damage   = 0     // がまんで受けたダメージ(ここでは2倍されていない)
-        this.bide_turn     = false // がまん経過ターン数(1~2)、放つときは3
+        this.bide          = {damage: 0, turn: 0, tgt: false} // がまんで受けたダメージ(ここでは2倍されていない)、経過ターン数(1~2)、放つときは3、対象（最後に攻撃してきたポケモン）
         this.bind_ID       = false // バインド状態を付与したポケモンのID
         this.bind_long     = false // ねばりのかぎづめが有効ならtrue
         this.bind_turn     = false // バインド経過ターン数
         this.bind_strong   = false // しめつけバンドが有効ならtrue
         this.cant_escape   = false // 逃げられない状態を付与したポケモンのID
-        this.cant_move     = false // 反動で次のターン動けなくなる 
+        this.cant_move     = false // 反動で次のターン動けなくなる技
         this.charge        = false // じゅうでん経過ターン数(1ターン目で特防アップ、2ターン目で電気技の威力アップ)
         this.chi_strike    = 0     // キョダイシンゲキ成功回数
         this.choice        = {item: false, ability: false} // 拘っている技
@@ -300,7 +299,7 @@ class Condition {
         this.encore_move   = false // アンコールされた技
         this.endure        = false // こらえる状態ならtrue
         this.explosion     = false // 爆発系の技のHP消費が確約されたらtrue
-        this.filling       = false // ためている技
+        this.filling       = {name: false, tgt: false} // ためている技
         this.first         = false // せんせいのツメ・イバンのみ・クイックドロウ - 同じ優先度内で最初に行動する
         this.flinch        = false // ひるみ　ひるみ状態ならtrue、それ以外ならfalse
         this.flash_fire    = false // もらいびが有効ならtrue
@@ -317,7 +316,6 @@ class Condition {
         this.helping_hand  = 0     // てだすけされた回数
         this.history       = []    // 使用した技の履歴
         this.hunger_switch = false // はらぺこスイッチ　はらぺこもようならtrue、まんぷくもようならfalse
-        this.ice_ball      = 0     // アイスボール経過ターン数
         this.imprison      = false // ふういん状態ならtrue
         this.ingrain       = false // ねをはる状態ならtrue
         this.landing       = false // 戦闘に出た時にtrueとなり、戦闘に出た時の処理が終わればfalse
@@ -347,7 +345,7 @@ class Condition {
         this.rank_down     = false // ランクが下がったらtrue
         this.rank_up       = false // ランクが上がったらtrue
         this.remaining_HP1 = false // 残りHP1で耐える効果
-        this.rollout       = 0     // ころがる経過ターン数
+        this.rollout       = {name: false, turn: 0, tgt: false} // ころがる/アイスボール、経過ターン数、対象
         this.roost         = false // はねやすめによりひこうタイプを失ったら　"ノーマル", "first", "second" のどれか
         this.second        = false // こうこうのしっぽ・まんぷくおこう・あとだし - 同じ優先度内で最後に行動する
         this.shadow        = false // シャドーダイブ状態ならtrue
@@ -367,8 +365,7 @@ class Condition {
         this.tar_shot      = false // タールショット状態ならtrue
         this.taunt         = 0     // ちょうはつ経過ターン数
         this.telekinesis   = false // テレキネシス状態の経過ターン数
-        this.thrash_move   = false // あばれる状態になった技
-        this.thrash_turn   = 0     // あばれる状態の経過ターン数
+        this.thrash        = {name: false, turn: 0} // あばれる状態になった技、経過ターン数
         this.throat_chop   = 0     // じごくづき経過ターン数(1~2)
         this.torment       = false // いちゃもん状態ならtrue
         this.transform     = false // へんしん状態ならtrue
@@ -386,8 +383,7 @@ class Condition {
     set myBeak_blast( value )    { this.beak_blast = value }
     set myBelch( value )         { this.belch = value }
     set myBerserk( value )       { this.berserk = value }
-    set myBide_damage( value )   { this.bide_damage = value }
-    set myBide_turn( value )     { this.bide_turn = value }
+    set myBide( value )          { this.bide = value }
     set myBind_ID( value )       { this.bind_ID = value }
     set myBind_long( value )     { this.bind_long = value }
     set myBind_turn( value )     { this.bind_turn = value }
@@ -431,7 +427,6 @@ class Condition {
     set myHelping_hand( value )  { this.helping_hand = value }
     set myHistory( value )       { this.history = value }
     set myHunger_switch( value ) { this.hunger_switch = value }
-    set myIce_ball( value )      { this.ice_ball = value }
     set myImprison( value )      { this.imprison = value }
     set myIngrain( value )       { this.ingrain = value }
     set myLanding( value )       { this.landing = value }
@@ -481,8 +476,7 @@ class Condition {
     set myTar_shot( value )      { this.tar_shot = value }
     set myTaunt( value )         { this.taunt = value }
     set myTelekinesis( value )   { this.telekinesis = value }
-    set myThrash( value )        { this.myThrash = value }
-    set myThrash_turn( value )   { this.myThrash_turn = value }
+    set myThrash( value )        { this.thrash = value }
     set myThroat_chop( value )   { this.throat_chop = value }
     set myTransform( value )     { this.transform = value }
     set myTruant( value )        { this.truant = value }
@@ -499,8 +493,7 @@ class Condition {
     get myBeak_blast()    { return this.beak_blast }
     get myBelch()         { return this.belch }
     get myBerserk()       { return this.berserk }
-    get myBide_damage()   { return this.bide_damage }
-    get myBide_turn()     { return this.bide_turn }
+    get myBide()          { return this.bide }
     get myBind_ID()       { return this.bind_ID }
     get myBind_long()     { return this.bind_long }
     get myBind_turn()     { return this.bind_turn }
@@ -544,7 +537,6 @@ class Condition {
     get myHelping_hand()  { return this.helping_hand }
     get myHistory()       { return this.history }
     get myHunger_switch() { return this.hunger_switch }
-    get myIce_ball()      { return this.ice_ball }
     get myImprison()      { return this.imprison }
     get myIngrain()       { return this.ingrain }
     get myLanding()       { return this.landing }
@@ -595,7 +587,6 @@ class Condition {
     get myTaunt()         { return this.taunt }
     get myTelekinesis()   { return this.telekinesis }
     get myThrash()        { return this.thrash }
-    get myThrash_turn()   { return this.thrash_turn } 
     get myThroat_chop()   { return this.throat_chop }
     get myTorment()       { return this.torment }
     get myTransform()     { return this.transform }

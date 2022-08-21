@@ -255,8 +255,10 @@ function giveDamage(poke){
         tgt.poke.myCondition.myDamage.nature   = poke.myMove.nature
         if ( oneShot.includes(poke.myMove.name) ) tgt.poke.myCondition.myOne_shot = true
         // がまん用
-        if ( tgt.poke.myCondition.myBide_turn ) {
-            tgt.poke.myCondition.myBide_damage += tgt.damage
+        if ( tgt.poke.myCondition.myBide.turn ) {
+            tgt.poke.myCondition.myBide.damage += tgt.damage
+            const tgtPosition = ( poke.myParty == tgt.poke.myParty )? poke.myPosition : poke.myPosition + 2
+            tgt.poke.myCondition.myBide.tgt = tgtPosition
         }
     }
 }
@@ -331,7 +333,7 @@ function remainHP1(poke){
 // 8.追加効果などの発動
 function additionalEffect(poke) {
     // 0.「反動で動けない状態」などの付与　（wikiにはない）
-    if ( cannotMoveByRecoil.includes(poke.myMove.name) ) {
+    if ( moveList_cannotMove.includes(poke.myMove.name) ) {
         poke.myCondition.myCant_move = poke.myMove.name
     }
 
@@ -339,8 +341,8 @@ function additionalEffect(poke) {
         case "あばれる":
         case "はなびらのまい":
         case "げきりん":
-            poke.myCondition.Thrash_move = poke.myMove.name
-            poke.myCondition.Thrash_move += 1
+            poke.myCondition.myThrash.name = poke.myMove.name
+            poke.myCondition.myThrash.turn += 1
             break
 
         case "さわぐ":

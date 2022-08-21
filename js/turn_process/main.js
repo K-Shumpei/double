@@ -122,6 +122,7 @@ function becomeToDynaMax(firstOrder){
 // 5.きあいパンチ/トラップシェル/くちばしキャノンの準備行動
 function preliminaryAction(secondOrder) {
     for ( const poke of secondOrder ) {
+        if ( poke.myCmd_move == "" ) continue
         switch ( poke.myMove.name ) {
             case "きあいパンチ":
                 writeLog(`${poke.myTN} の ${poke.myName} は 集中力を高めている！`)
@@ -151,7 +152,7 @@ function moveUsedEachPokemon() {
         const judge = moveSuccessJudge(poke)
 
         // コマンドの消去
-        if ( !poke.myCondition.myFilling ) {
+        if ( !poke.myCondition.myFilling.name ) {
             poke.myCmd_hand = ""
             poke.myCmd_move = ""
             poke.myCmd_tgt = ""
@@ -164,7 +165,7 @@ function moveUsedEachPokemon() {
             if ( fieldStatus.mySwitch_opp ) break
         } else {
             poke.myCondition.myProtect_num = 0
-            if ( !poke.myCondition.myFilling ) poke.myMove.success = false
+            if ( !poke.myCondition.myFilling.name ) poke.myMove.success = false
         }
 
         // 使用した技を履歴に残す

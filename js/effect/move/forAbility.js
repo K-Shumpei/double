@@ -263,7 +263,7 @@ var bind = [
 ]
 
 // 反動で動けない技（反動技）
-var cannotMoveByRecoil = [
+const moveList_cannotMove = [
     'がんせきほう', 
     'ギガインパクト', 
     'スターアサルト', 

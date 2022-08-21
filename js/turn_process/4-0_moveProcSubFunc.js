@@ -1234,7 +1234,8 @@ function moveEffect_smackDown(poke, tgt) {
     // そらをとぶ・とびはねるを中断させる、フリーフォールは中断されない
     if ( tgt.poke.myCondition.mySky ) {
         tgt.poke.myCondition.mySky = false // そらをとぶ
-        tgt.poke.myCondition.filling = false // ため技
+        tgt.poke.myCondition.filling.name = false // ため技の名前
+        tgt.poke.myCondition.filling.tgt  = false // ため技の対象
     }
 
     tgt.poke.myCondition.myMagnet_rise = false // でんじふゆう

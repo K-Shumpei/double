@@ -312,7 +312,7 @@ function resetBind(poke) {
 }
 
 function resetFilling(poke) {
-    poke.myCondition.myFilling = false // ため技の名前
+    poke.myCondition.myFilling = {name: false, tgt: false} // ため技の名前
     poke.myCondition.myDig     = false // あなをほる状態
     poke.myCondition.myShadow  = false // シャドーダイブ状態
     poke.myCondition.mySky     = false // そらをとぶ状態
@@ -579,12 +579,10 @@ function isTarget(poke){
             return oppPokeInBattle(poke)
 
         case "自分以外":
-            const oppTarget = oppPokeInBattle(poke)
-            const myTarget  = myPokeInBattle(poke).filter( _poke => _poke.myID != poke.myID )
-            return Object.assign(oppTarget, myTarget)
+            return allPokeInBattle().filter( _poke => _poke.myID != poke.myID )
     }
 
-    // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択)
+    // 残りは1体対象(不定, 味方1体, 自分か味方, 1体選択, ランダム1体)
 
     let target = false
     // 1.フリーフォールによる対象
@@ -728,7 +726,7 @@ function isTargetByRandom(poke) {
             case 1:
                 return oppPokeInBattle(poke)
             case 2:
-                return shuffle(oppPokeInBattle(poke)).pop()
+                return [shuffle(oppPokeInBattle(poke))[0]]
         }
     }
     return false

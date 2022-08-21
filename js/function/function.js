@@ -656,15 +656,14 @@ function selectedMove(poke) {
 
     let move_org = "" // 技の元データを代入
 
-    if ( poke.myCondition.myThrash_move ) move_org = moveSearchByName(poke.myCondition.myThrash_move) // あばれる状態
-    if ( poke.myCondition.myFilling )     move_org = moveSearchByName(poke.myCondition.myFilling)     // ため技
-    if ( poke.myCondition.myCant_move )   move_org = moveSearchByName(poke.myCondition.myCant_move)   // 反動で動けない
-    if ( poke.myCondition.myEncore_move ) move_org = moveSearchByName(poke.myCondition.myEncore_move) // あばれる状態
-    if ( poke.myCondition.myIce_ball )    move_org = moveSearchByName("アイスボール")
-    if ( poke.myCondition.myRoll_out )    move_org = moveSearchByName("ころがる")
-    if ( poke.myCondition.myBide_turn )   move_org = moveSearchByName("がまん")
-    if ( poke.myCondition.myUproar )      move_org = moveSearchByName("さわぐ")
-    if ( poke.myCondition.myStruggle )    move_org = moveSearchByName("わるあがき")
+    if ( poke.myCondition.myThrash.name )  move_org = moveSearchByName(poke.myCondition.myThrash.name)  // あばれる状態
+    if ( poke.myCondition.myFilling.name ) move_org = moveSearchByName(poke.myCondition.myFilling.name) // ため技
+    if ( poke.myCondition.myCant_move )    move_org = moveSearchByName(poke.myCondition.myCant_move)    // 反動で動けない
+    if ( poke.myCondition.myEncore_move )  move_org = moveSearchByName(poke.myCondition.myEncore_move)  // アンコール状態
+    if ( poke.myCondition.myRollout.name ) move_org = moveSearchByName(poke.myCondition.myRollout.name)
+    if ( poke.myCondition.myBide.turn )    move_org = moveSearchByName("がまん")
+    if ( poke.myCondition.myUproar )       move_org = moveSearchByName("さわぐ")
+    if ( poke.myCondition.myStruggle )     move_org = moveSearchByName("わるあがき")
 
     if ( move_org == "" ) {
         move_org = moveSearchByName(move_name)
