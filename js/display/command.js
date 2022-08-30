@@ -3,25 +3,17 @@ function showCommand() {
     // 戻るボタンを見せる
     document.getElementById(`back_command`).style.display = "block"
 
-    const poke0 = myParty.filter( poke => poke.myPosition == 0 )
-    const poke1 = myParty.filter( poke => poke.myPosition == 1 )
+    for ( let i = 0; i < 2; i++ ) {
+        const poke = myParty.filter( _poke => _poke.myPosition == i )
+        if ( poke.length !== 1 ) continue
+        if ( !showCommand_move(poke[0]) ) continue
 
-    if ( poke0.length === 1 ) {
-        const available = showCommand_move(poke0[0])
-        if ( available ) {
-            document.getElementById(`choise_${poke0[0].myPosition}`).style.display = "block"
-            document.getElementById(`change_btn_${poke0[0].myPosition}`).disabled = showCommand_choice(poke0[0])
-            return
-        }
-    }
+        // 戦う・交代ボタンの表示
+        document.getElementById(`choise_${poke[0].myPosition}`).style.display = "block"
+        // 交代ボタンの有効化
+        document.getElementById(`change_btn_${poke[0].myPosition}`).disabled = showCommand_choice(poke[0])
 
-    if ( poke1.length === 1 ) {
-        const available = showCommand_move(poke1[0])
-        if ( available ) {
-            document.getElementById(`choise_${poke1[0].myPosition}`).style.display = "block"
-            document.getElementById(`change_btn_${poke0[0].myPosition}`).disabled = showCommand_choice(poke0[0])
-            return
-        }
+        return
     }
 }
 
@@ -108,11 +100,20 @@ function showCommand_choice(poke) {
 }
 
 // 「攻撃」を選んだ時
-function choiseMove(position){
+function choiceMove(position){
     // 「攻撃」か「交代」のボタン　を隠す
     document.getElementById(`choise_${position}`).style.display = "none"
 
     const poke = myParty.filter( _poke => _poke.myPosition == position )[0]
+
+    // メガシンカ・Z技・ダイマックスボタンの表示
+    document.getElementById(`special_${position}`).style.display = "block"
+    // メガシンカボタンの有効化
+    document.getElementById(`mega_btn_${position}`).disabled = showCommand_mega(poke)
+    // Z技ボタンの有効化
+    document.getElementById(`Zmove_btn_${position}`).disabled = showCommand_Zmove(poke)
+    // ダイマックスボタンの有効化
+    document.getElementById(`dynamax_btn_${position}`).disabled = showCommand_dynamax(poke)
 
     // 技を見せる
     for ( let i = 0; i < 4; i++ ) {
@@ -129,14 +130,14 @@ function choiseMove(position){
         document.getElementById(`rest_pp_${poke.myPosition}${i}`).textContent = poke[`myRest_pp_${i}`]
         document.getElementById(`full_pp_${poke.myPosition}${i}`).textContent = poke[`myFull_pp_${i}`]
         // 選択不可化
-        if ( disableChoiseMove(poke, i) ) {
+        if ( disableChoiceMove(poke, i) ) {
             document.getElementById(`move_radio_${poke.myPosition}${i}`).disabled = true
         }
     }
 }
 
 // 技の選択不可化
-function disableChoiseMove(poke, num) {
+function disableChoiceMove(poke, num) {
     const move = moveSearchByName(poke[`myMove_${num}`])
     const history = poke.myCondition.myHistory
 
@@ -196,16 +197,20 @@ function decideMoveCommand(position, num){
     }
     document.getElementById(`com_log_com_${position}`).textContent = moveName
 
+    // 技を隠す
+    for ( let i = 0; i < 4 ;i++ ) {
+        document.getElementById(`com_move_${position}${i}`).style.display = "none"
+        document.getElementById(`com_pp_${position}${i}`).style.display = "none"
+        document.getElementById(`move_${position}${i}`).textContent = ""
+        document.getElementById(`rest_pp_${position}${i}`).textContent = ""
+        document.getElementById(`full_pp_${position}${i}`).textContent = ""
+    }
+
+    // メガシンカ・Z技・ダイマックスボタン　を隠す
+    document.getElementById(`special_${position}`).style.display = "none"
+
     switch ( moveTarget ) {
         case "1体選択":
-            // 技を隠す
-            for ( let i = 0; i < 4 ;i++ ) {
-                document.getElementById(`com_move_${position}${i}`).style.display = "none"
-                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-                document.getElementById(`move_${position}${i}`).textContent = ""
-                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-                document.getElementById(`full_pp_${position}${i}`).textContent = ""
-            }
             // 「攻撃対象」の文字をを見せる
             document.getElementById(`target_comment_${position}`).style.display = "block"
             // 攻撃対象を見せる(相手)
@@ -228,39 +233,19 @@ function decideMoveCommand(position, num){
         case "味方全体":
         case "相手全体":
         case "全体":
+        case "ランダム1体":
         case "自分以外":
         case "味方の場":
         case "相手の場":
         case "全体の場":
             document.getElementById(`com_log_tgt_${position}`).textContent = `${move.target}に `
-            // 技を隠す
-            for ( let i = 0; i < 4 ;i++ ) {
-                document.getElementById(`com_move_${position}${i}`).style.display = "none"
-                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-                document.getElementById(`move_${position}${i}`).textContent = ""
-                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-                document.getElementById(`full_pp_${position}${i}`).textContent = ""
-            }
-            decideAction(position)
-            break
-
-        case "ランダム1体":
-            document.getElementById(`com_log_tgt_${position}`).textContent = `ランダムな相手に `
-            // 技を隠す
-            for ( let i = 0; i < 4 ;i++ ) {
-                document.getElementById(`com_move_${position}${i}`).style.display = "none"
-                document.getElementById(`com_pp_${position}${i}`).style.display = "none"
-                document.getElementById(`move_${position}${i}`).textContent = ""
-                document.getElementById(`rest_pp_${position}${i}`).textContent = ""
-                document.getElementById(`full_pp_${position}${i}`).textContent = ""
-            }
             decideAction(position)
             break
     }
 }
 
 // 「交代」を選んだ時
-function choiseHand(position){
+function choiceHand(position){
     // 「攻撃」か「交代」のボタン　を隠す
     document.getElementById(`choise_${position}`).style.display = "none"
     // 「交代先」の文字をを見せる
@@ -340,10 +325,23 @@ function back(){
     // 戻るボタンを見せる
     document.getElementById('back_command').style.display = "block"
 
+    // メガシンカ・Z技・ダイマックス
+    for ( const poke of myParty ) {
+        if ( poke.myPosition === null ) continue
+        poke.myMega = false
+        poke.myZmove = false
+        poke.myDynamax = false
+    }
+
     for ( let i = 0; i < 2; i++ ) {
         // 「攻撃」か「交代」のボタン　を隠す
         document.getElementById(`choise_${i}`).style.display = "none"
         document.getElementById(`change_btn_${i}`).disabled = false
+        // メガシンカ・Z技・ダイマックスボタン　を隠す
+        document.getElementById(`special_${i}`).style.display = "none"
+        document.getElementById(`mega_btn_${i}`).disabled = false
+        document.getElementById(`Zmove_btn_${i}`).disabled = false
+        document.getElementById(`dynamax_btn_${i}`).disabled = false
         // 「攻撃対象」の文字をを隠す
         document.getElementById(`target_comment_${i}`).style.display = "none"
         // 「交代先」の文字をを隠す

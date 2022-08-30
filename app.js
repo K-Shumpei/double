@@ -111,21 +111,15 @@ io.on("connection", function(socket){
     })
 
     // コマンドの受信
-    socket.on("send command", function(move0, tgt0, hand0, move1, tgt1, hand1) {
+    socket.on("send command", function(move0, tgt0, hand0, move1, tgt1, hand1, special0, special1) {
         let room = data[isRoom(socket.id)]
         for (let i = 0; i < 2; i++){
             if (room["id_" + i] == socket.id){
                 room["check_" + i] = true
                 room["command_" + i] = [
-                    {move: move0, tgt : tgt0, hand: hand0},  
-                    {move: move1, tgt : tgt1, hand: hand1} 
+                    {move: move0, tgt : tgt0, hand: hand0, special: special0},  
+                    {move: move1, tgt : tgt1, hand: hand1, special: special1} 
                 ]
-
-                //data[room]["user" + (i+1)].data.mega = opt.mega
-                //data[room]["user" + (i+1)].data.Z = opt.Z
-                //data[room]["user" + (i+1)].data.ultra = opt.ultra
-                //data[room]["user" + (i+1)].data.dyna = opt.dyna
-                //data[room]["user" + (i+1)].data.giga = opt.giga
             }
         }
         if (room.check_0 && room.check_1){

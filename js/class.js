@@ -48,6 +48,10 @@ class Party {
         this.emergency     = false // ききかいひ/にげごしが発動したらtrue
         this.red_card      = false // レッドカードが発動したらtrue
         this.switch        = false // とんぼがえり/ボルトチェンジ/クイックターンが発動すればtrue
+        // メガシンカ・Z技・ダイマックス
+        this.mega          = false
+        this.Zmove         = false
+        this.dynamax       = false
     }
 
     //セッターメソッド
@@ -153,6 +157,10 @@ class Party {
     set myEmergency( value )     { this.emergency = value }
     set myRed_card( value )      { this.red_card = value }
     set mySwitch( value )        { this.switch = value }
+    // メガシンカ・Z技・ダイマックス
+    set myMega( value )          { this.mega = value }
+    set myZmove( value )         { this.Zmove = value }
+    set myDynamax( value )       { this.dynamax = value }
 
     // ゲッターメソッド
     // 基本情報
@@ -258,6 +266,10 @@ class Party {
     get myEmergency()     { return this.emergency }
     get myRed_card()      { return this.red_card }
     get mySwitch()        { return this.switch }
+    // メガシンカ・Z技・ダイマックス
+    get myMega()          { return this.mega }
+    get myZmove()         { return this.Zmove } 
+    get myDynamax()       { return this.dynamax }
 
 }
 

@@ -112,7 +112,18 @@ function changePokemon(firstOrder) {
 
 // 3.メガシンカ/ウルトラバースト
 function megaEvolition(firstOrder){
-
+    for ( const poke of firstOrder ) {
+        console.log(poke.myName)
+        if ( !poke.myMega ) continue
+        for ( const mega of itemList_megaStone ) {
+            if ( mega.poke != poke.myName ) continue
+            if ( mega.name != poke.myItem ) continue
+            writeLog(`${poke.myTN} の ${poke.myName} のメガシンカ !`)
+            formChange(poke, mega.mega, true)
+            break
+        }
+        
+    }
 }
 // 4.ダイマックス　すばやさ順に発動
 function becomeToDynaMax(firstOrder){

@@ -146,7 +146,7 @@ function decideMove(poke) {
     // ちょうはつターンの消費
     if ( poke.myCondition.myTaunt ) poke.myCondition.myTaunt += 1
     // アンコールターンの消費
-    if ( poke.myCondition.Encore.turn ) poke.myCondition.Encore.turn += 1
+    if ( poke.myCondition.myEncore.turn ) poke.myCondition.myEncore.turn += 1
 }
 
 

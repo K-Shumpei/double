@@ -279,6 +279,19 @@ $(function () {
             const move1 = ( form.move1.value == "" )? "" : Number(form.move1.value)
             const tgt1  = ( form.tgt1.value == ""  )? "" : Number(form.tgt1.value)
             const hand1 = ( form.hand1.value == "" )? "" : Number(form.hand1.value)
+
+            // メガシンカ・Z技・ダイマックス
+            const poke0    = myParty.filter( poke => poke.myPosition == 0 )
+            const mega0    = ( poke0.length === 1 )? poke0[0].myMega : null
+            const Zmove0   = ( poke0.length === 1 )? poke0[0].myZmove : null
+            const dynamax0 = ( poke0.length === 1 )? poke0[0].myDynamax : null
+            const special0 = {mega: mega0, Zmove: Zmove0, dynamax: dynamax0}
+
+            const poke1    = myParty.filter( poke => poke.myPosition == 1 )
+            const mega1    = ( poke1.length === 1 )? poke1[0].myMega : null
+            const Zmove1   = ( poke1.length === 1 )? poke1[0].myZmove : null
+            const dynamax1 = ( poke1.length === 1 )? poke1[0].myDynamax : null
+            const special1 = {mega: mega1, Zmove: Zmove1, dynamax: dynamax1}
             
             // チェックの解除
             for ( const name of ["move0", "tgt0", "hand0", "move1", "tgt1", "hand1"] ) {
@@ -287,17 +300,8 @@ $(function () {
                 }
             }
             
-            // ダイマックスなどの情報
-            //const mega = document.getElementById("A_mega").checked
-            //const Z = document.getElementById("A_Z").checked
-            //const ultra = document.getElementById("A_ultra").checked
-            //const dyna = document.getElementById("A_dyna").checked
-            //const giga = document.getElementById("A_giga").checked
-            //const option = {mega: mega, Z: Z, ultra: ultra, dyna: dyna, giga: giga}
-
-            
             // 送信
-            socketio.emit("send command", move0, tgt0, hand0, move1, tgt1, hand1)
+            socketio.emit("send command", move0, tgt0, hand0, move1, tgt1, hand1, special0, special1)
             return false
         }
 
@@ -337,19 +341,20 @@ $(function () {
         randomList = list
         // 自分のコマンドを記入
         for ( const poke of myParty ) {
-            if ( poke.myPosition != null ) {
-                poke.myCmd_move = myCommand[poke.myPosition].move
-                poke.myCmd_tgt  = myCommand[poke.myPosition].tgt
-                poke.myCmd_hand = myCommand[poke.myPosition].hand
-            }
+            if ( poke.myPosition === null ) continue
+            poke.myCmd_move = myCommand[poke.myPosition].move
+            poke.myCmd_tgt  = myCommand[poke.myPosition].tgt
+            poke.myCmd_hand = myCommand[poke.myPosition].hand
         }
         // 相手のコマンドを記入
         for ( const poke of oppParty ) {
-            if ( poke.myPosition != null ) {
-                poke.myCmd_move = oppCommand[poke.myPosition].move
-                poke.myCmd_tgt  = oppCommand[poke.myPosition].tgt
-                poke.myCmd_hand = oppCommand[poke.myPosition].hand
-            }
+            if ( poke.myPosition === null ) continue
+            poke.myCmd_move = oppCommand[poke.myPosition].move
+            poke.myCmd_tgt  = oppCommand[poke.myPosition].tgt
+            poke.myCmd_hand = oppCommand[poke.myPosition].hand
+            poke.myMega = oppCommand[poke.myPosition].special.mega
+            poke.myZmove = oppCommand[poke.myPosition].special.Zmove
+            poke.myDynamax = oppCommand[poke.myPosition].special.dynamax
         }
 
         // ターンの処理
