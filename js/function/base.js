@@ -50,7 +50,7 @@ function fiveCut( number ) {
 function moveSearchByName( name ) {
     for ( const move of moveList ) {
         if ( name == move.name ) {
-            return move
+            return Object.assign({}, move)
         }
     }
     return false
@@ -1469,6 +1469,16 @@ function allParameter() {
         "speed", 
         "accuracy", 
         "evasion"
+    ]
+}
+
+function fiveParameter() {
+    return [
+        "atk", 
+        "def", 
+        "sp_atk", 
+        "sp_def", 
+        "speed"
     ]
 }
 

@@ -322,6 +322,9 @@ function itemForm(){
             if ( item == "はっきんだま" ) break
             document.getElementById(`name`).value = "ギラティナ(アナザーフォルム)"
             break
+
+        default:
+            return
     }
 
     setID()

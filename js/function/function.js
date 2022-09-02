@@ -654,27 +654,37 @@ function formChange(poke, name, declaration) {
 function selectedMove(poke) {
     const move_name = poke[`myMove_${poke.myCmd_move}`]
 
-    let move_org = "" // 技の元データを代入
+    let move_org = false // 技の元データを代入
 
     if ( poke.myCondition.myThrash.name )  move_org = moveSearchByName(poke.myCondition.myThrash.name)  // あばれる状態
     if ( poke.myCondition.myFilling.name ) move_org = moveSearchByName(poke.myCondition.myFilling.name) // ため技
     if ( poke.myCondition.myCant_move )    move_org = moveSearchByName(poke.myCondition.myCant_move)    // 反動で動けない
     if ( poke.myCondition.myEncore.name )  move_org = moveSearchByName(poke.myCondition.myEncore.name)  // アンコール状態
-    if ( poke.myCondition.myRollout.name ) move_org = moveSearchByName(poke.myCondition.myRollout.name)
+    if ( poke.myCondition.myRollout.name ) move_org = moveSearchByName(poke.myCondition.myRollout.name) // ころがる・アイスボール
     if ( poke.myCondition.myBide.turn )    move_org = moveSearchByName("がまん")
     if ( poke.myCondition.myUproar )       move_org = moveSearchByName("さわぐ")
     if ( poke.myCondition.myStruggle )     move_org = moveSearchByName("わるあがき")
 
-    if ( move_org == "" ) {
-        move_org = moveSearchByName(move_name)
-        /*
-        if (move_name.includes("Z")) {
-            move = moveSearchByName(move_name.replace("Z", "")).concat()
-            move.name = move_name
-        } else {
+    if ( !move_org ) move_org = moveSearchByName(move_name)
 
+    if ( poke.myZmove ) {
+        switch ( move_org.nature ) {
+            case "物理":
+            case "特殊":
+                // 通常のZワザ
+                const normal_Z =  moveList_Z.filter( Zmove => Zmove.item == poke.myItem )
+                if ( normal_Z.length === 1 ) {
+                    move_org = moveSearchByName( normal_Z[0].name )
+                    move_org.power = getZmovePower(move_name)
+                }
+                // 専用のZワザ
+                const dedicated_Z = moveList_dedicated_Z.filter( Zmove => Zmove.item == poke.myItem )
+                if ( dedicated_Z.length === 1 ) move_org = moveSearchByName( dedicated_Z[0].name )
+                break
+
+            case "変化":
+                break
         }
-        */
     }
 
     // ディープコピー
@@ -696,5 +706,42 @@ function moveConfig(poke, move) {
     }
 
     return move
+}
+
+// Zワザの威力
+function getZmovePower(moveName) {
+    const power = moveSearchByName(moveName).power
+
+    switch ( true ) {
+        case power >= 140:
+            return 200
+        
+        case power >= 130:
+            return 195
+
+        case power >= 120:
+            return 190
+
+        case power >= 110:
+            return 185
+
+        case power >= 100:
+            return 180
+
+        case power >= 90:
+            return 175
+
+        case power >= 80:
+            return 160
+
+        case power >= 70:
+            return 140
+
+        case power >= 60:
+            return 120
+
+        default:
+            return 100
+    }
 }
 

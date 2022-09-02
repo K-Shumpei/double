@@ -52,6 +52,8 @@ class Party {
         this.mega          = false
         this.Zmove         = false
         this.dynamax       = false
+
+        this.move          = false // 使用した技
     }
 
     //セッターメソッド

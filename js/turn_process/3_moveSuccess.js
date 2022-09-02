@@ -355,51 +355,35 @@ function actionFailure(poke) {
 
 // 5.Zワザの場合はZパワーを送る。Z変化技の場合は付加効果
 function ZpowerActivation(poke) {
-    return
     // Z技にチェックがなければ何もしない
-    if (!atk.data.Z) {
-        return
-    }
-    writeLog(me, you, con.TN + "　の　" + poke.myName + "　は　Zパワーを身に纏った!" + "\n")
-    // 普通のZクリスタル（攻撃技）の場合
-    if (move.nature != "変化") {
-        move.accuracy = "-"
-        move.direct = "間接"
-        if (move.power < 60) {
-            move.power = 100
-        } else if (move.power < 70) {
-            move.power = 120
-        } else if (move.power < 80) {
-            move.power = 140
-        } else if (move.power < 90) {
-            move.power = 160
-        } else if (move.power < 100) {
-            move.power = 175
-        } else if (move.power < 110) {
-            move.power = 180
-        } else if (move.power < 120) {
-            move.power = 185
-        } else if (move.power < 130) {
-            move.power = 190
-        } else if (move.power < 140) {
-            move.power = 195
-        } else {
-            move.power = 200
-        }
-        const power = moveEff.Zpower()
-        for (let i = 0; i < power.length; i++) {
-            if ( poke.myMove.name == power[i][0]) {
-                move.power = power[i][2]
-            }
-        }
-        const list = itemEff.Zcrystal()
-        for (let i = 0; i < list.length; i++) {
-            if (atk.con.item == list[i][2]) {
-                move.name = list[i][1]
-            }
-        }
-    }
+    if ( !poke.myZmove ) return
+
+    writeLog(`${poke.myTN} の ${poke.myName} は Zパワーを身に纏った !`)
+
     // 普通のZクリスタル（変化技）の場合
+    // 特定のパラメーターが上昇
+    const rankZmove = moveList_status_Z.rank.filter( move => move.name == poke.myMove.name )
+    if ( rankZmove.length === 1 ) changeMyRank(poke, rankZmove[0].parameter, rankZmove[0].num)
+    // 全パラメーターが上昇
+    if ( moveList_status_Z.all.includes(poke.myMove.name) ) {
+        for ( const para of fiveParameter() ) {
+            changeMyRank(poke, para, 1)
+        }
+    }
+    // きゅうしょアップ状態になる
+    if ( moveList_status_Z.critical.includes(poke.myMove.name) ) {
+        poke.myCondition.myCritical = true
+        writeLog(`${poke.myTN} の ${poke.myName} は 張り切り出した !`)
+    }
+    // 下がった能力を元に戻す
+    if ( moveList_status_Z.clear.includes(poke.myMove.name) ) {
+        for ( const para of allParameter() ) {
+            poke[`myRank_${para}`] = Math.max(0, poke[`myRank_${para}`])
+        }
+        writeLog(`${poke.myTN} の ${poke.myName} の 下がった能力が元に戻った !`)
+    }
+
+
     if (move.nature == "変化") {
         const list = moveEff.Zstatus()
         for (let i = 0; i < list.length; i++) {

@@ -181,6 +181,7 @@ function moveUsedEachPokemon() {
 
         // 使用した技を履歴に残す
         poke.myCondition.myHistory.unshift(poke.myMove)
+        poke.myMove = false
 
 
 
