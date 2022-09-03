@@ -236,7 +236,7 @@ const additionalEffectToMakeFlinch = [
 ]
 
 // 追加効果のある技（その他の効果）
-var additionalEffectForOtherEffect = [
+const additionalEffectOther = [
     'アンカーショット', 
     'オリジンズスーパーノヴァ', 
     'かげぬい', 

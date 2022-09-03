@@ -1212,6 +1212,68 @@ const moveList_gigantamax = [
     {name: 'キョダイレンゲキ', poke: 'ウーラオス(れんげきのかた)', type: 'みず'}
 ]
 
+// ダイマックス技の威力がルールに則していないもの
+const moveList_dynamaxPowerException = [
+    {name: 'マルチアタック', power: 95}, 
+    {name: 'アシストパワー', power: 130}, 
+    {name: 'つけあがる', power: 130}, 
+    {name: 'つけあがる', power: 130}, 
+    {name: 'ウェザーボール', power: 130}, 
+    {name: 'だいちのはどう', power: 130}, 
+    {name: 'ライジングボルト', power: 140}, 
+    {name: 'ダイマックスほう', power: 140},
+    // 連続攻撃技 
+    {name: 'つっぱり', power: 70}, 
+    {name: 'トリプルキック', power: 80}, 
+    {name: 'にどげり', power: 80}, 
+    {name: 'みずしゅりけん', power: 90}, 
+    {name: 'みだれづき', power: 90}, 
+    {name: 'ふくろだたき', power: 100}, 
+    {name: 'ダブルアタック', power: 120}, 
+    {name: 'ギアソーサー', power: 130}, 
+    {name: 'スイープビンタ', power: 130}, 
+    {name: 'すいりゅうれんだ', power: 130}, 
+    {name: 'スケイルショット', power: 130}, 
+    {name: 'タネマシンガン', power: 130}, 
+    {name: 'ダブルウィング', power: 130}, 
+    {name: 'ダブルチョップ', power: 130}, 
+    {name: 'つららばり', power: 130}, 
+    {name: 'ドラゴンアロー', power: 130}, 
+    {name: 'ボーンラッシュ', power: 130}, 
+    {name: 'ホネブーメラン', power: 130}, 
+    {name: 'ミサイルばり', power: 130}, 
+    {name: 'ロックブラスト', power: 130}, 
+    {name: 'ダブルパンツァー', power: 140}, 
+    {name: 'トリプルアクセル', power: 140}, 
+    // 威力が変動する技
+    {name: 'きしかいせい', power: 100}, 
+    {name: 'けたぐり', power: 100}, 
+    {name: 'なげつける', power: 100}, 
+    {name: 'はきだす', power: 100}, 
+    {name: 'プレゼント', power: 100}, 
+    {name: 'エレキボール', power: 130}, 
+    {name: 'くさむすび', power: 130}, 
+    {name: 'じたばた', power: 130}, 
+    {name: 'ジャイロボール', power: 130}, 
+    {name: 'ヒートスタンプ', power: 130}, 
+    {name: 'ヘビーボンバー', power: 130}, 
+    {name: 'にぎりつぶす', power: 140}, 
+    // ダメージ固定技
+    {name: 'カウンター', power: 75}, 
+    {name: 'ちきゅうなげ', power: 75}, 
+    {name: 'いかりのまえば', power: 100}, 
+    {name: 'いのちがけ', power: 100}, 
+    {name: 'しぜんのいかり', power: 100}, 
+    {name: 'ナイトヘッド', power: 100}, 
+    {name: 'ミラーコート', power: 100}, 
+    {name: 'メタルバースト', power: 100}, 
+    {name: 'がむしゃら', power: 130}, 
+    {name: 'じわれ', power: 130}, 
+    {name: 'ぜったいれいど', power: 130}, 
+    {name: 'つのドリル', power: 130}, 
+    {name: 'ハサミギロチン', power: 130}
+]
+
 // タイプが変わる技
 const moveList_changeType = [
     'ウェザーボール', 

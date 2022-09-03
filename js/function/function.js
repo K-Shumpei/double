@@ -667,6 +667,7 @@ function selectedMove(poke) {
 
     if ( !move_org ) move_org = moveSearchByName(move_name)
 
+    // Zワザ
     if ( poke.myZmove ) {
         switch ( move_org.nature ) {
             case "物理":
@@ -683,6 +684,23 @@ function selectedMove(poke) {
                 break
 
             case "変化":
+                if ( move_name != "とっておき" ) break
+                move_org = moveSearchByName( "ナインエボルブースト" )
+                break
+        }
+    }
+    // ダイマックス技
+    if ( poke.myDynamax ) {
+        switch ( move_org.nature ) {
+            case "物理":
+            case "特殊":
+                const dynamax = moveList_dynamax.filter( dyna => dyna.type == move_org.type )
+                move_org = moveSearchByName( dynamax[0].name )
+                move_org.power = getDynamaxPower(move_name)
+                break
+
+            case "変化":
+                move_org = moveSearchByName( "ダイウォール" )
                 break
         }
     }
@@ -745,3 +763,37 @@ function getZmovePower(moveName) {
     }
 }
 
+// ダイマックス技の威力
+function getDynamaxPower(moveName) {
+    const move = moveSearchByName(moveName)
+    const type = move.type
+    const power = move.power
+    const down = ["かくとう", "どく"]
+
+    // 例外
+    const exception = moveList_dynamaxPowerException.filter( _move => _move.name == move.name )
+    if ( exception.length === 1 ) return exception[0].power
+
+    switch ( true ) {
+        case power >= 150:
+            return ( down.includes(type) )? 100 : 150
+
+        case power >= 110:
+            return ( down.includes(type) )? 95 : 140
+
+        case power >= 75:
+            return ( down.includes(type) )? 90 : 130
+
+        case power >= 65:
+            return ( down.includes(type) )? 85 : 120
+
+        case power >= 55:
+            return ( down.includes(type) )? 80 : 110
+
+        case power >= 45:
+            return ( down.includes(type) )? 75 : 100
+
+        default:
+            return ( down.includes(type) )? 70 : 90
+    }
+}

@@ -13,8 +13,6 @@ function moveSuccessJudge(poke) {
     // 4.ねごと/いびき使用時「ぐうぐう 眠っている」メッセージ
     // 5.Zワザの場合はZパワーを送る。Z変化技の場合は付加効果
     ZpowerActivation(poke)
-    // 5a.ダイマックス技に変更
-    dynamaxMove(poke)
     // 6.他の技が出る技により技を置き換え、(3-8~10)の行程を繰り返す
     if ( moveReplace(poke) ) return false
     // 7.特性バトルスイッチによるフォルムチェンジ
@@ -360,7 +358,6 @@ function ZpowerActivation(poke) {
 
     writeLog(`${poke.myTN} の ${poke.myName} は Zパワーを身に纏った !`)
 
-    // 普通のZクリスタル（変化技）の場合
     // 特定のパラメーターが上昇
     const rankZmove = moveList_status_Z.rank.filter( move => move.name == poke.myMove.name )
     if ( rankZmove.length === 1 ) changeMyRank(poke, rankZmove[0].parameter, rankZmove[0].num)
@@ -382,124 +379,16 @@ function ZpowerActivation(poke) {
         }
         writeLog(`${poke.myTN} の ${poke.myName} の 下がった能力が元に戻った !`)
     }
-
-
-    if (move.nature == "変化") {
-        const list = moveEff.Zstatus()
-        for (let i = 0; i < list.length; i++) {
-            if ( poke.myMove.name == list[i][0]) {
-                if ( poke.myMove.name == "のろい") {
-                    if (atk.con.type.includes("ゴースト")) {
-                        writeLog(me, you, con.TN + "　の　" + poke.myName + "　の　HPが全回復した!" + "\n")
-                        atk.con.last_HP = atk.con.full_HP
-                    } else {
-                        afn.rankChangeZ(me, you, con, "A", 1)
-                    }
-                } else if (list[i][1] == "A" || list[i][1] == "B" || list[i][1] == "C" || list[i][1] == "D" || list[i][1] == "S" || list[i][1] == "X" || list[i][1] == "Y") {
-                    afn.rankChangeZ(me, you, con, list[i][1], list[i][2])
-                } else if (list[i][1] == "all") {
-                    for (const parameter of ["A", "B", "C", "D", "S"]) {
-                        afn.rankChangeZ(me, you, con, parameter, 1)
-                    }
-                } else if (list[i][1] == "critical") {
-                    if (!atk.con.p_con.includes("きゅうしょアップ")) {
-                        writeLog(me, you, con.TN + "　の　" + poke.myName + "　は　技が急所に当たりやすくなった!" + "\n")
-                        atk.con.p_con += "きゅうしょアップ" + "\n"
-                    }
-                } else if (list[i][1] == "clear") {
-                    writeLog(me, you, con.TN + "　の　" + poke.myName + "　の　能力ダウンがリセットされた!" + "\n")
-                    for (const parameter of ["A", "B", "C", "D", "S", "X", "Y"]) {
-                        atk.con[parameter + "_rank"] = Math.max(atk.con[parameter + "_rank"], 0)
-                    }
-                } else if (list[i][1] == "cure") {
-                    writeLog(me, you, con.TN + "　の　" + poke.myName + "　の　HPが全回復した!" + "\n")
-                    atk.con.last_HP = atk.con.full_HP
-                }
-            }
-        }
-        move.name = "Z" + move.name
+    // 自分のHPを全回復
+    if ( moveList_status_Z.cure.includes(poke.myMove.name) ) {
+        changeHP(poke, poke.myFull_hp, "+")
     }
-    // 専用Zクリスタルの場合
-    const list = itemEff.spZcrystal()
-    for (let i = 0; i < list.length; i++) {
-        if ( poke.myMove.name == list[i][3]) {
-            move.name = list[i][1]
-            move.power = cfn.moveSearchByName( poke.myMove.name)[3]
-        }
-    }
-    if ( poke.myMove.name == "ナインエボルブースト") {
-        move.nature = "変化"
-    }
-    atk.data.Zable = true
-    atk.data.ZTxt = "Z技（済）"
-}
-
-// 5a.ダイマックス技に変更
-function dynamaxMove(poke) {
-    return
-    if (atk.data.dynaTxt.includes("3") || atk.data.gigaTxt.includes("3")) {
-        const list = moveEff.dyna()
-        const giga = moveEff.gigadyna()
-        if (move.nature == "変化") {
-            move.name = "ダイウォール"
-            move.type = "ノーマル"
-            move.target = "自分"
+    // のろい
+    if ( poke.myMove.name == "のろい" ) {
+        if ( poke.myType.includes("ゴースト") ) {
+            changeHP(poke, poke.myFull_hp, "+")
         } else {
-            move.accuracy = "-"
-            move.direct = "間接"
-            for (let i = 0; i < list.length; i++) {
-                if (move.type == list[i][0]) {
-                    if (move.type == "かくとう" || move.type == "どく") {
-                        if (move.power < 45) {
-                            move.power = 70
-                        } else if (move.power < 55) {
-                            move.power = 75
-                        } else if (move.power < 65) {
-                            move.power = 80
-                        } else if (move.power < 75) {
-                            move.power = 85
-                        } else if (move.power < 110) {
-                            move.power = 90
-                        } else if (move.power < 150) {
-                            move.power = 95
-                        } else {
-                            move.power = 100
-                        }
-                    } else {
-                        if (move.power < 45) {
-                            move.power = 90
-                        } else if (move.power < 55) {
-                            move.power = 100
-                        } else if (move.power < 65) {
-                            move.power = 110
-                        } else if (move.power < 75) {
-                            move.power = 120
-                        } else if (move.power < 110) {
-                            move.power = 130
-                        } else if (move.power < 150) {
-                            move.power = 140
-                        } else {
-                            move.power = 150
-                        }
-                    }
-                    for (let j = 0; j < moveEff.dynaPow().length; j++) {
-                        if ( poke.myMove.name == moveEff.dynaPow()[j][0]) {
-                            move.power = moveEff.dynaPow()[j][1]
-                        }
-                    }
-                    move.name = list[i][1]
-                }
-            }
-            if (atk.data.gigaTxt.includes("3")) {
-                for (let i = 0; i < giga.length; i++) {
-                    if (move.type == giga[i][2] && poke.myName == giga[i][0]) {
-                        move.name = giga[i][1]
-                        if ( poke.myMove.name == "キョダイコランダ" || move.name == "キョダイカキュウ" || move.name == "キョダイソゲキ") {
-                            move.power = 160
-                        }
-                    }
-                }
-            }
+            changeMyRank(poke, "atk", 1)
         }
     }
 }
@@ -602,6 +491,8 @@ function attackDeclaration(poke) {
     }
 
     
+
+    
     /*
     // ちからずく
     const addEff = moveEff.additionalEffect()
@@ -611,6 +502,9 @@ function attackDeclaration(poke) {
         }
     }    
     */
+
+    // Zワザは一度しか使用できない
+    if ( poke.myZmove ) getMyField(poke).myZmove = true
 }
 
 
@@ -756,12 +650,16 @@ function PPDecrease(poke) {
 
     const PP = poke[`myRest_pp_${poke.myCmd_move}`]
     let count = 1
-    /*
-    for (const tgt of con.tgt) {
-        const user = isMe(me, you, tgt)
-        if (tgt.ability == "プレッシャー" && isAbility(user[0], tgt)) count += 1
+
+    const target = ( poke.myMove.target == "全体の場" || poke.myMove.target == "相手の場" )? oppPokeInBattle(poke) : poke.myTarget
+
+    for ( const tgt of target ) {
+        if ( !isAbility(tgt.poke) ) continue
+        if ( tgt.poke.myAbility != "プレッシャー" ) continue
+        if ( tgt.poke.myParty != poke.myParty ) continue
+        count += 1
     }
-    */
+
     poke[`myRest_pp_${poke.myCmd_move}`] = Math.max(PP - count, 0)
 
     /*

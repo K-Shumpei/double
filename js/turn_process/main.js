@@ -113,11 +113,12 @@ function changePokemon(firstOrder) {
 // 3.メガシンカ/ウルトラバースト
 function megaEvolition(firstOrder){
     for ( const poke of firstOrder ) {
-        console.log(poke.myName)
         if ( !poke.myMega ) continue
         for ( const mega of itemList_megaStone ) {
             if ( mega.poke != poke.myName ) continue
             if ( mega.name != poke.myItem ) continue
+            getMyField(poke).myMega = true
+            poke.myMega = false
             writeLog(`${poke.myTN} の ${poke.myName} のメガシンカ !`)
             formChange(poke, mega.mega, true)
             break

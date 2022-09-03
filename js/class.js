@@ -604,12 +604,14 @@ class Field {
         this.aurora_veil   = false // オーロラベール経過ターン数
         this.baton_pass    = false // バトンタッチ継承内容
         this.cannonade     = false // キョダイホウゲキ経過ターン数
+        this.dynamax       = false // ダイマックスの使用有無
         this.extender      = false // グランドコートが有効ならtrue
         this.fire_ocean    = false // ひのうみ経過ターン数
         this.light_clay    = false // ひかりのかべ　ひかりのねんどならtrue
         this.light_screen  = false // ひかりのかべ経過ターン数
         this.lucky_chant   = false // おまじない経過ターン数
         this.mat_block     = false // たたみがえし状態ならtrue
+        this.mega          = false // メガシンカの使用有無
         this.mist          = false // しろいきり状態ならtrue
         this.pray          = [{name: false, position: 0}, {name: false, position: 1}] // 技名(いやしのねがい、みかづきのまいなど)、場所
         this.quick_guard   = false // ファストガード状態ならtrue
@@ -631,18 +633,21 @@ class Field {
         this.wide_guard    = false // ワイドガード状態ならtrue
         this.wildfire      = false // キョダイゴクエン経過ターン数
         this.wish_data     = [{heal: 0, position: 0, turn: 0}, {heal: 0, position:1, turn: 0}] // ねがいごと回復量、場所、経過ターン数
+        this.Zmove         = false // Zワザの使用有無
     }
 
     set myAurora_clay( value )   { this.aurora_clay = value }
     set myAurora_veil( value )   { this.aurora_veil = value }
     set myBaton_pass( value )    { this.baton_pass = value }
     set myCannonade( value )     { this.cannonade = value }
+    set myDynamax( value )       { this.dynamax = value}
     set myExtender( value )      { this.extender = value }
     set myFire_ocean( value )    { this.fire_ocean = value }
     set myLight_clay( value )    { this.light_clay = value }
     set myLight_screen( value )  { this.light_screen = value }
     set myLucky_chant( value )   { this.lucky_chant = value }
     set myMat_block( value )     { this.mat_block = value }
+    set myMega( value )          { this.mega = value }
     set myMist( value )          { this.mist = value }
     set myPray( value )          { this.pray = value }
     set myQuick_guard( value )   { this.quick_guard = value }
@@ -664,17 +669,20 @@ class Field {
     set myWildfire( value )      { this.wildfire = value }
     set myWide_guard( value )    { this.wide_guard = value }
     set myWish_data( value )     { this.wish_data = value }
+    set myZmove( value )         { this.Zmove = value }
 
     get myAurora_clay()   { return this.aurora_clay }
     get myAurora_veil()   { return this.aurora_veil }
     get myBaton_pass()    { return this.Baton_pass }
     get myCannonade()     { return this.cannonade }
+    get myDynamax()       { return this.dynamax }
     get myExtender()      { return this.extender }
     get myFire_ocean()    { return this.fire_ocean }
     get myLight_clay()    { return this.light_clay }
     get myLight_screen()  { return this.light_screen }
     get myLucky_chant()   { return this.lucky_chant }
     get myMat_block()     { return this.mat_block }
+    get myMega()          { return this.mega }
     get myMist()          { return this.mist }
     get myPray()          { return this.pray }
     get myQuick_guard()   { return this.quick_guard }
@@ -696,6 +704,7 @@ class Field {
     get myWide_guard()    { return this.wide_guard }
     get myWildfire()      { return this.wildfire }
     get myWish_data()     { return this.wish_data }
+    get myZmove()         { return this.Zmove }
 
     get myTN() { return this.trainer_name }
 }
