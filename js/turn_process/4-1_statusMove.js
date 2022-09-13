@@ -412,7 +412,8 @@ function statusMoveForExceptForMe(poke) {
             case "ふしょくガス":
                 writeLog(`${tgt.poke.myTN} の ${tgt.poke.myItem} を 溶かした !`)
                 tgt.poke.myItem = ""
-                if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myCondition.myUnburden = true
+                // かるわざ
+                activateUnburden(tgt.poke)
                 break
                 
             case "フラフラダンス":
@@ -734,11 +735,8 @@ function statusMoveForOneOfThem(poke) {
             break
         
         case "すてゼリフ":
-            /*
-            if (isBench(me) && !con.p_con.includes("技『すてゼリフ』　A失敗" ) && !con.p_con.includes("技『すてゼリフ』　C失敗" )) toHand(me, you, con)
-            removeText(con.p_con, "技『すてゼリフ』　A失敗" )
-            removeText(con.p_con, "技『すてゼリフ』　C失敗" )
-            */
+            fieldStatus
+            toHand(poke)
             break
         
         case "スピードスワップ":
@@ -762,9 +760,7 @@ function statusMoveForOneOfThem(poke) {
                 // こだわり解除
                 _poke.myCondition.myChoice = {item: false, ability: false}
                 // かるわざ
-                if ( _poke.myAbility == "かるわざ" && isAbility(_poke) && !_poke.myItem ) {
-                    _poke.myCondition.myUnburden = true
-                }
+                activateUnburden(_poke)
             }
             break
         

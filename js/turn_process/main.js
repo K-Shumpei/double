@@ -184,6 +184,9 @@ function moveUsedEachPokemon() {
         poke.myCondition.myHistory.unshift(poke.myMove)
         poke.myMove = false
 
+        if ( fieldStatus.mySwitch_me ) return
+        if ( fieldStatus.mySwitch_opp ) return
+
 
 
         /*

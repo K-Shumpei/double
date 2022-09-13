@@ -922,7 +922,9 @@ function effectWithDmg_incinerate(poke, tgt) {
 
     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} は 焼き尽くされた !`)
     tgt.poke.myItem = ""
-    if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myCondition.myUnburden = true
+
+    // かるわざ
+    activateUnburden(tgt.poke)
 
     return
 }
@@ -1175,7 +1177,8 @@ function moveEffect_item(poke, tgt) {
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} を はたき落とした !`)
             tgt.poke.myItem = ""
             tgt.poke.myCondition.myChoice = {item: false, ability: false}
-            if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true
+            // かるわざ
+            activateUnburden(tgt.poke)
             return
 
         case "どろぼう":
@@ -1185,7 +1188,8 @@ function moveEffect_item(poke, tgt) {
             poke.myItem = tgt.poke.myItem
             tgt.poke.myItem = ""
             tgt.poke.myCondition.myChoice = {item: false, ability: false}
-            if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true
+            // かるわざ
+            activateUnburden(tgt.poke)
             eatBerryInAbnormal(poke)
             eatBerryInPinch(poke)
             return
@@ -1195,7 +1199,8 @@ function moveEffect_item(poke, tgt) {
             if ( !itemList_berry.includes(tgt.poke.myItem) ) return
             eatBerryImmediately(poke, tgt.poke.myItem)
             tgt.poke.myItem = ""
-            if ( tgt.poke.myAbility == "かるわざ" ) tgt.poke.myUnburden = true
+            // かるわざ
+            activateUnburden(tgt.poke)
             return
     }
 

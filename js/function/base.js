@@ -229,15 +229,12 @@ function enableToRecycle(poke){
         poke.myCondition.myBelch = true // ゲップが使えるようになる
         cheekPouch(poke)                // 特性『ほおぶくろ』
     }
-    if ( poke.myAbility == "かるわざ" ) {
-        poke.myCondition.myUnburden = true
-    }
 
-    const item = poke.myItem
-    poke.myRecycle = item
+    poke.myRecycle = poke.myItem
     poke.myItem = ""
 
-
+    // かるわざ
+    activateUnburden(poke)
 }
 
 
@@ -474,6 +471,15 @@ function isRipen(poke) {
 function isDynamax(poke) {
     if ( poke.myCondition.myDynamax ) return 1 / 2
     return 1
+}
+
+// かるわざ
+function activateUnburden(poke) {
+    if ( !isAbility(poke) ) return
+    if ( poke.myAbility == "かるわざ" ) return
+    if ( poke.myItem ) return
+
+    poke.myCondition.myUnburden = true
 }
 
 // IDによる味方判定
