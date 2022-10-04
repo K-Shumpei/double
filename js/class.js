@@ -365,7 +365,6 @@ class Condition {
         this.roost         = false // はねやすめによりひこうタイプを失ったら　"ノーマル", "first", "second" のどれか
         this.second        = false // こうこうのしっぽ・まんぷくおこう・あとだし - 同じ優先度内で最後に行動する
         this.shadow        = false // シャドーダイブ状態ならtrue
-        this.sheer_force   = false // ちからずくが有効ならtrue
         this.shell_trap    = false // トラップシェル 設置状態なら"set"、行動順繰り上げならtrue、それ以外ならfalse
         this.shields_down  = false // リミットシールド　流星の姿ならtrue
         this.skin          = false // 発動したスキン系の特性、それ以外はfalse
@@ -472,7 +471,6 @@ class Condition {
     set myRoost( value )         { this.roost = value }
     set mySecond( value )        { this.second = value }
     set myShadow( value )        { this.shadow = value }
-    set mySheer_force( value )   { this.sheer_force = value }
     set myShell_trap( value )    { this.shell_trap = value }
     set myShields_down( value )  { this.shields_down = value }
     set mySkin( value )          { this.skin = value }
@@ -578,7 +576,6 @@ class Condition {
     get myRoost()         { return this.roost }
     get mySecond()        { return this.second }
     get myShadow()        { return this.shadow }
-    get mySheer_force()   { return this.sheer_force }
     get myShell_trap()    { return this.shell_trap }
     get myShields_down()  { return this.shields_down }
     get mySkin()          { return this.skin }

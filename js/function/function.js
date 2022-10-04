@@ -13,7 +13,7 @@ function changeHP(poke, damage, pm) {
     showHPbar(poke)
 
     // ひんし宣言 
-    if ( poke.myRest_hp == 0) toHand(poke)
+    if ( poke.myRest_hp == 0 ) toHand(poke)
 }
 
 function changeHPthroughMG(me, you, con, damage) {

@@ -4,10 +4,8 @@
 
 // 追加効果（自分のランクを変化）
 function additionalEffect_myRank(poke, tgt) {
-    const thisMove = additionalEffectToChangeMyRank.filter( move => move.name == poke.myMove.name )
-    if ( thisMove.length === 0 ) return
-
-    const move = thisMove[0]
+    const move = additionalEffectToChangeMyRank.filter( move => move.name == poke.myMove.name )[0]
+    if ( move === undefined ) return
     if ( getRandom() * 100 >= move.probability * isGrace(poke) ) return
 
     for ( const rank of move.rank ) {
@@ -19,10 +17,8 @@ function additionalEffect_myRank(poke, tgt) {
 
 // 追加効果（相手のランク変化）
 function additionalEffect_tgtRank(poke, tgt) {
-    const thisMove = additionalEffectToChangeYourRank.filter( move => move.name == poke.myMove.name )
-    if ( thisMove.length === 0 ) return
-
-    const move = thisMove[0]
+    const move = additionalEffectToChangeYourRank.filter( move => move.name == poke.myMove.name )[0]
+    if ( move === undefined ) return
     if ( getRandom() * 100 >= move.probability * isGrace(poke) ) return
 
     for ( const rank of move.rank ) {
@@ -34,10 +30,8 @@ function additionalEffect_tgtRank(poke, tgt) {
 
 // 追加効果（状態異常）
 function additionalEffect_ailment(poke, tgt) {
-    const thisMove = additionalEffectToMakeAbnormal.filter( move => move.name == poke.myMove.name )
-    if ( thisMove.length === 0 ) return
-
-    const move = thisMove[0]
+    const move = additionalEffectToMakeAbnormal.filter( move => move.name == poke.myMove.name )[0]
+    if ( move === undefined ) return
     if ( getRandom() * 100 >= move.probability * isGrace(poke) ) return
     getAbnormal(tgt.poke, move.ailment)
     
@@ -46,10 +40,8 @@ function additionalEffect_ailment(poke, tgt) {
 
 // 追加効果（ひるみ）
 function additionalEffect_flinch(poke, tgt) {
-    const thisMove = additionalEffectToMakeFlinch.filter( move => move.name == poke.myMove.name )
-    if ( thisMove.length === 0 ) return
-
-    const move = thisMove[0]
+    const move = additionalEffectToMakeFlinch.filter( move => move.name == poke.myMove.name )[0]
+    if ( move === undefined ) return
     if ( tgt.poke.myAbility == "せいしんりょく" && isAbility(tgt.poke) ) return
     if ( getRandom() * 100 >= move.probability * isGrace(poke) ) return
     tgt.poke.myCondition.myFlinch = true
@@ -1101,7 +1093,7 @@ function moveEffect1st_bind(poke, tgt) {
 function moveEffect1st_secretPower(poke, tgt) {
     if ( poke.myMove.name != "ひみつのちから" ) return // 技「ひみつのちから」であること
     if ( tgt.substitute )                     return // みがわりが有効でないこと
-    if ( poke.myCondition.mySheer_force )     return // ちからずくが無効であること
+    if ( isSheerForce(poke) )     return // ちからずくが無効であること
     if ( getRandom() >= 0.3 * isGrace(poke) ) return // 確率の壁
 
 
@@ -1350,7 +1342,7 @@ function moveEffect1st_clearField(poke, tgt) {
 // ねっさのだいち/ねっとう/スチームバーストを受けたことによるこおり状態の回復
 function moveEffect1st_melt(poke, tgt) {
     if ( tgt.poke.myAilment != "こおり" ) return
-    if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
+    if ( isSheerForce(poke) ) return // ちからずくが無効であること
 
     switch ( poke.myMove.name ) {
         case "スチームバースト":
@@ -1387,7 +1379,7 @@ function moveEffect1st_wakeUpSlap(poke, tgt) {
 function moveEffect1st_sparklingAria(poke, tgt) {
     if ( poke.myMove.name != "うたかたのアリア" ) return
     if ( tgt.poke.myAilment != "やけど" ) return
-    if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
+    if ( isSheerForce(poke) ) return // ちからずくが無効であること
     resetAilment(poke)
     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の やけどが治った`)
     return
@@ -1396,7 +1388,7 @@ function moveEffect1st_sparklingAria(poke, tgt) {
 // ぶきみなじゅもんによるPPの減少
 function moveEffect1st_eerieSpell(poke, tgt) {
     if ( poke.myMove.name != "ぶきみなじゅもん" ) return
-    if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
+    if ( isSheerForce(poke) ) return // ちからずくが無効であること
     if ( tgt.poke.myCondition.myHistory === [] ) return // 技を使用していること
 
     const lastMove = tgt.poke.myCondition.myHistory[0].name
@@ -1496,7 +1488,7 @@ function abilityEffect1st_defense(poke, tgt) {
 
     switch ( poke.myAbility ) {
         case "へんしょく":
-            if ( poke.myCondition.mySheer_force )        return // ちからずくが無効であること
+            if ( isSheerForce(poke) )        return // ちからずくが無効であること
             if ( tgt.poke.myType == [poke.myMove.type] ) return // すでに同じタイプでないこと
 
             abilityDeclaration(tgt.poke)
@@ -1523,7 +1515,7 @@ function abilityEffect1st_defense(poke, tgt) {
 function defenseItemEffect3rd_item(poke, tgt) {
     if ( !isItem(tgt.poke) )              return // 対象の持ち物が有効であること
     if ( tgt.poke.myRest_hp == 0 )        return // 対象がひんしでないこと
-    if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
+    if ( isSheerForce(poke) ) return // ちからずくが無効であること
     if ( tgt.substitute )                 return // みがわり状態でないこと
     if ( !tgt.damage )                    return // ダメージを受けていること
 

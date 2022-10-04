@@ -38,13 +38,6 @@ function moveSuccessJudge(poke) {
     // 19.マックスレイドバトルでの失敗
     // 20.特性による失敗
     if ( failureByAbility(poke) ) return false
-
-
-    // 17.トラップシェルが物理技を受けていないことによる失敗
-    if ( shellTrap(poke) ) return false
-    // 18.けたぐり/くさむすび/ヘビーボンバー/ヒートスタンプをダイマックスポケモンに使用したことによる失敗
-    if (dynaWeightFailure(poke)) return false
-    
     // 21.中断されても効果が発動する技
     if ( remainEffectMove(poke) ) return false
     // 22.へんげんじざい/リベロの発動
@@ -501,19 +494,6 @@ function attackDeclaration(poke) {
             if ( !poke.myCondition.myRollout.tgt ) poke.myCondition.myRollout.tgt = poke.myCmd_tgt
             break
     }
-
-    
-
-    
-    /*
-    // ちからずく
-    const addEff = moveEff.additionalEffect()
-    for (let i = 0; i < addEff.length; i++) {
-        if ( poke.myMove.name == addEff[i][0] && atk.con.ability == "ちからずく" && move.name != "なげつける") {
-            atk.con.p_con += "ちからずく有効" + "\n"
-        }
-    }    
-    */
 
     // Zワザは一度しか使用できない
     if ( poke.myZmove ) getMyField(poke).myZmove = true

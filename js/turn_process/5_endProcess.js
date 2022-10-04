@@ -122,7 +122,6 @@ function otherEnd() {
         poke.myCondition.myMagic_coat = false
         // スキン
         poke.myCondition.mySkin = false
-        // ちからずく
         // じごくづき
         if ( poke.myCondition.myThroat_chop == 1 ) poke.myCondition.myThroat_chop = 2
         else if ( poke.myCondition.myThroat_chop == 2 ) poke.myCondition.myThroat_chop = 0

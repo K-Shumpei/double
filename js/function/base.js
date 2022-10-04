@@ -322,6 +322,46 @@ function healAilmentForAbility(poke) {
     }
 }
 
+// ちからずくが有効かどうか
+function isSheerForce(poke) {
+    // 相手のランク補正を下げる。
+    // 自分のランク補正を上げる。
+    // 相手を状態異常・こんらん・ひるみ状態にする。
+    // ねっとう・スチームバースト・ねっさのだいちで相手のこおり状態を治す。
+    // アンカーショット・うたかたのアリア・オリジンズスーパーノヴァ・かげぬい・じごくづき・ひみつのちから・ぶきみなじゅもんの効果。
+    // いにしえのうたでメロエッタがフォルムチェンジする効果。
+
+    if ( !isAbility(poke) ) return false
+    if ( poke.myAbility != "ちからずく" ) return false
+
+
+    const moveList_additionalEffect = []
+        .concat(additionalEffectToChangeYourRank) // 相手のランク補正を下げる
+        .concat(additionalEffectToChangeMyRank)   // 自分のランク補正を上げる
+        .concat(additionalEffectToMakeAbnormal)   // 相手を状態異常・こんらん状態にする（ねっとう・スチームバースト・ねっさのだいちを含む）
+        .concat(additionalEffectToMakeFlinch)     // 相手をひるみ状態にする
+
+    for ( const move of moveList_additionalEffect ) {
+        if ( poke.myMove.name == move.name ) return true
+    }
+
+    switch ( poke.myMove.name ) {
+        case "アンカーショット":
+        case "うたかたのアリア":
+        case "オリジンズスーパーノヴァ":
+        case "かげぬい":
+        case "じごくづき":
+        case "ひみつのちから":
+        case "ぶきみなじゅもん":
+            return true
+
+        case "いにしえのうた":
+            if ( poke.myName != "メロエッタ(ボイスフォルム)" ) return false
+            return true
+    }
+
+}
+
 
 // 連続技の回数
 function getContinuous(poke) {

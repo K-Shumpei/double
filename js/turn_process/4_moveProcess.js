@@ -11,12 +11,14 @@ function processOfAdditionalEffect(poke) {
         isDamage(poke)
         // 2.みがわり状態に攻撃技が防がれたときの効果: 本体がダメージを受けたときの処理(4~9)などより優先される
         substituteBlock(poke)
-        // 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
+        // 3.じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん使用時のダメージ: ひんしになるときは使用者のひんし判定
         dyingDamage(poke)
         // 4.ダメージを本体に与える
         giveDamage(poke)
-        // 5.相性判定のメッセージ
-        declareEffectiveness(poke)
+        // 5.バツグンの相性判定のメッセージ
+        superEffective(poke)
+        // 6.今ひとつの相性判定のメッセージ
+        notVeryEffective(poke)
         // 7.ダメージの判定に関するメッセージ
         damageMassage(poke)
         // 8.ダメージをHP1で耐える効果
@@ -208,10 +210,22 @@ function substituteBlock(poke) {
     }
 }
 
-// 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
+// 3.じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん使用時のダメージ: ひんしになるときは使用者のひんし判定
 function dyingDamage(poke) {
-    // じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん
-    // いのちがけは第五世代ではこの時点、第六世代以降では10-1でひんしとなる。
+    if ( !poke.myCondition.myExplosion ) return
+
+    switch ( poke.myCondition.myExplosion ) {
+        case "full":
+            changeHP(poke, poke.myRest_hp, "-")
+            break
+
+        case "half":
+            const damage = Math.ceil(poke.myFull_hp / 2)
+            changeHP(poke, damage, "-")
+            break
+    }
+
+    poke.myCondition.myExplosion = false
 }
 
 // 4.ダメージを本体に与える
@@ -254,8 +268,8 @@ function giveDamage(poke) {
     }
 }
 
-// 5.相性判定のメッセージ
-function declareEffectiveness(poke) {
+// 5.バツグンの相性判定のメッセージ
+function superEffective(poke) {
     if ( poke.myMove.continuous >= 2 ) return
     // 連続攻撃技のときは12-4.まで相性(4~5)のメッセージは出ない。ただしみがわり状態に防がれたときは1発ごとに相性のメッセージが出る。
     for ( const tgt of poke.myTarget ) {
@@ -263,6 +277,17 @@ function declareEffectiveness(poke) {
         if ( tgt.substitute ) continue // みがわり状態に防がれないこと
 
         if ( tgt.effective > 1 ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に 効果は バツグンだ !`)
+    }
+}
+
+// 6.今ひとつの相性判定のメッセージ
+function notVeryEffective(poke) {
+    if ( poke.myMove.continuous >= 2 ) return
+    // 連続攻撃技のときは12-4.まで相性(4~5)のメッセージは出ない。ただしみがわり状態に防がれたときは1発ごとに相性のメッセージが出る。
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success )   continue // すでに失敗していないこと
+        if ( tgt.substitute ) continue // みがわり状態に防がれないこと
+
         if ( tgt.effective < 1 ) writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に 効果は 今ひとつのようだ......`)
     }
 }
@@ -305,12 +330,9 @@ function remainHP1(poke) {
                 break
             // 4.きあいのタスキ/きあいのハチマキ
             case "きあいのタスキ":
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は きあいのタスキで 持ちこたえた !`)
-                tgt.poke.myCondition.myRemaining_HP1 = false
-                break
-
             case "きあいのハチマキ":
-                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は きあいのハチマキで 持ちこたえた !`)
+                itemDeclaration(poke)
+                writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 攻撃をこらえた !`)
                 tgt.poke.myCondition.myRemaining_HP1 = false
                 break
             // 5.なかよし度: 「<ポケモン>は <プレイヤー>を 悲しませまいと もちこたえた!」
@@ -355,11 +377,14 @@ function additionalEffect(poke) {
         }
     // removeText(con.p_con, "状態変化『がまん』")
 
+    // 1.なげつける使用による持ち物の消費
+    
+    // 2.技の効果
     // 追加効果 (ひみつのちから/オリジンズスーパーノヴァ/ぶきみなじゅもんを除く)
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 ) continue
-        if ( poke.myAbility == "ちからずく" && isAbility(poke) ) continue
+        if ( poke.myAbility == "ちからずく" && isAbility(poke) && poke.myMove.name != "なげつける" ) continue
 
         // 追加効果（自分のランク変化）
         additionalEffect_myRank(poke, tgt)
@@ -376,7 +401,6 @@ function additionalEffect(poke) {
         // 追加効果（その他）
         additionalEffect_other(poke, tgt)
     }
-
 
     // 追加効果以外の効果
     for ( const tgt of poke.myTarget ) {
@@ -431,7 +455,7 @@ function effectWithDmg(poke) {
         // 12.直接攻撃のZワザを守りきれなかったとき、ニードルガード/トーチカ/キングシールドの効果
         // トラップシェルの起爆判定（wikiにない）
         if ( tgt.poke.myCondition.myShell_trap == "set" ) {
-            if ( poke.myMove.nature == "物理" && !poke.myCondition.mySheer_force && spirit ) {
+            if ( poke.myMove.nature == "物理" && !isSheerForce(poke) && spirit ) {
                 tgt.poke.myCondition.myShell_trap = false
             }
         }
@@ -524,12 +548,14 @@ function continuousMove(poke) {
         isDamage(poke)
         // 2.みがわり状態に攻撃技が防がれたときの効果: 本体がダメージを受けたときの処理(4~9)などより優先される
         substituteBlock(poke)
-        // 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
+        // 3.じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん使用時のダメージ: ひんしになるときは使用者のひんし判定
         dyingDamage(poke)
         // 4.ダメージを本体に与える
         giveDamage(poke)
-        // 5.相性判定のメッセージ
-        declareEffectiveness(poke)
+        // 5.バツグンの相性判定のメッセージ
+        superEffective(poke)
+        // 6.今ひとつの相性判定のメッセージ
+        notVeryEffective(poke)
         // 7.ダメージの判定に関するメッセージ
         damageMassage(poke)
         // 8.ダメージをHP1で耐える効果
@@ -626,7 +652,7 @@ function formChangeAbility(poke) {
     switch ( poke.myMove.name ) {
         case "いにしえのうた":
             if ( poke.myName != "メロエッタ(ボイスフォルム)" ) break
-            if ( poke.myCondition.mySheer_force ) break // ちからずくが無効であること
+            if ( isSheerForce(poke) ) break // ちからずくが無効であること
             // if ( con.p_con.includes("状態変化『へんしん』") ) continue
             formChange(poke, "メロエッタ(ステップフォルム)", true)
             break
@@ -660,7 +686,7 @@ function lifeorbShellbell(poke) {
 
     if ( !isItem(poke) ) return // 自分の持ち物が有効であること
     if ( poke.myRest_hp == 0 ) return // 自分がひんしでないこと
-    if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
+    if ( isSheerForce(poke) ) return // ちからずくが無効であること
 
     // いのちのたま
     if ( poke.myItem == "いのちのたま" ) {
@@ -693,10 +719,10 @@ function defenseItemEffect4th(poke) {
     // レッドカードと同時発動した場合は、レッドカードの交代が行われた後、ききかいひの交代先を選ぶ
 function emergencyExit(poke) {
     for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )                   continue // すでに失敗していないこと
-        if ( tgt.poke.myRest_hp == 0 )        continue // 対象がひんしでないこと
-        if ( poke.myCondition.mySheer_force ) continue // ちからずくが無効であること
-        if ( !isAbility(tgt.poke) )           continue // 特性が有効であること
+        if ( !tgt.success )            continue // すでに失敗していないこと
+        if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
+        if ( isSheerForce(poke) )      continue // ちからずくが無効であること
+        if ( !isAbility(tgt.poke) )    continue // 特性が有効であること
         if ( tgt.poke.myRest_hp > tgt.poke.myFull_hp / 2 )               continue // 残りHPが半分以下であること
         if ( tgt.poke.myRest_hp + tgt.damage <= tgt.poke.myFull_hp / 2 ) continue // この攻撃で半分以下になったこと
         if ( tgt.poke.myAbility != "ききかいひ" && tgt.poke.myAbility != "にげごし" ) continue
@@ -743,7 +769,7 @@ function pickPocket(poke) {
 
         if ( tgt.poke.myAbility == "わるいてぐせ" && isAbility(tgt.poke) ) {
             if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
-            if ( poke.myCondition.mySheer_force ) continue // ちからずくが無効であること
+            if ( isSheerForce(poke) ) continue // ちからずくが無効であること
             if ( poke.myItem == "" ) continue // 自分が持ち物を持っていること
             if ( tgt.poke.myItem != "" ) continue // 対象が持ち物を持っていないこと
             if ( poke.myMove.direct == "間接" ) // 直接攻撃であること
@@ -807,7 +833,7 @@ function attackItemEffect(poke) {
 // 28.特性の効果（その2）
 function abilityEffect2nd(poke) {
     // かたやぶり解除（？）
-    
+
     // じゅうなん/すいほう/どんかん/パステルベール/ふみん/マイペース/マグマのよろい/みずのベール/めんえき/やるき
     // かたやぶりの効果で特性を無視されたときに発動し、状態異常/状態変化を治す。
     healAilmentForAbility(poke)
