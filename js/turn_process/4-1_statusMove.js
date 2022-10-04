@@ -119,11 +119,11 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "エレキフィールド":
-            activateTerrain(poke, "electric")
+            activateTerrain(poke, "エレキ")
             break
     
         case "グラスフィールド":
-            activateTerrain(poke, "grassy")
+            activateTerrain(poke, "グラス")
             break
         
         case "くろいきり":
@@ -146,7 +146,7 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "サイコフィールド":
-            activateTerrain(poke, "psychic")
+            activateTerrain(poke, "サイコ")
             break
         
         case "じゅうりょく":
@@ -204,7 +204,7 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "ミストフィールド":
-            activateTerrain(poke, "misty")
+            activateTerrain(poke, "ミスト")
             break
 
         case "みずあそび":
@@ -903,8 +903,8 @@ function statusMoveForOneOfThem(poke) {
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の周りに 粉塵が舞った`)
             break
         
-        case "へんしん": // && !def.con.p_con.includes("みがわり" ) && !def.con.p_con.includes("イリュージョン" )) {
-        // afn.metamon(atk, def)
+        case "へんしん":
+            activateTransform(poke, tgt.poke)
             break
     
         case "まほうのこな":

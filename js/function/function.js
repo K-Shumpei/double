@@ -61,7 +61,6 @@ function changeRank(poke, parameter, change, spirit) {
             writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)
             return false
         }
-        //if (con.ability == "ミラーアーマー" && isAbility(me, con)) return false
         if ( parameter == "atk" && poke.myAbility == "かいりきバサミ" && isAbility(poke) ) {
             abilityDeclaration(poke)
             writeLog(`${poke.myTN} の ${poke.myName} の ${text} は 下がらない !`)

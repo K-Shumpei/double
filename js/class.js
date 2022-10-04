@@ -105,6 +105,9 @@ class Party {
     set mySp_def_ev( value ) { this.sp_def_ev = value }
     set mySpeed_ev( value )  { this.speed_ev = value }
     // 元の情報
+    set myName_org( value )     { this.name_org = value }
+    set myGender_org( value )   { this.gender_org = value }
+    set myLevel_org( value )    { this.level_org = value }
     set myType_org( value )     { this.type_org = value }
     set myAbility_org( value )  { this.ability_org = value }
     set myAtk_org( value )      { this.atk_org = value }
@@ -214,8 +217,11 @@ class Party {
     get mySp_def_ev() { return this.sp_def_ev }
     get mySpeed_ev()  { return this.speed_ev }
     // 元の情報
-    get myAbility_org()  { return this.ability_org }
+    get myName_org()     { return this.name_org }
+    get myGender_org()   { return this.gender_org }
+    get myLevel_org()    { return this.level_org }
     get myType_org()     { return this.type_org }
+    get myAbility_org()  { return this.ability_org }
     get myAtk_org()      { return this.atk_org }
     get myDef_org()      { return this.def_org }
     get mySp_atk_org()   { return this.sp_atk_org }
@@ -296,7 +302,7 @@ class Condition {
         this.confusion     = false // こんらん経過ターン数
         this.curse         = false // のろい状態ならtrue
         this.critical      = false // きゅうしょアップ状態ならtrue
-        this.damage        = {value: 0, party: false, position: false, nature: false} // このターン最後に受けたダメージの情報
+        this.damage        = {value: 0, sum: 0, party: false, position: false, nature: false} // このターン最後に受けたダメージの情報
         this.defense_curl  = false // まるくなる状態ならtrue
         this.destiny_bond  = false // みちづれ みちづれ状態ならtrue、それ以外ならfalse
         this.dig           = false // あなをほる状態ならtrue
@@ -325,6 +331,7 @@ class Condition {
         this.helping_hand  = 0     // てだすけされた回数
         this.history       = []    // 使用した技の履歴
         this.hunger_switch = false // はらぺこスイッチ　はらぺこもようならtrue、まんぷくもようならfalse
+        this.illusion      = {status: false, name: false, gender: false, level: false, type: false} // 特性『イリュージョン』が発動していたらtrue
         this.imprison      = false // ふういん状態ならtrue
         this.ingrain       = false // ねをはる状態ならtrue
         this.landing       = false // 戦闘に出た時にtrueとなり、戦闘に出た時の処理が終わればfalse
@@ -431,6 +438,7 @@ class Condition {
     set myHelping_hand( value )  { this.helping_hand = value }
     set myHistory( value )       { this.history = value }
     set myHunger_switch( value ) { this.hunger_switch = value }
+    set myIllusion( value )      { this.illusion = value }
     set myImprison( value )      { this.imprison = value }
     set myIngrain( value )       { this.ingrain = value }
     set myLanding( value )       { this.landing = value }
@@ -536,6 +544,7 @@ class Condition {
     get myHelping_hand()  { return this.helping_hand }
     get myHistory()       { return this.history }
     get myHunger_switch() { return this.hunger_switch }
+    get myIllusion()      { return this.illusion }
     get myImprison()      { return this.imprison }
     get myIngrain()       { return this.ingrain }
     get myLanding()       { return this.landing }

@@ -47,14 +47,14 @@ function isDamageByFixedDamageMove(poke, tgt){
 
         case "カウンター":
         case "ミラーコート":
-            poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
+            poke.myCondition.myDamage = {value: 0, sum: 0, party: false, position: false, nature: false}
             return poke.myCondition.myDamage.value * 2
 
         case "がまん":
             return poke.myMove.power
 
         case "メタルバースト":
-            poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
+            poke.myCondition.myDamage = {value: 0, sum: 0, party: false, position: false, nature: false}
             return poke.myCondition.myDamage.value * 1.5
 
         case "いのちがけ":

@@ -157,7 +157,7 @@ function landing_other1st_ability(poke){
         case "エレキメイカー":
             if ( fieldStatus.myElectric ) return
             abilityDeclaration(poke)
-            activateTerrain(poke, "electric")
+            activateTerrain(poke, "エレキ")
             return
         
         case "オーラブレイク":
@@ -183,12 +183,15 @@ function landing_other1st_ability(poke){
             return
         
         case "かわりもの":
+            const imposter = getOppParty(poke).filter( _poke => _poke.myPosition == poke.myPosition )[0]
+            if ( imposter === undefined ) return // 対象がいること
+            if ( imposter.myCondition.myTransform ) return  // へんしん状態でないこと
+            if ( imposter.myCondition.mySubstitute ) return // みがわり状態でないこと
+            if ( imposter.myCondition.myIllusion.status ) return // イリュージョン状態でないこと
+
+            abilityDeclaration(poke)
+            activateTransform(poke, imposter)
             return
-            if (you["con" + con.child].p_con.includes("状態変化『みがわり』")) return
-            if (you["con" + con.child].p_con.includes("状態変化『へんしん』")) return
-            if (you["con" + con.child].p_con.includes("状態変化『イリュージョン』")) return
-            if (con.p_con.includes("技『スキルスワップ』")) return
-            metamon(me, you, con)
         
         case "きけんよち":
             if ( !isAnticipation(poke) ) return
@@ -211,13 +214,13 @@ function landing_other1st_ability(poke){
         case "グラスメイカー":
             if ( fieldStatus.myGrassy ) return
             abilityDeclaration(poke)
-            activateTerrain(poke, "grassy")
+            activateTerrain(poke, "グラス")
             return
         
         case "サイコメイカー":
             if ( fieldStatus.myPsychic ) return
             abilityDeclaration(poke)
-            activateTerrain(poke, "psychic")
+            activateTerrain(poke, "サイコ")
             return
             
         case "すなおこし":
@@ -342,7 +345,7 @@ function landing_other1st_ability(poke){
         case "ミストメイカー":
             if ( fieldStatus.myMisty ) return
             abilityDeclaration(poke)
-            activateTerrain(poke, "misty")
+            activateTerrain(poke, "ミスト")
             return
 
         case "ゆきふらし":
@@ -378,58 +381,12 @@ function landing_other1st_ability(poke){
             const forewarnMove = shuffle(forewarn.name)[0]
             writeLog(`${poke.myTN} の ${poke.myName} は ${forewarnMove} を読み取った !`)
             return
-
-        
-        // 状態異常を治す特性
-        case "やるき":
-        case "ふみん":
-            if ( poke.myAilment != "ねむり" ) return
-            abilityDeclaration(poke)
-            resetAilment(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} は 目を覚ました !`)
-            return
-
-        case "めんえき":
-        case "パステルベール":
-            if ( poke.myAilment != "どく" ) return
-            abilityDeclaration(poke)
-            resetAilment(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の 毒が治った !`)
-            return
-        
-        case "じゅうなん":
-            if ( poke.myAilment != "まひ" ) return
-            abilityDeclaration(poke)
-            resetAilment(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の 痺れが取れた !`)
-            return
-        
-        case "みずのベール":
-        case "すいほう":
-            if ( poke.myAilment != "やけど" ) return
-            abilityDeclaration(poke)
-            resetAilment(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の 火傷が治った !`)
-            return
-        
-        case "マグマのよろい":
-            if ( poke.myAilment != "こおり" ) return
-            abilityDeclaration(poke)
-            resetAilment(poke)
-            writeLog(`${poke.myTN} の ${poke.myName} の 氷が溶けた !`)
-            return
-        
-        case "マイペース":
-        case "どんかん":
-            if ( !poke.myCondition.myConfusion ) return
-            abilityDeclaration(poke)
-            poke.myCondition.myConfusion = false
-            writeLog(`${poke.myTN} の ${poke.myName} の 混乱が解けた !`)
-            return
-        
-        default:
-            return
     }
+
+        
+    // 状態異常を治す特性
+    // じゅうなん/すいほう/どんかん/パステルベール/ふみん/マイペース/マグマのよろい/みずのベール/めんえき/やるき
+    healAilmentForAbility(poke)
 }
 
 

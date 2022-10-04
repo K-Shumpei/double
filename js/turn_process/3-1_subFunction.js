@@ -98,7 +98,7 @@ function getNextMove(poke) {
 }
 
 //**************************************************
-// 13.技の仕様による失敗
+// 18.技の仕様による失敗
 //**************************************************
 
 function failureBySpec_spec(poke) {
@@ -145,6 +145,11 @@ function failureBySpec_spec(poke) {
             if ( !poke.myCondition.myDamage.value ) return true // 適格なダメージをそのターンは受けていない
             if ( poke.myParty == poke.myDamage.party ) return true // 味方からのダメージ
             return false
+
+        case "このゆびとまれ":
+        case "いかりのこな":
+            // シングルバトルである
+            return false
         
         case "くちばしキャノン":
             if ( !poke.myCondition.myBeak_blast ) return true // 加熱していない（アンコールで強制された場合など）(wikiにない)
@@ -157,16 +162,24 @@ function failureBySpec_spec(poke) {
         case "たくわえる":
             if ( poke.myCondition.myStockpile == 3 ) return true // たくわえるカウントがすでに3である
             return false
-        
-        case "はきだす":
-        case "のみこむ":
-            if ( poke.myCondition.myStockpile == 0 ) return true // たくわえるカウントが0である
+
+        case "テレポート":
+            if ( !isBench(poke) ) return true // 交代できる味方がいない
             return false
         
         case "とっておき":
             if ( !moveList.includes("とっておき") ) return true // 覚えているわざにとっておきがない
             if ( moveList.filter( move => !move ).length === 1 ) return true // とっておき以外の技を覚えていない
             // 使用されてない技がある　がまだ
+            return false
+
+        case "トラップシェル":
+            if ( poke.myCondition.myShell_trap == "set" ) return true
+            return false
+
+        case "はきだす":
+        case "のみこむ":
+            if ( poke.myCondition.myStockpile == 0 ) return true // たくわえるカウントが0である
             return false
 
         case "ほおばる":
@@ -180,9 +193,9 @@ function failureBySpec_spec(poke) {
             if ( poke.myMove.name == "なげつける" && poke.myItem.includes("ジュエル") ) return true // 不適格な持ち物である
             return false
         
+        case "ねこだまし":
         case "たたみがえし":
         case "であいがしら":
-        case "ねこだまし":
             if ( !history ) return false // 行動していない
             if ( history.length == 1 && activateOtherMove.includes(history[0].name) && history[0].success ) return false // 他の技が出る技で出た
             return true
@@ -244,10 +257,6 @@ function failureBySpec_spec(poke) {
             }
             return false
         
-        case "もえつきる":
-            if ( !poke.myType.includes("ほのお") ) return true // 使用者がほのおタイプではない
-            return false
-        
         case "いびき":
         case "ねごと":
             if ( poke.myAilment == "ねむり" ) return false
@@ -272,13 +281,21 @@ function failureBySpec_spec(poke) {
             if ( poke.myAbility == "リーフガード" && isAbility(poke) && isSunny(poke) ) return true
 
             return false
+
+        case "けたぐり":
+        case "くさむすび":
+        case "ヘビーボンバー":
+        case "ヒートスタンプ":
+            if ( !poke.myTarget ) return false
+            if ( poke.myTarget[0].poke.myCondition.myDynamax ) return true
+            return false
     }
 
     return false
 }
 
 //**************************************************
-// 19.特性による失敗
+// 20.特性による失敗
 //**************************************************
 
 function failureByAbility_ability(poke) {
@@ -571,7 +588,7 @@ function invalidByComp_comp(poke, tgt) {
 }
 
 //**************************************************
-// 40,ふゆうによる無効化
+// 40.ふゆうによるじめん技の無効化
 //**************************************************
 
 function invalidByLevitate1st_levitate(poke, tgt) {
@@ -586,7 +603,7 @@ function invalidByLevitate1st_levitate(poke, tgt) {
 }
 
 //**************************************************
-// 41.でんじふゆう/テレキネシス/ふうせんによる無効化
+// 41.でんじふゆう/テレキネシス/ふうせんによるじめん技の無効化
 //**************************************************
 
 function invalidByLevitate2nd_other(poke, tgt) {
@@ -657,6 +674,10 @@ function invalidByType1st_type(poke, tgt) {
     if ( tgt.poke.myType.includes("こおり") ) {
         if ( poke.myMove.name == "ぜったいれいど" ) return true
     }
+    // ひこうタイプ: フリーフォールの無効化
+    if ( tgt.poke.myType.includes("ひこう") ) {
+        if ( poke.myMove.name == "フリーフォール" ) return true
+    }
 
     return false
 }
@@ -692,7 +713,7 @@ function invalidBySpec1st_spec(poke, tgt) {
 }
 
 //**************************************************
-// 46.技の仕様による無効化(その2)
+// 47.技の仕様による無効化(その2)
 //**************************************************
 
 // 重複による無効化
@@ -711,26 +732,18 @@ function invalidBySpec2nd_duplicate(poke, tgt) {
             if ( tgt.poke.myCondition.myTorment ) return true // 対象がすでにいちゃもん状態である
             return false
 
-        case "とぎすます":
-            if ( tgt.poke.myCondition.myLaser_focus ) return true // 自身がすでにとぎすます状態である　（wikiにはなかった）
+        case "さしおさえ":
+            if ( tgt.poke.myCondition.myEmbargo ) return true // 対象がすでにさしおさえ状態である
+            if ( tgt.poke.myItem == "" ) return true
             return false
-        
-        case "かぎわける":
-        case "みやぶる":
-        case "ミラクルアイ":
-            if ( tgt.poke.myCondition.myForesight ) return true // 対象がすでにみやぶられている状態である　（wikiにはなかった）
+
+        case "テレキネシス":
+            if ( tgt.poke.myCondition.myTelekinesis ) return true // 対象がすでにテレキネシス状態である
             return false
-        
-        case "ほごしょく":
-            if ( fieldStatus.myGrassy   && poke.myType.includes("くさ") ) return true // 自身が同じタイプを持っている (wikiにない)
-            if ( fieldStatus.myElectric && poke.myType.includes("でんき") ) return true
-            if ( fieldStatus.myMisty    && poke.myType.includes("フェアリー") ) return true
-            if ( fieldStatus.myPsychic  && poke.myType.includes("エスパー") ) return true
-            if ( !( fieldStatus.myGrassy || fieldStatus.myElectric || fieldStatus.myMisty || fieldStatus.myPsychic ) && poke.myType.includes("ノーマル")) return true
-            return false
-        
+
         case "なやみのタネ":
             if ( tgt.poke.myAbility == "ふみん" ) return true // 対象がすでにふみんである
+            if ( tgt.poke.myAbility == "なまけ" ) return true // 対象がすでになまけである
             return false
 
         case "ねをはる":
@@ -740,9 +753,14 @@ function invalidBySpec2nd_duplicate(poke, tgt) {
         case "ほろびのうた":
             if ( tgt.poke.myCondition.myPerish_song ) return true // 対象がすでにほろびのうた状態である
             return false
+     
+        case "みやぶる":
+        case "かぎわける":
+            if ( tgt.poke.myCondition.myForesight ) return true // 対象がすでにみやぶられている状態である
+            return false
 
         case "ミラクルアイ":
-            if ( tgt.poke.myCondition.myMiracle_eye ) return true // 対象がすでにミラクルアイ状態である
+            if ( tgt.poke.myCondition.myMiracle_eye) return true // 対象がすでにミラクルアイ状態である
             return false
 
         case "メロメロ":
@@ -752,33 +770,51 @@ function invalidBySpec2nd_duplicate(poke, tgt) {
         case "やどりぎのタネ":
             if ( tgt.poke.myCondition.myLeech_seed ) return true // 対象がすでにやどりぎのタネ状態である
             return false
-    }
-}
 
-// 状態異常にする変化技
-function invalidBySpec2nd_ailment(poke, tgt) {
-    for ( const element of moveList_status_ailment ) {
-        if ( poke.myMove.name == element.name ) {
-            // 対象がすでにこんらんになっている
-            if ( element.ailment == "こんらん" && tgt.poke.myCondition.myConfusion ) return true
-            // 対象がすでに同じ・別の状態異常になっている
-            if ( element.ailment != "こんらん" && tgt.poke.myAilment ) return true
-        }
+        case "とぎすます":
+            if ( tgt.poke.myCondition.myLaser_focus ) return true // 自身がすでにとぎすます状態である　（wikiにはなかった）
+            return false
+    
+        case "ほごしょく":
+            if ( fieldStatus.myGrassy   && poke.myType.includes("くさ") ) return true // 自身が同じタイプを持っている (wikiにない)
+            if ( fieldStatus.myElectric && poke.myType.includes("でんき") ) return true
+            if ( fieldStatus.myMisty    && poke.myType.includes("フェアリー") ) return true
+            if ( fieldStatus.myPsychic  && poke.myType.includes("エスパー") ) return true
+            if ( !( fieldStatus.myGrassy || fieldStatus.myElectric || fieldStatus.myMisty || fieldStatus.myPsychic ) && poke.myType.includes("ノーマル")) return true
+            return false
     }
+
+    // 状態異常にする変化技
+    for ( const element of moveList_status_ailment ) {
+        if ( poke.myMove.name != element.name ) continue
+
+        // 対象がすでにこんらんになっている
+        if ( element.ailment == "こんらん" && tgt.poke.myCondition.myConfusion ) return true
+        // 対象がすでに同じ・別の状態異常になっている
+        if ( element.ailment != "こんらん" && tgt.poke.myAilment ) return true
+    }
+
     return false
+
 }
 
 // ランク補正に関する無効化
 function invalidBySpec2nd_rank(poke, tgt) {
-    const rankMove = statusMoveToChangeRankForOneOfThem.concat(statusMoveToChangeRankForMe, statusMoveToChangeRankForAllOfUs, statusMoveToChangeRankForAllOfYou)
+    // ランク変化を付与する技リスト
+    const rankMove = [].concat(
+            statusMoveToChangeRankForMe,       // 対象が「自分」
+            statusMoveToChangeRankForAllOfUs,  // 対象が「味方全体」
+            statusMoveToChangeRankForAllOfYou, // 対象が「相手全体」
+            statusMoveToChangeRankForOneOfThem // 対象が「1体選択」
+        )
+
     for ( const element of rankMove ) {
-        if ( poke.myMove.name == element.name ) {
-            for ( const rank of element.rank ) {
-                if ( rank.change > 0 && tgt.poke[`myRank_${rank.parameter}`] != 6 )  return false // ランク補正を上げる変化技: ランクがすでに最大である
-                if ( rank.change < 0 && tgt.poke[`myRank_${rank.parameter}`] != -6 ) return false // ランク補正を下げる変化技: ランクがすでに最低である
-            }
-            return true
+        if ( poke.myMove.name != element.name ) continue
+        for ( const rank of element.rank ) {
+            if ( rank.change > 0 && tgt.poke[`myRank_${rank.parameter}`] != 6 )  return false // ランク補正を上げる変化技: ランクがすでに最大である
+            if ( rank.change < 0 && tgt.poke[`myRank_${rank.parameter}`] != -6 ) return false // ランク補正を下げる変化技: ランクがすでに最低である
         }
+        return true
     }
 
     switch ( poke.myMove.name ) {
@@ -793,6 +829,7 @@ function invalidBySpec2nd_rank(poke, tgt) {
             if ( myPokeInBattle(poke).length == 1 ) return true // シングルバトルである/対象となる味方がいない
             return false
         
+        case "ソウルビート":
         case "はいすいのじん":
             if ( tgt.poke.myRank_atk    != 6 ) return false
             if ( tgt.poke.myRank_def    != 6 ) return false
@@ -849,7 +886,7 @@ function invalidBySpec2nd_other(poke, tgt) {
 }
 
 //**************************************************
-// 47.タイプによる技の無効化(その2)
+// 48.タイプによる技の無効化(その2)
 //**************************************************
 
 // タイプによる無効化
@@ -882,7 +919,7 @@ function invalidByType2nd_type(poke, tgt) {
 }
 
 //**************************************************
-// 48.さわぐによるねむりの無効化
+// 49.さわぐ状態によるねむりの無効化
 //**************************************************
 
 // さわぐ状態のポケモンがいる時、ねむり状態とねむけ状態にならない
@@ -893,14 +930,14 @@ function invalidByUproar_uproar(poke, tgt) {
     if ( !isUproar() ) return false // さわぐ状態のポケモンがいること
     if ( poke.myMove.name == "ねむる" ) return true
     if ( poke.myMove.name == "あくび" ) return true
-    if ( thisMove.length === 0 ) return false // 眠り状態を付与する変化技であること
+    if ( thisMove.length === 1 ) return true // 眠り状態を付与する変化技であること
 
-    return true
+    return false
 
 }
 
 //**************************************************
-// 49.しんぴのまもり状態による無効化
+// 50.しんぴのまもり状態による無効化
 //**************************************************
 
 function invalidBySafeguard_safeguard(poke, tgt) {
@@ -917,7 +954,7 @@ function invalidBySafeguard_safeguard(poke, tgt) {
 }
 
 //**************************************************
-// 50.エレキフィールド/ミストフィールド状態による状態異常の無効化
+// 51.エレキフィールド/ミストフィールド状態による状態異常の無効化
 //**************************************************
 
 // エレキフィールド（ねむけ状態も防げる）
@@ -946,7 +983,7 @@ function invalidByTerrain2nd_misty(poke, tgt) {
 }
 
 //**************************************************
-// 51.みがわり状態によるランク補正を下げる技/デコレーションの無効化
+// 52.みがわり状態によるランク補正を下げる技/デコレーションの無効化
 //**************************************************
 
 function invalidBySub1st_rank(poke, tgt) {
@@ -961,7 +998,7 @@ function invalidBySub1st_rank(poke, tgt) {
 }
 
 //**************************************************
-// 52.しろいきりによる無効化
+// 53.しろいきりによるランク補正を下げる技の無効化
 //**************************************************
 
 function invalidByMist_mist(poke, tgt) {
@@ -976,7 +1013,7 @@ function invalidByMist_mist(poke, tgt) {
 }
 
 //**************************************************
-// 53.特性による無効化(その3)
+// 54.特性による無効化(その3)
 //**************************************************
 
 // フラワーベール　ランクを下げられない　状態異常・ねむけ状態にならない
@@ -1102,7 +1139,7 @@ function invalidByAbility3rd_other(poke, tgt) {
 }
 
 //**************************************************
-// 54.命中判定による技の無効化
+// 55.命中判定による技の無効化
 //**************************************************
 
 function invalidByAccuracy_accuracy(poke, tgt) {
@@ -1228,7 +1265,7 @@ function invalidByAccuracy_accuracy(poke, tgt) {
 
 
 //**************************************************
-// 59.みがわりによるランク補正を変動させる効果以外の無効化
+// 61.みがわりによるランク補正を変動させる効果以外の無効化
 //**************************************************
 
 function invalidBySub2nd_other(poke, tgt) {
@@ -1240,7 +1277,7 @@ function invalidBySub2nd_other(poke, tgt) {
 }
 
 //**************************************************
-// 62.技の仕様による無効化(その3)
+// 64.技の仕様による無効化(その3)
 //**************************************************
 
 // 特性に関する無効化
@@ -1485,11 +1522,6 @@ function invalidBySpec3rd_duplicate(poke, tgt) {
             if ( tgt.poke.myCondition.myHeal_block ) return true // 対象がすでにかいふくふうじ状態である
             return false
         
-        case "さしおさえ":
-            if ( tgt.poke.myCondition.myEmbargo ) return true // 対象がすでにさしおさえ状態である　（wikiにない）
-            if ( tgt.poke.myItem == "" ) return true
-            return false
-        
         case "スポットライト":
             for ( const spot of getMyField(tgt.poke).mySpotlight ) {
                 if ( spot.position == tgt.poke.myPosition ) return true // 対象がすでにちゅうもくのまと状態である（wikiにない）
@@ -1498,10 +1530,6 @@ function invalidBySpec3rd_duplicate(poke, tgt) {
         
         case "ちょうはつ":
             if ( tgt.poke.myCondition.myTaunt ) return true // 対象がすでにちょうはつ状態である
-            return false
-        
-        case "テレキネシス":
-            if ( tgt.poke.myCondition.myTelekinesis ) return true // 対象がすでにテレキネシス状態である　（wikiにない）
             return false
         
         case "でんじふゆう":
@@ -1651,7 +1679,6 @@ function invalidBySpec3rd_other(poke, tgt) {
         case "バトンタッチ":
         case "いやしのねがい":
         case "みかづきのまい":
-        case "テレポート":
             if ( !isBench(poke) ) return true // 交代できる味方がいない
             return false
         
@@ -1683,8 +1710,10 @@ function invalidBySpec3rd_other(poke, tgt) {
             return false
         
         case "へんしん":
-            if ( poke.myCondition.myTransform )     return true // 自身がすでにへんしん状態である
-            if ( tgt.poke.myCondition.myTransform ) return true // 対象がすでにへんしん状態である
+            if ( poke.myCondition.myTransform )           return true // 自身がすでにへんしん状態である
+            if ( tgt.poke.myCondition.myTransform )       return true // 対象がすでにへんしん状態である
+            if ( tgt.poke.myCondition.mySubstitute )      return true // 対象がみがわり状態である
+            if ( tgt.poke.myCondition.myIllusion.status ) return true // 対象がイリュージョン状態である
             return false
         
         case "トリック":

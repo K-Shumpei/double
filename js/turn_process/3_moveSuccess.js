@@ -1,9 +1,6 @@
 function moveSuccessJudge(poke) {
     // 0.技の決定
     decideMove(poke)
-    // con.tgt に　リストで対象がセットされる
-    // isTarget(me, you, con)
-
     // 1.フリーフォールで行動順を飛ばされる
     if ( skyDropFailure(poke) ) return false
     // 2.(自身のおんねん/いかり状態の解除)
@@ -15,52 +12,53 @@ function moveSuccessJudge(poke) {
     ZpowerActivation(poke)
     // 6.他の技が出る技により技を置き換え、(3-8~10)の行程を繰り返す
     if ( moveReplace(poke) ) return false
-    // 7.特性バトルスイッチによるフォルムチェンジ
-    battleSwitch(poke)
-    // 8.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
-    attackDeclaration(poke)
-    // 9.わざのタイプが変わる。1→2→3の順にタイプが変わる
-    moveTypeChange(poke)
-    // 10.技の対象が決まる。若い番号の対象が優先される
-    decideTarget(poke)
-    // 11.PPが適切な量引かれる (プレッシャーの効果が考慮される)
-    PPDecrease(poke)
-    // 12.こだわり系アイテム/ごりむちゅうで技が固定される
-    commitmentRock(poke)
-    // 13.技の仕様による失敗
-    if ( failureBySpec(poke) ) return false
-    // 14.自分のこおりを回復するわざにより自身のこおり状態が治る
+    // 7.自分のこおりを回復するわざにより自身のこおり状態が治る
     selfMeltCheck(poke)
+    // 8.特性バトルスイッチによるフォルムチェンジ
+    battleSwitch(poke)
+    // 9.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
+    attackDeclaration(poke)
+    // 10.わざのタイプが変わる。1→2→3の順にタイプが変わる
+    moveTypeChange(poke)
+    // 11.技の対象が決まる。若い番号の対象が優先される
+    decideTarget(poke)
+    // 12.PPが適切な量引かれる (プレッシャーの効果が考慮される)
+    PPDecrease(poke)
+    // 13.こだわり系アイテム/ごりむちゅうで技が固定される
+    commitmentRock(poke)
+    // 14.ほのおタイプではないことによるもえつきるの失敗
+    if ( burnUpFailure(poke) ) return false
     // 15.おおあめ/おおひでりによる技の失敗
-    if ( greatWeatherFailure(poke) ) {
-        removeText(con.p_con, "溜め技")
-        removeText(con.p_con, "姿を隠す")
-        return false
-    }
+    if ( greatWeatherFailure(poke) ) return false
     // 16.ふんじんによるほのお技の失敗とダメージ
     if ( powderFailure(poke) ) return false
+    // 17.ミクルのみによる命中補正効果が消費される
+    // 18.技の仕様による失敗
+    if ( failureBySpec(poke) ) return false
+    // 19.マックスレイドバトルでの失敗
+    // 20.特性による失敗
+    if ( failureByAbility(poke) ) return false
+
+
     // 17.トラップシェルが物理技を受けていないことによる失敗
     if ( shellTrap(poke) ) return false
     // 18.けたぐり/くさむすび/ヘビーボンバー/ヒートスタンプをダイマックスポケモンに使用したことによる失敗
     if (dynaWeightFailure(poke)) return false
-    // 19.特性による失敗
-    if ( failureByAbility(poke) ) return false
-    // 20.中断されても効果が発動する技
+    
+    // 21.中断されても効果が発動する技
     if ( remainEffectMove(poke) ) return false
-    // 21.へんげんじざい/リベロの発動
+    // 22.へんげんじざい/リベロの発動
     proteanLibero(poke)
-    // 22.溜め技の溜めターンでの動作
+    // 23.溜め技の溜めターンでの動作
     if (accumulateOperation(poke)) return false
-    // 23.待機中のよこどりで技が盗まれる。技を奪ったポケモンは13-15の行程を繰り返す
-    // 24.だいばくはつ/じばく/ミストバーストによるHP消費が確約される
+    // 24.待機中のよこどりで技が盗まれる。技を奪ったポケモンは3-9~11の行程を繰り返す
+    // 25.だいばくはつ/じばく/ミストバーストによるHP消費が確約される
     promiseToChangeHP(poke)
-    // 26.だいばくはつ/じばく/ミストバーストの使用者は対象が不在でもHPを全て失う。使用者がひんしになっても攻撃は失敗しない
-    selfDestruction(poke)
-    // 25.対象のポケモンが全員すでにひんしになっていて場にいないことによる失敗
+    // 26.対象のポケモンが全員すでにひんしになっていて場にいないことによる失敗
     if ( faintedFailure(poke) ) return false
-    // 27.ビックリヘッド/てっていこうせんの使用者はHPを50%失う。対象が不在なら失わない。使用者がひんしになっても攻撃が失敗しない
+    // 27.ビックリヘッド/てっていこうせん使用によるHP消費が確約される
     mindblownStealbeam(poke)
-    // 28.マグニチュード使用時は威力が決定される
+    // 28.マグニチュードの大きさ（威力）が決定
     magnitude(poke)
     // 29.姿を隠していることによる無効化
     if ( invalidByHide(poke) ) return false
@@ -84,11 +82,11 @@ function moveSuccessJudge(poke) {
     if ( invalidByAbility1st(poke) ) return false
     // 39.相性による無効化
     if ( invalidByComp(poke) ) return false
-    // 40,ふゆうによる無効化
+    // 40.ふゆうによるじめん技の無効化
     if ( invalidByLevitate1st(poke) ) return false
-    // 41.でんじふゆう/テレキネシス/ふうせんによる無効化
+    // 41.でんじふゆう/テレキネシス/ふうせんによるじめん技の無効化
     if ( invalidByLevitate2nd(poke) ) return false
-    // 42.ぼうじんゴーグルによる無効化
+    // 42.ぼうじんゴーグルによる粉技の無効化
     if ( invalidByPowderGoggle(poke) ) return false
     // 43.特性による無効化(その2)
     if ( invalidByAbility2nd(poke) ) return false
@@ -96,41 +94,43 @@ function moveSuccessJudge(poke) {
     if ( invalidByType1st(poke) ) return false
     // 45.技の仕様による無効化(その1)
     if ( invalidBySpec1st(poke) ) return false
-    // 46.技の仕様による無効化(その2)
+    // 46.ふしぎなバリアに対し「不思議なバリアに 守られて 技の 影響を 受けない!」のメッセージが出る変化技の無効化
+    // 47.技の仕様による無効化(その2)
     if ( invalidBySpec2nd(poke) ) return false
-    // 47.タイプによる技の無効化(その2)
+    // 48.タイプによる技の無効化(その2)
     if ( invalidByType2nd(poke) ) return false
-    // 48.さわぐによるねむりの無効化
+    // 49.さわぐ状態によるねむりの無効化
     invalidByUproar(poke)
-    // 49.しんぴのまもり状態による無効化
+    // 50.しんぴのまもり状態による無効化
     if ( invalidBySafeguard(poke) ) return false
-    // 50.エレキフィールド/ミストフィールド状態による状態異常の無効化
+    // 51.エレキフィールド/ミストフィールド状態による状態異常の無効化
     if ( invalidByTerrain2nd(poke) ) return false
-    // 51.みがわり状態によるランク補正を下げる技/デコレーションの無効化
+    // 52.みがわり状態によるランク補正を下げる技/デコレーションの無効化
     if ( invalidBySub1st(poke) ) return false
-    // 52.しろいきりによる無効化
+    // 53.しろいきりによるランク補正を下げる技の無効化
     if ( invalidByMist(poke) ) return false
-    // 53.特性による無効化(その3)
+    // 54.特性による無効化(その3)
     if ( invalidByAbility3rd(poke) ) return false
-    // 54.命中判定による技の無効化
+    // 55.命中判定による技の無効化
     if ( invalidByAccuracy(poke) ) return false
-    // 55.シャドースチールで対象のランク補正を吸収する
+    // 56.シャドースチールで対象のランク補正を吸収する
     spectralThief(poke)
-    // 56.対応するタイプの攻撃技の場合ジュエルが消費される
+    // 57.対応するタイプのジュエルが発動する
     useJuwel(poke)
-    // 57. かわらわり/サイコファング/ネコにこばんの効果が発動する
+    // 58.かわらわり/サイコファング/ネコにこばんの効果が発動する
     wallBreak(poke)
-    // 58. ポルターガイストで対象のもちものが表示される
+    // 59.さわぐによりねむり状態のポケモンが起きる
+    // 60.ポルターガイストで対象の持ち物が表示される
     poltergeist(poke)
-    // 59.みがわりによるランク補正を変動させる効果以外の無効化
+    // 61.みがわりによるランク補正を変動させる効果以外の無効化
     if ( invalidBySub2nd(poke) ) return false
-    // 60.ミラーアーマー: ランクを下げる変化技の反射
+    // 62.ミラーアーマー: ランクを下げる変化技の反射
     if ( millorArmer(poke) ) return false
-    // 61.ほえる・ふきとばしの無効化
+    // 63.ほえる/ふきとばしの無効化
     if ( roarWhirlwind(poke) ) return false
-    // 62.技の仕様による無効化(その3)
+    // 64.技の仕様による無効化(その3)
     if ( invalidBySpec3rd(poke) ) return false
-    // 63.アロマベール: かなしばり/アンコール/ちょうはつ状態の無効化
+    // 65.アロマベール: かなしばり/アンコール/ちょうはつ状態の無効化
     if ( alomaVeilInvalidation(poke) ) return false
 
     return true
@@ -351,6 +351,8 @@ function actionFailure(poke) {
     }
 }
 
+// 4.ねごと/いびき使用時「ぐうぐう 眠っている」メッセージ
+
 // 5.Zワザの場合はZパワーを送る。Z変化技の場合は付加効果
 function ZpowerActivation(poke) {
     // Z技にチェックがなければ何もしない
@@ -395,17 +397,18 @@ function ZpowerActivation(poke) {
 
 // 6.他の技が出る技により技を置き換え、(3-9~11)の行程を繰り返す
     // オウムがえし/さきどりのコピーできない技だった場合は失敗
+    // ねごとで出せる技が無いときは失敗
 function moveReplace(poke) {
     const moveName = getNextMove(poke)
     // 他の技が出る技ではない時
     if ( moveName === null ) return false
 
-    // 8.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
+    // 9.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
     attackDeclaration(poke)
-    // 9.わざのタイプが変わる。1→2→3の順にタイプが変わる
+    // 10.わざのタイプが変わる。1→2→3の順にタイプが変わる
     moveTypeChange(poke)
-    // 10.技の対象が決まる。若い番号の対象が優先される
-    // 11.PPが適切な量引かれる (プレッシャーの効果が考慮される)
+    // 11.技の対象が決まる。若い番号の対象が優先される
+    // 12.PPが適切な量引かれる (プレッシャーの効果が考慮される)
     PPDecrease(poke)
 
     // 他の技が出た時
@@ -441,7 +444,15 @@ function moveReplace(poke) {
     }
 }
 
-// 7.特性バトルスイッチによるフォルムチェンジ
+// 7.自分のこおりを回復するわざにより自身のこおり状態が治る
+function selfMeltCheck(poke) {
+    if ( poke.myAilment == "こおり" && meltFrozen.includes(poke.myMove.name) ) {
+        writeLog(`${poke.myMove.name} でこおりがとけた !`)
+        resetAilment(poke)
+    }
+}
+
+// 8.特性バトルスイッチによるフォルムチェンジ
 function battleSwitch(poke) {
     // バトルスイッチでなければスルー
     if ( poke.myAbility != "バトルスイッチ" ) return
@@ -460,7 +471,8 @@ function battleSwitch(poke) {
     }
 }
 
-// 8.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
+// 9.「<ポケモン>の <技>!」のメッセージ。PPが減少することが確約される
+// 減らされるのは12
 function attackDeclaration(poke) {
 
     // シャドーレイ、フォトンゲイザー: 対象の特性を攻撃処理の終わりまで無くす
@@ -509,7 +521,7 @@ function attackDeclaration(poke) {
 
 
 
-// 9.わざのタイプが変わる。1→2→3の順にタイプが変わる
+// 10.わざのタイプが変わる。1→2→3の順にタイプが変わる
 function moveTypeChange(poke) {
     // 1.技のタイプを変える特性の効果
     if ( !moveList_changeType.includes(poke.myMove.name) && isAbility(poke) ) {
@@ -621,7 +633,7 @@ function moveTypeChange(poke) {
     if ( fieldStatus.myIon_deluge && poke.myMove.type == "ノーマル" ) poke.myMove.type = "でんき"
 }
 
-// 10.技の対象が決まる。若い番号の対象が優先される
+// 11.技の対象が決まる。若い番号の対象が優先される
 function decideTarget(poke) {
     const target = isTarget(poke)
     for ( const tgt of target ) {
@@ -640,7 +652,7 @@ function decideTarget(poke) {
     poke.myMove.continuous = getContinuous(poke)
 }
 
-// 11.PPが適切な量引かれる (プレッシャーの効果が考慮される)
+// 12.PPが適切な量引かれる (プレッシャーの効果が考慮される)
 function PPDecrease(poke) {
     // 以下の場合はPPが減らない
     if ( poke.myCondition.myThrash.name )       return // あばれる状態
@@ -651,13 +663,20 @@ function PPDecrease(poke) {
     const PP = poke[`myRest_pp_${poke.myCmd_move}`]
     let count = 1
 
-    const target = ( poke.myMove.target == "全体の場" || poke.myMove.target == "相手の場" )? oppPokeInBattle(poke) : poke.myTarget
-
-    for ( const tgt of target ) {
+    for ( const tgt of poke.myTarget ) {
         if ( !isAbility(tgt.poke) ) continue
         if ( tgt.poke.myAbility != "プレッシャー" ) continue
-        if ( tgt.poke.myParty != poke.myParty ) continue
+        if ( tgt.poke.myParty == poke.myParty ) continue
         count += 1
+    }
+
+    if ( poke.myMove.target == "全体の場" || poke.myMove.target == "相手の場" ) {
+        for ( const tgt of oppPokeInBattle(poke) ) {
+            if ( !isAbility(tgt) ) continue
+            if ( tgt.myAbility != "プレッシャー" ) continue
+            if ( tgt.myParty == poke.myParty ) continue
+            count += 1
+        }
     }
 
     poke[`myRest_pp_${poke.myCmd_move}`] = Math.max(PP - count, 0)
@@ -675,7 +694,7 @@ function PPDecrease(poke) {
     */
 }
 
-// 12.こだわり系アイテム/ごりむちゅうで技が固定される
+// 13.こだわり系アイテム/ごりむちゅうで技が固定される
 function commitmentRock(poke) {
     // 以下の状況ではこだわらない
     if ( poke.myCondition.myChoice )  return // すでにこだわっている時
@@ -701,23 +720,15 @@ function commitmentRock(poke) {
     }
 }
 
-// 13.技の仕様による失敗
-function failureBySpec(poke) {
-    if ( failureBySpec_spec(poke) ) {
-        writeLog(`しかし うまく決まらなかった....`)
-        return true
-    }
-    return false
-}
+// 14.ほのおタイプではないことによるもえつきるの失敗
+function burnUpFailure(poke) {
+    if ( poke.myMove.name != "もえつきる" ) return false
+    if ( poke.myType.includes("ほのお") ) return false
 
-// 14.自分のこおりを回復するわざにより自身のこおり状態が治る
-function selfMeltCheck(poke) {
-    if ( poke.myAilment == "こおり" && meltFrozen.includes(poke.myMove.name) ) {
-        writeLog(`${poke.myMove.name} でこおりがとけた !`)
-        resetAilment(poke)
-    }
+    writeLog(`しかし うまく決まらなかった....`)
+    return true
 }
-
+        
 // 15.おおあめ/おおひでりによる技の失敗
 function greatWeatherFailure(poke) {
     if ( !isWeather() ) return false
@@ -744,35 +755,20 @@ function powderFailure(poke) {
     }
 }
 
-// 17.トラップシェルが物理技を受けていないことによる失敗
-function shellTrap(poke) {
-    if ( poke.myMove.name != "トラップシェル" ) return false
-    if ( poke.myCondition.myShell_trap == "set" ) {
-        poke.myCondition.myShell_trap = false
-        writeLog(`しかし トラップシェルは 不発に終わった !`)
+// 17.ミクルのみによる命中補正効果が消費される
+
+// 18.技の仕様による失敗
+function failureBySpec(poke) {
+    if ( failureBySpec_spec(poke) ) {
+        writeLog(`しかし うまく決まらなかった....`)
         return true
     }
-    if ( poke.myCondition.myShell_trap == true ) {
-        poke.myCondition.myShell_trap = false
-        return false
-    }
-    writeLog(`しかし うまく決まらなかった....`)
-    return true
+    return false
 }
 
-// 18.けたぐり/くさむすび/ヘビーボンバー/ヒートスタンプをダイマックスポケモンに使用したことによる失敗
-function dynaWeightFailure(poke) {
-    if ( !referToWeight.includes(poke.myMove.name) ) return false
-    if ( !poke.myTarget ) return false
-    if ( poke.myTarget[0].poke.myCondition.myDynamax ) {
-        writeLog(`${poke.myTN} の ${poke.myName} は 首を横に振った`)
-        return true
-    } else {
-        return false
-    }
-}
+// 19.マックスレイドバトルでの失敗
 
-// 19.特性による失敗
+// 20.特性による失敗
 function failureByAbility(poke) {
     if ( failureByAbility_ability(poke) ) {
         writeLog(`しかし うまく決まらなかった....`)
@@ -782,7 +778,7 @@ function failureByAbility(poke) {
     }
 }
 
-// 20.中断されても効果が発動する技
+// 21.中断されても効果が発動する技
 function remainEffectMove(poke) {
     switch ( poke.myMove.name ) {
         case "みらいよち":
@@ -830,7 +826,7 @@ function remainEffectMove(poke) {
         }
 }
 
-// 21.へんげんじざい/リベロの発動
+// 22.へんげんじざい/リベロの発動
 function proteanLibero(poke) {
     if ( !isAbility(poke) ) return
     if ( poke.myMove.type == poke.myType[0] && poke.myType.length == 1 ) return
@@ -841,7 +837,7 @@ function proteanLibero(poke) {
     }
 }
 
-// 22.溜め技の溜めターンでの動作
+// 23.溜め技の溜めターンでの動作
 function accumulateOperation(poke) {
     if ( !accumulationMove.includes(poke.myMove.name) ) return
     
@@ -949,8 +945,7 @@ function accumulateOperation(poke) {
     return true
 }
 
-// 23
-// よこどり状態のポケモンがいる時、よこどりされる
+// 24.待機中のよこどりで技が盗まれる。技を奪ったポケモンは3-9~11の行程を繰り返す
     /*
     if (def.con.p_con.includes("よこどり") && moveEff.snatch().includes( poke.myMove.name)) {
         removeText(def.con, "よこどり")
@@ -958,13 +953,13 @@ function accumulateOperation(poke) {
         atk = order[0]
         def = order[1]
 
-        // 9.わざのタイプが変わる。1→2→3の順にタイプが変わる
+        // 10.わざのタイプが変わる。1→2→3の順にタイプが変わる
         moveTypeChange(me, you, con, move)
         // 45.技の仕様による無効化(その1)
         if (invalidBySpec1st(me, you, con, move)) {return true}
-        // 46.技の仕様による無効化(その2)
+        // 47.技の仕様による無効化(その2)
         if (invalidBySpec2nd(me, you, con, move)) {return true}
-        // 62.技の仕様による無効化(その3)
+        // 64.技の仕様による無効化(その3)
         if (invalidBySpec3rd(me, you, con, move)) {return true}
 
         process.moveProcess(me, you, con, move)
@@ -973,18 +968,18 @@ function accumulateOperation(poke) {
     }
     */
 
-// 24.だいばくはつ/じばく/ミストバーストによるHP消費が確約される
+// 25.だいばくはつ/じばく/ミストバーストによるHP消費が確約される
 function promiseToChangeHP(poke) {
     switch ( poke.myMove.name ) {
         case "じばく":
         case "だいばくはつ":
         case "ミストバースト":
-            poke.myCondition.myExplosion = true
+            poke.myCondition.myExplosion = "full"
             break
     }
 }
 
-// 25.対象のポケモンが全員すでにひんしになっていて場にいないことによる失敗
+// 26.対象のポケモンが全員すでにひんしになっていて場にいないことによる失敗
 function faintedFailure(poke) {
     if ( poke.myMove.target.includes("場") ) return false
 
@@ -996,21 +991,17 @@ function faintedFailure(poke) {
     }
 }
 
-// 26.だいばくはつ/じばく/ミストバーストの使用者は対象が不在でもHPを全て失う。使用者がひんしになっても攻撃は失敗しない
-function selfDestruction(poke) {
-    if ( !poke.myCondition.myExplosion ) return
-    poke.myRest_hp = 0
-    toHand(poke)
-}
-
-// 27.ビックリヘッド/てっていこうせんの使用者はHPを50%失う。対象が不在なら失わない。使用者がひんしになっても攻撃が失敗しない
+// 27.ビックリヘッド/てっていこうせん使用によるHP消費が確約される
 function mindblownStealbeam(poke) {
-    if ( poke.myMove.name != "ビックリヘッド" && poke.myMove.name != "てっていこうせん" ) return
-    if ( !poke.myTarget ) return
-    poke.myRest_hp = Math.max(poke.myRest_hp - Math.ceil(poke.myFull_hp / 2), 0)
+    switch ( poke.myMove.name ) {
+        case "ビックリヘッド":
+        case "てっていこうせん":
+            poke.myCondition.myExplosion = "half"
+            break
+    }
 }
 
-// 28.マグニチュード使用時は威力が決定される
+// 28.マグニチュードの大きさ（威力）が決定
 function magnitude(poke) {
     if ( poke.myMove.name == "マグニチュード" ) {
         const random = getRandom() * 100
@@ -1186,6 +1177,8 @@ function failureByTK(poke) {
     return checkMoveSuccess(poke)
 }
 
+// 37.マジックミラーによる反射
+
 // 38.特性による無効化(その1)
 function invalidByAbility1st(poke) {
     for ( const tgt of poke.myTarget ) {
@@ -1219,7 +1212,7 @@ function invalidByComp(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 40,ふゆうによる無効化
+// 40.ふゆうによるじめん技の無効化
 function invalidByLevitate1st(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1235,7 +1228,7 @@ function invalidByLevitate1st(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 41.でんじふゆう/テレキネシス/ふうせんによる無効化
+// 41.でんじふゆう/テレキネシス/ふうせんによるじめん技の無効化
 function invalidByLevitate2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1250,7 +1243,7 @@ function invalidByLevitate2nd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 42.ぼうじんゴーグルによる無効化
+// 42.ぼうじんゴーグルによる粉技の無効化
 function invalidByPowderGoggle(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1314,20 +1307,17 @@ function invalidBySpec1st(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 46.技の仕様による無効化(その2)
+// 46.ふしぎなバリアに対し「不思議なバリアに 守られて 技の 影響を 受けない!」のメッセージが出る変化技の無効化
+// ランクを下げる技/デコレーション/いばる/おだてる/タールショット
+// 状態異常にする技/こんらんにする技/あくび/いちゃもん/メロメロ/やどりぎのタネ/さきおくり
+
+// 47.技の仕様による無効化(その2)
 function invalidBySpec2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
         // 重複による無効化
         if ( invalidBySpec2nd_duplicate(poke, tgt) ) {
-            tgt.success = false
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
-            continue
-        }
-        
-        // 状態異常にする変化技
-        if ( invalidBySpec2nd_ailment(poke, tgt) ) {
             tgt.success = false
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} には 効果がないようだ....`)
             continue
@@ -1351,7 +1341,7 @@ function invalidBySpec2nd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 47.タイプによる技の無効化(その2)
+// 48.タイプによる技の無効化(その2)
 function invalidByType2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1367,7 +1357,7 @@ function invalidByType2nd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 48.さわぐによるねむりの無効化
+// 49.さわぐ状態によるねむりの無効化
 function invalidByUproar(poke) {
     // 騒ぎ始めた時、眠っているポケモンは目を覚ます
     for ( const _poke of allPokeInBattle() ) {
@@ -1391,7 +1381,7 @@ function invalidByUproar(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 49.しんぴのまもり状態による無効化
+// 50.しんぴのまもり状態による無効化
 function invalidBySafeguard(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1406,7 +1396,7 @@ function invalidBySafeguard(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 50.エレキフィールド/ミストフィールド状態による状態異常の無効化
+// 51.エレキフィールド/ミストフィールド状態による状態異常の無効化
 function invalidByTerrain2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1428,7 +1418,7 @@ function invalidByTerrain2nd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 51.みがわり状態によるランク補正を下げる技/デコレーションの無効化
+// 52.みがわり状態によるランク補正を下げる技/デコレーションの無効化
 function invalidBySub1st(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1443,7 +1433,7 @@ function invalidBySub1st(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 52.しろいきりによる無効化
+// 53.しろいきりによるランク補正を下げる技の無効化
 function invalidByMist(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1459,7 +1449,7 @@ function invalidByMist(poke) {
 }
 
 
-// 53.特性による無効化(その3)
+// 54.特性による無効化(その3)
 function invalidByAbility3rd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1500,7 +1490,7 @@ function invalidByAbility3rd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 54.命中判定による技の無効化
+// 55.命中判定による技の無効化
 function invalidByAccuracy(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1526,7 +1516,7 @@ function invalidByAccuracy(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 55.シャドースチールで対象のランク補正を吸収する
+// 56.シャドースチールで対象のランク補正を吸収する
 function spectralThief(poke) {
     if ( poke.myMove.name != "シャドースチール") return false
     for ( const tgt of poke.myTarget ) {
@@ -1545,7 +1535,7 @@ function spectralThief(poke) {
     }
 }
 
-// 56.対応するタイプの攻撃技の場合ジュエルが消費される
+// 57.対応するタイプのジュエルが発動する
 function useJuwel(poke) {
     if ( poke.myMove.name == "くさのちかい" ) return false
     if ( poke.myMove.name == "ほのおのちかい" ) return false
@@ -1563,7 +1553,7 @@ function useJuwel(poke) {
     } 
 }
 
-// 57. かわらわり/サイコファング/ネコにこばんの効果が発動する
+// 58.かわらわり/サイコファング/ネコにこばんの効果が発動する
 function wallBreak(poke) {
     if ( poke.myMove.name == "かわらわり" || poke.myMove.name == "サイコファング" ) {
 
@@ -1589,7 +1579,7 @@ function wallBreak(poke) {
     }
 }
 
-// 58. ポルターガイストで対象のもちものが表示される
+// 60.ポルターガイストで対象の持ち物が表示される
 function poltergeist(poke) {
     if ( poke.myMove.name == "ポルターガイスト" ) {
 
@@ -1600,7 +1590,7 @@ function poltergeist(poke) {
     }
 }
 
-// 59.みがわりによるランク補正を変動させる効果以外の無効化
+// 61.みがわりによるランク補正を変動させる効果以外の無効化
 function invalidBySub2nd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -1615,7 +1605,7 @@ function invalidBySub2nd(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 60.ミラーアーマー: ランクを下げる変化技の反射
+// 62.ミラーアーマー: ランクを下げる変化技の反射
 function millorArmer(poke) {
     /*
     const list = moveEff.rankChange()
@@ -1633,7 +1623,7 @@ function millorArmer(poke) {
     */
 }
 
-// 61.ほえる・ふきとばしの無効化
+// 63.ほえる/ふきとばしの無効化
 function roarWhirlwind(poke) {
     if ( poke.myMove.name == "ほえる" || poke.myMove.name == "ふきとばし" ) {
 
@@ -1662,7 +1652,7 @@ function roarWhirlwind(poke) {
     return checkMoveSuccess(poke)
 }
 
-// 62.技の仕様による無効化(その3)
+// 64.技の仕様による無効化(その3)
 function invalidBySpec3rd(poke) {
     // 対象が場でない技
     for ( const tgt of poke.myTarget ) {
@@ -1722,7 +1712,7 @@ function invalidBySpec3rd(poke) {
     return checkMoveSuccess(poke) 
 }
 
-// 63.アロマベール: かなしばり/アンコール/ちょうはつ状態の無効化
+// 65.アロマベール: かなしばり/アンコール/ちょうはつ状態の無効化
 function alomaVeilInvalidation(poke) {
     if ( poke.myMove.name == "かなしばり" || poke.myMove.name == "アンコール" || poke.myMove.name == "ちょうはつ" ) {
 

@@ -1,5 +1,5 @@
 //**************************************************
-// 8.追加効果などの発動
+// 9.追加効果などの発動
 //**************************************************
 
 // 追加効果（自分のランクを変化）
@@ -280,22 +280,22 @@ function additionalEffect_dynamax(poke, tgt) {
 
         case "ダイサンダー":
             if ( fieldStatus.myElectric ) return
-            activateTerrain(poke, "electric")
+            activateTerrain(poke, "エレキ")
             return
 
         case "ダイソウゲン":
             if ( fieldStatus.myGrassy ) return
-            activateTerrain(poke, "grassy")
+            activateTerrain(poke, "グラス")
             return
 
         case "ダイサイコ":
             if ( fieldStatus.myPsychic ) return
-            activateTerrain(poke, "psychic")
+            activateTerrain(poke, "サイコ")
             return
 
         case "ダイフェアリー":
             if ( fieldStatus.myMisty ) return
-            activateTerrain(poke, "misty")
+            activateTerrain(poke, "ミスト")
             return
 
         case "キョダイカンデン":
@@ -559,7 +559,7 @@ function additionalEffect_dynamax(poke, tgt) {
 }
 
 //**************************************************
-// 9.ダメージが発生したときの効果
+// 10.ダメージが発生したときの効果
 //**************************************************
 
 // 1.コアパニッシャーによるとくせいなし
@@ -1046,11 +1046,11 @@ function effectWithDmg_mask(poke, tgt) {
 }
 
 //**************************************************
-// 14.技の効果
+// 15.技の効果（その1）
 //**************************************************
 
 // ほのおタイプの攻撃技を受けたことによるこおり状態の回復
-function moveEffect_melted(poke, tgt) {
+function moveEffect1st_melted(poke, tgt) {
     if ( tgt.poke.myAilment != "こおり" ) return
     if ( poke.myMove.type != "ほのお" ) return
     if ( tgt.substitute ) return
@@ -1061,7 +1061,7 @@ function moveEffect_melted(poke, tgt) {
 }
 
 // 反動技による反動ダメージ (わるあがきも含む)
-function moveEffect_recoil(poke, tgt) {
+function moveEffect1st_recoil(poke, tgt) {
     const thisMove = moveList_recoil.filter( move => move.name == poke.myMove.name )
     if ( thisMove.length === 0 ) return
     if ( poke.myAbility == "いしあたま" && isAbility(poke) ) return
@@ -1073,7 +1073,7 @@ function moveEffect_recoil(poke, tgt) {
 }
 
 // バインド状態
-function moveEffect_bind(poke, tgt) {
+function moveEffect1st_bind(poke, tgt) {
     if ( !bind.includes(poke.myMove.name) ) return // バインド技であること
     if ( tgt.substitute )                   return // みがわりが有効でないこと
     if ( tgt.poke.myRest_hp == 0 )          return // ひんし状態でないこと
@@ -1098,7 +1098,7 @@ function moveEffect_bind(poke, tgt) {
 }
 
 // ひみつのちからの追加効果
-function moveEffect_secretPower(poke, tgt) {
+function moveEffect1st_secretPower(poke, tgt) {
     if ( poke.myMove.name != "ひみつのちから" ) return // 技「ひみつのちから」であること
     if ( tgt.substitute )                     return // みがわりが有効でないこと
     if ( poke.myCondition.mySheer_force )     return // ちからずくが無効であること
@@ -1146,7 +1146,7 @@ function moveEffect_secretPower(poke, tgt) {
 }
 
 // とどめばりによるこうげき上昇
-function moveEffect_fellStinger(poke, tgt) {
+function moveEffect1st_fellStinger(poke, tgt) {
     if ( poke.myMove.name != "とどめばり" ) return
     if ( tgt.poke.myRest_hp > 0 ) return
     changeMyRank(poke, "atk", 3)
@@ -1154,7 +1154,7 @@ function moveEffect_fellStinger(poke, tgt) {
 }
 
 // スケイルショットによるぼうぎょ低下・すばやさ上昇
-function moveEffect_scaleShot(poke, tgt) {
+function moveEffect1st_scaleShot(poke, tgt) {
     if ( poke.myMove.name != "スケイルショット" ) return
     changeMyRank(poke, "def", -1)
     changeMyRank(poke, "speed", 1)
@@ -1162,7 +1162,7 @@ function moveEffect_scaleShot(poke, tgt) {
 }
 
 // はたきおとす/どろぼう/ほしがる/むしくい/ついばむによるもちものに関する効果
-function moveEffect_item(poke, tgt) {
+function moveEffect1st_item(poke, tgt) {
     if ( !tgt.poke.myItem ) return // 対象が持ち物を持っていること
     if ( tgt.substitute ) return // みがわりが有効でないこと
     if ( cannotChangeItem(tgt.poke) ) return // 干渉できる持ち物であること
@@ -1183,7 +1183,7 @@ function moveEffect_item(poke, tgt) {
 
         case "どろぼう":
         case "ほしがる":
-            if ( !poke.myItem ) return
+            if ( poke.myItem ) return
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${tgt.poke.myItem} を 奪った !`)
             poke.myItem = tgt.poke.myItem
             tgt.poke.myItem = ""
@@ -1208,7 +1208,7 @@ function moveEffect_item(poke, tgt) {
 }
 
 // ドラゴンテール/ともえなげによる交代・交代先の繰り出し
-function moveEffect_changeTgt(poke, tgt) {
+function moveEffect1st_changeTgt(poke, tgt) {
     if ( poke.myMove.name != "ドラゴンテール" && poke.myMove.name != "ともえなげ" ) return
     if ( !isBench(poke) )                 return // 控えがいること
     if ( tgt.substitute )                 return // みがわり状態でないこと
@@ -1229,7 +1229,7 @@ function moveEffect_changeTgt(poke, tgt) {
 }
 
 // うちおとす/サウザンアローによるうちおとす状態
-function moveEffect_smackDown(poke, tgt) {
+function moveEffect1st_smackDown(poke, tgt) {
     if ( poke.myMove.name != "うちおとす" && poke.myMove.name != "サウザンアロー" ) return
     // 自身または対象がひんしの場合や、対象が身代わりで技を受けた場合、対象が接地している状態では、撃ち落とす状態にならない
     if ( tgt.poke.myRest_hp == 0 ) return
@@ -1252,7 +1252,7 @@ function moveEffect_smackDown(poke, tgt) {
 }
 
 // サウザンウェーブ/くらいつくによるにげられない状態
-function moveEffect_cantEscape(poke, tgt) {
+function moveEffect1st_cantEscape(poke, tgt) {
     switch ( poke.myMove.name ) {
         case "サウザンウェーブ":
             if ( tgt.poke.myRest_hp == 0 ) return // 対象がひんし状態でないこと
@@ -1283,7 +1283,7 @@ function moveEffect_cantEscape(poke, tgt) {
 }
 
 // プラズマフィストによるプラズマシャワー状態
-function moveEffect_ionDeluge(poke, tgt) {
+function moveEffect1st_ionDeluge(poke, tgt) {
     if ( poke.myMove.name != "プラズマフィスト" ) return
     fieldStatus.myIon_deluge = true
     writeLog(`電気が駆け巡る !`)
@@ -1292,16 +1292,16 @@ function moveEffect_ionDeluge(poke, tgt) {
 }
 
 // オリジンズスーパーノヴァによるサイコフィールド状態
-function moveEffect_genesisSupernova(poke, tgt) {
+function moveEffect1st_genesisSupernova(poke, tgt) {
     if ( poke.myMove.name != "オリジンズスーパーノヴァ" ) return
     if ( fieldStatus.myPsychic ) return
-    activateTerrain(poke, "psychic")
+    activateTerrain(poke, "サイコ")
 
     return
 }
 
 // こうそくスピン/ラジアルエッジストームによる場の状態の解除
-function moveEffect_clearField(poke, tgt) {
+function moveEffect1st_clearField(poke, tgt) {
     switch ( poke.myMove.name ) {
         case "こうそくスピン":
             if ( poke.myCondition.myLeech_seed ) {
@@ -1348,7 +1348,7 @@ function moveEffect_clearField(poke, tgt) {
 }
 
 // ねっさのだいち/ねっとう/スチームバーストを受けたことによるこおり状態の回復
-function moveEffect_melt(poke, tgt) {
+function moveEffect1st_melt(poke, tgt) {
     if ( tgt.poke.myAilment != "こおり" ) return
     if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
 
@@ -1366,7 +1366,7 @@ function moveEffect_melt(poke, tgt) {
 }
 
 // きつけを受けたことによるまひ状態の回復
-function moveEffect_smellingSalts(poke, tgt) {
+function moveEffect1st_smellingSalts(poke, tgt) {
     if ( poke.myMove.name != "きつけ" ) return
     if ( tgt.poke.myAilment != "まひ" ) return
     resetAilment(poke)
@@ -1375,7 +1375,7 @@ function moveEffect_smellingSalts(poke, tgt) {
 }
 
 // めざましビンタを受けたことによるねむり状態の回復
-function moveEffect_wakeUpSlap(poke, tgt) {
+function moveEffect1st_wakeUpSlap(poke, tgt) {
     if ( poke.myMove.name != "めざましビンタ" ) return
     if ( tgt.poke.myAilment != "ねむり" ) return
     resetAilment(poke)
@@ -1384,7 +1384,7 @@ function moveEffect_wakeUpSlap(poke, tgt) {
 }
 
 // うたかたのアリアを受けたことによるやけど状態の回復
-function moveEffect_sparklingAria(poke, tgt) {
+function moveEffect1st_sparklingAria(poke, tgt) {
     if ( poke.myMove.name != "うたかたのアリア" ) return
     if ( tgt.poke.myAilment != "やけど" ) return
     if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
@@ -1394,7 +1394,7 @@ function moveEffect_sparklingAria(poke, tgt) {
 }
 
 // ぶきみなじゅもんによるPPの減少
-function moveEffect_eerieSpell(poke, tgt) {
+function moveEffect1st_eerieSpell(poke, tgt) {
     if ( poke.myMove.name != "ぶきみなじゅもん" ) return
     if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
     if ( tgt.poke.myCondition.myHistory === [] ) return // 技を使用していること
@@ -1417,11 +1417,11 @@ function moveEffect_eerieSpell(poke, tgt) {
 }
 
 //**************************************************
-// 15.特性の効果
+// 16.特性の効果（その1）
 //**************************************************
 
 // 1.攻撃側のマジシャン/じしんかじょう/ビーストブースト/くろのいななき/しろのいななき
-function abilityEffect_attack(poke, tgt) {
+function abilityEffect1st_attack(poke, tgt) {
     if ( !isAbility(poke) )    return // 自分の特性が有効であること
     if ( poke.myRest_hp == 0 ) return // 自分がひんしでないこと
 
@@ -1490,7 +1490,7 @@ function abilityEffect_attack(poke, tgt) {
 }
 
 // 2.防御側のへんしょく/ぎゃくじょう
-function abilityEffect_defense(poke, tgt) {
+function abilityEffect1st_defense(poke, tgt) {
     if ( !isAbility(tgt.poke) )    return // 対象の特性が有効であること
     if ( tgt.poke.myRest_hp == 0 ) return // 対象がひんしでないこと
 
@@ -1517,10 +1517,10 @@ function abilityEffect_defense(poke, tgt) {
 }
 
 //**************************************************
-// 16.防御側のもちものの効果
+// 17.防御側の持ち物の効果（その3）
 //**************************************************
 
-function defenseItemEffect_item(poke, tgt) {
+function defenseItemEffect3rd_item(poke, tgt) {
     if ( !isItem(tgt.poke) )              return // 対象の持ち物が有効であること
     if ( tgt.poke.myRest_hp == 0 )        return // 対象がひんしでないこと
     if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
@@ -1528,7 +1528,8 @@ function defenseItemEffect_item(poke, tgt) {
     if ( !tgt.damage )                    return // ダメージを受けていること
 
     // アッキのみ/タラプのみ
-    // だっしゅつボタン/レッドカードによって手持ちに戻るまで
+    // だっしゅつボタンによって手持ちに戻るまで
+    // レッドカードの発動・交代
     switch ( tgt.poke.myItem ) {
         case "アッキのみ":
             if ( poke.myMove.nature != "物理" ) return
@@ -1556,14 +1557,112 @@ function defenseItemEffect_item(poke, tgt) {
         case "レッドカード":
             if ( !isBench(poke) ) return
             if ( poke.myCondition.myDynamax ) return
+
+            // 手持ちに戻るまで
             itemDeclaration(tgt.poke)
             enableToRecycle(tgt.poke)
             poke.myRed_card = poke.myPosition
             writeLog(`${poke.myTN} の ${poke.myName} は 手持ちに戻った`)
             toHand(poke)
+
+            // 次のポケモンを繰り出す
+            const next = shuffle(isBench(poke))[0]
+            const position = poke.myRed_card
+            poke.myRed_card = false
+            summon(next, position)
             return
 
         default:
             return
+    }
+}
+
+//**************************************************
+// 27.攻撃側の持ち物の効果
+//**************************************************
+
+// ヒメリのみ
+function attackItemEffect_leppaBerry(poke) {
+    // おんねんの効果でPP0になったときも含む。
+    // 防御側がぶきみなじゅもんでPP0になったときは、その直後に割り込んで発動する。
+    if ( !isItem(poke) ) return
+    if ( poke.myItem != "ヒメリのみ" ) return
+
+    for ( let i = 0; i < 4; i++ ) {
+        if ( poke[`myRest_pp_${i}`] > 0 ) continue
+
+        const num = Math.min(10 * isRipen(poke), poke[`myFull_pp_${i}`])
+        poke[`myRest_pp_${i}`] = num
+        writeLog(`${poke.myTN} の ${poke.myName} は ヒメリのみで ${poke[`myMove_${i}`]}のPPを${num}回復した`)
+        enableToRecycle(poke)
+        return
+    }
+}
+
+// のどスプレー
+function attackItemEffect_throatSpray(poke) {
+    if ( !isItem(poke) ) return
+    if ( poke.myItem != "のどスプレー" ) return
+    if ( !musicMove.includes(poke.myMove.name) ) return
+    if ( poke.myRank_sp_atk == 6 ) return
+
+    itemDeclaration(poke)
+    changeMyRank(poke, "sp_atk", 1)
+    enableToRecycle(poke)
+}
+
+// からぶりほけん
+function attackItemEffect_blunderPolicy(poke) {
+    if ( !isItem(poke) ) return
+    if ( poke.myItem != "からぶりほけん" ) return
+}
+
+//**************************************************
+// 29.行動後に発動する持ち物の効果
+//**************************************************
+
+// しろいハーブ
+function itemEffectAfterAction_whiteHerb(poke) {
+    // 自分用
+    landing_whiteHerb(poke)
+    // 攻撃対象用
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success )            continue // すでに失敗していないこと
+        if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
+        landing_whiteHerb(tgt.poke)
+    }
+}
+
+// だっしゅつパックによって手持ちに戻るまで
+// 自分用
+function itemEffectAfterAction_ejectPack_me(poke) {
+    if ( !isItem(poke) ) return
+    if ( !isBench(poke) ) return
+    if ( !poke.myCondition.myRank_down ) return
+    if ( poke.myItem != "だっしゅつパック" ) return
+    // だっしゅつボタンやききかいひが発動している場合、だっしゅつパックは発動しない
+    for ( const tgt of poke.myTarget ) {
+        if ( tgt.myEject_button !== false ) return
+        if ( tgt.myEmergency    !== false ) return
+    }
+
+    itemDeclaration(poke)
+    poke.myEject_pack = poke.myPosition
+    toHand(poke)
+}
+
+// 攻撃対象用
+function itemEffectAfterAction_ejectPack_opp(poke) {
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success )                      continue // すでに失敗していないこと
+        if ( isSwitch(poke) )                    continue // 攻撃ポケモンが交代しないこと
+        if ( !isItem(tgt.poke) )                 continue // アイテムが有効であること
+        if ( !isBench(tgt.poke) )                continue // 控えがいること
+        if ( !tgt.poke.myCondition.myRank_down ) continue // ランクが下がったこと
+        if ( tgt.poke.myItem != "だっしゅつパック" ) continue
+
+        itemDeclaration(tgt.poke)
+        tgt.myEject_pack = tgt.myPosition
+        toHand(tgt.poke)
     }
 }

@@ -3,7 +3,7 @@
 // 自分以外全員・相手全員を対象にする範囲攻撃技は、1は敵味方同時に、2~11は味方のポケモンに対する処理を行ってから敵のポケモンの処理を、防御側から見て左側のポケモンから行う(味方2-1~2-9→使用者3→味方4→...→味方11→敵の左側2-1~2-9→右側2-1~2-9→左側3→右側3→...右側11の順)。
 // トリプルバトル・群れバトルで相手の場に3匹以上のポケモンが並んでいる場合も、防御側から見て左側のポケモンから処理される。
 
-function processOfAdditionalEffect(poke){
+function processOfAdditionalEffect(poke) {
     if ( poke.myMove.nature == "変化" ) {
         statusMoveEffect(poke)
     } else {
@@ -17,69 +17,62 @@ function processOfAdditionalEffect(poke){
         giveDamage(poke)
         // 5.相性判定のメッセージ
         declareEffectiveness(poke)
-        // 6.ダメージの判定に関するメッセージ
+        // 7.ダメージの判定に関するメッセージ
         damageMassage(poke)
-        // 7.ダメージをHP1で耐える効果
+        // 8.ダメージをHP1で耐える効果
         remainHP1(poke)
-        // 8.追加効果などの発動
+        // 9.追加効果などの発動
         additionalEffect(poke)
-        // 9.ダメージが発生したときの効果
+        // 10.ダメージが発生したときの効果
         effectWithDmg(poke)
     }
-    // 10.ひんし判定
+    // 11.ひんし判定
     dyingJudge(poke)
-    // 11.ひんしできんちょうかん/かがくへんかガスが解除されたことによる封じられていた効果の発動(おわりのだいち、はじまりのうみの解除 wikiにない)
-    // コアパニッシャーによりとくせいなし状態にされたときは即座に封じられていた効果が発動する。
-    // 12.連続攻撃技である場合、以下の処理を行う(おやこあいも含む)。
+    // 12.ひんしできんちょうかん/かがくへんかガスが解除されたことによる封じられていた効果の発動(おわりのだいち、はじまりのうみの解除 wikiにない)
+    // 13.連続攻撃技である場合、以下の処理を行う(おやこあいも含む)。
     continuousMove(poke)
-    // 13.HP20%以下(赤ゲージ)になったとき、なかよし度4以上で「ピンチで なきそう...」のメッセージ
-    // 14.技の効果
-    moveEffect(poke)
-    // 15.特性の効果
-    abilityEffect(poke)
-    // 16.防御側のもちものの効果
-    defenseItemEffect(poke)
-    // 17.コンビネーションわざの効果
-    // 18.いにしえのうた/きずなへんげによるフォルムチェンジ
+    // 14.HP20%以下(赤ゲージ)になったとき、なかよし度4以上で「ピンチで なきそう...」のメッセージ
+    // 15.技の効果（その1）
+    moveEffect1st(poke)
+    // 16.特性の効果（その1）
+    abilityEffect1st(poke)
+    // 17.防御側の持ち物の効果（その3）
+    defenseItemEffect3rd(poke)
+    // 18.コンビネーションわざの効果
+    // 19.いにしえのうた/きずなへんげによるフォルムチェンジ
     formChangeAbility(poke)
-    // 19.いのちのたまの反動/かいがらのすずの回復
+    // 20.いのちのたまの反動/かいがらのすずの回復
     lifeorbShellbell(poke)
-    // 20.オボンのみなど回復のきのみ/チイラのみ/リュガのみ/ヤタピのみ/ズアのみ/カムラのみ/サンのみ/スターのみ/ミクルのみ/きのみジュース
-    recoverBerry(poke)
-    // 21.ききかいひ/にげごしによって手持ちに戻るまで
+    // 21.防御側の持ち物の効果（その4）
+    defenseItemEffect4th(poke)
+    // 22.ききかいひ/にげごしによって手持ちに戻る
     emergencyExit(poke)
-    // 22.とんぼがえり/ボルトチェンジ/クイックターンによって手持ちに戻るまで
+    // 23.とんぼがえり/ボルトチェンジ/クイックターンによって手持ちに戻る
     comeBackMove(poke)
-    // 23.アイアンローラーによるフィールドの消失
+    // 24.アイアンローラーによるフィールドの消失
     steelRoller(poke) 
-    // 24.レッドカードによる交代先の繰り出し
-    redCard(poke)
     // 25.わるいてぐせ
     pickPocket(poke)
-    // 26.一部の技の効果
-    someMoveEffect(poke)
-    // 27.一部の持ち物の効果
-    someItemEffect(poke)
-    // 28.きょうせい
-    // 1第六世代では道具の消費直後に発動する。
-    // 29.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・交代
+    // 26.技の効果（その2）
+    moveEffect2nd(poke)
+    // 27.攻撃側の持ち物の効果
+    attackItemEffect(poke)
+    // 28.特性の効果（その2）
+    abilityEffect2nd(poke)
+    // 29.行動後に発動する持ち物の効果
+    itemEffectAfterAction(poke)
+    // 30.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・繰り出し
     returnBattle(poke)
     if ( fieldStatus.mySwitch_me ) return
     if ( fieldStatus.mySwitch_opp ) return
-    // ドラゴンテール/ともえなげは発動直後に強制交代される
-    // おどりこ
-    // 次のポケモンの行動
-    // 8.9.の効果で攻撃側のポケモンがひんしになる場合、10.で防御側が倒れた後に攻撃側が倒れるため、相打ち時は攻撃側の勝ちとなる。
-    // 14.以降の反動ダメージで攻撃側がひんしになった場合、攻撃側の勝ちとなる。
-
-
-    // かたやぶりなどの特性無視終了？
-    moldBreakStop(poke)
+    // 31.おどりこ
+    ability_dancer(poke)
+    // 32.次のポケモンの行動。全ポケモンが行動を完了したときは#5.ターン終了時の処理に進む。
 }
 
 
 // 1.ダメージ計算
-function isDamage(poke){
+function isDamage(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
@@ -108,10 +101,7 @@ function isDamage(poke){
         // 2.ダメージが65536以上のとき、65536で割った余りが代わりのダメージになる。
         tgt.damage = tgt.damage % 65536
         // 3.ダメージが対象のHP残量より大きい場合、HP残量と同じになるようにダメージを切り捨てる。みがわり状態に防がれる場合は、みがわりのHP残量まで切り捨てる。
-        tgt.damage = Math.min(tgt.damage, tgt.poke.myRest_hp)
-        if ( tgt.substitute ) {
-            tgt.damage = Math.min(tgt.damage, tgt.poke.myCondition.mySubstitute )
-        }
+        tgt.damage = ( tgt.substitute )? Math.min(tgt.damage, tgt.poke.myCondition.mySubstitute ) : Math.min(tgt.damage, tgt.poke.myRest_hp)
         // 4.みがわりに防がれずに「ダメージをHP1で耐える効果」が発動する場合、ダメージから1を引く。発動したときのメッセージは(7)で流れる。
         if ( !tgt.substitute && tgt.damage == tgt.poke.myRest_hp ) {
             // ダメージをHP1で食いしばる場合、以下の優先順位で発動する。
@@ -158,7 +148,7 @@ function isDamage(poke){
 }
 
 // 2.みがわり状態に攻撃技が防がれたときの効果: 本体がダメージを受けたときの処理(4~9)などより優先される
-function substituteBlock(poke){
+function substituteBlock(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success )    continue // すでに失敗していないこと
         if ( !tgt.substitute ) continue // みがわりが有効であること
@@ -219,13 +209,13 @@ function substituteBlock(poke){
 }
 
 // 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
-function dyingDamage(poke){
+function dyingDamage(poke) {
     // じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん
     // いのちがけは第五世代ではこの時点、第六世代以降では10-1でひんしとなる。
 }
 
 // 4.ダメージを本体に与える
-function giveDamage(poke){
+function giveDamage(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( tgt.substitute ) continue // みがわり状態でないこと
@@ -250,6 +240,7 @@ function giveDamage(poke){
         // ゆきなだれ、リベンジ、カウンター。ミラーコート、メタルバースト用
         // 一撃必殺技の時、おうじゃのしるし・あくしゅうでひるまない、きあいパンチは成功する、ナゾのみ・弱点保険は発動する
         tgt.poke.myCondition.myDamage.value    = tgt.damage
+        tgt.poke.myCondition.myDamage.sum      += tgt.damage
         tgt.poke.myCondition.myDamage.party    = poke.myParty
         tgt.poke.myCondition.myDamage.position = poke.myPosition
         tgt.poke.myCondition.myDamage.nature   = poke.myMove.nature
@@ -276,7 +267,7 @@ function declareEffectiveness(poke) {
     }
 }
 
-// 6.ダメージの判定に関するメッセージ
+// 7.ダメージの判定に関するメッセージ
 function damageMassage(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -290,8 +281,8 @@ function damageMassage(poke) {
 
 }
 
-// 7.ダメージをHP1で耐える効果
-function remainHP1(poke){
+// 8.ダメージをHP1で耐える効果
+function remainHP1(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
@@ -330,7 +321,7 @@ function remainHP1(poke){
     }
 }
 
-// 8.追加効果などの発動
+// 9.追加効果などの発動
 function additionalEffect(poke) {
     // 0.「反動で動けない状態」などの付与　（wikiにはない）
     if ( moveList_cannotMove.includes(poke.myMove.name) ) {
@@ -403,8 +394,8 @@ function additionalEffect(poke) {
     }
 }
 
-// 9.ダメージが発生したときの効果
-function effectWithDmg(poke){
+// 10.ダメージが発生したときの効果
+function effectWithDmg(poke) {
     for ( const tgt of poke.myTarget ) {
         // ばけのかわ・アイスフェイス以外、1以上のダメージがある
         if ( !tgt.success ) continue // すでに失敗していないこと
@@ -449,9 +440,9 @@ function effectWithDmg(poke){
 
 
 
-// 10.ひんし判定
-function dyingJudge(poke){
-    // 1.いのちがけ使用者のひんし
+// 11.ひんし判定
+function dyingJudge(poke) {
+    // 1.いのちがけ使用者のひんし: 防御側にダメージを与え、特性や持ち物の効果が発動した後にひんしになる
     if ( poke.myMove.name == "いのちがけ" ) {
         poke.myRest_hp = 0
         toHand(poke)
@@ -470,7 +461,9 @@ function dyingJudge(poke){
         toHand(tgt.poke)
     }
 
-    // 3.みちづれによる攻撃側のひんし
+    // 3.味方の特性や持ち物の効果による攻撃側のひんし
+
+    // 4.みちづれによる攻撃側のひんし: 防御側にダメージを与え、特性や持ち物の効果が発動した後にひんしになる
     if ( destiny ) {
         writeLog(`${destiny.myTN} の ${destiny.myName} は ${poke.myTN} の ${poke.myName} を みちづれにした !`)
         poke.myRest_hp = 0
@@ -478,8 +471,11 @@ function dyingJudge(poke){
     }
 }
 
-// 12.連続攻撃技である場合、以下の処理を行う(おやこあいも含む)。
-function continuousMove(poke){
+// 12.ひんしできんちょうかん/かがくへんかガスが解除されたことによる封じられていた効果の発動(おわりのだいち、はじまりのうみの解除 wikiにない)
+// コアパニッシャーによりとくせいなし状態にされたときは即座に封じられていた効果が発動する。
+
+// 13.連続攻撃技である場合、以下の処理を行う(おやこあいも含む)。
+function continuousMove(poke) {
     if ( poke.myRest_hp == 0 )         return // ひんし状態でないこと
     if ( poke.myMove.continuous == 1 ) return // 連続技であること
 
@@ -499,7 +495,7 @@ function continuousMove(poke){
     const tgt = poke.myTarget[0]
 
     for ( let i = 1; i < poke.myMove.continuous; i++ ) {
-        // 1.攻撃側と防御側のポケモンの回復のきのみ・HP1/4で発動するピンチきのみ・きのみジュースの発動判定
+        // 1.攻撃側と防御側の持ち物 ( (21) で発動するきのみ/きのみジュース/シード系アイテム等) の発動判定を行う。
         eatBerryInPinch(poke)
         if ( !tgt.success ) break // すでに失敗していないこと
         eatBerryInPinch(tgt.poke)
@@ -534,15 +530,15 @@ function continuousMove(poke){
         giveDamage(poke)
         // 5.相性判定のメッセージ
         declareEffectiveness(poke)
-        // 6.ダメージの判定に関するメッセージ
+        // 7.ダメージの判定に関するメッセージ
         damageMassage(poke)
-        // 7.ダメージをHP1で耐える効果
+        // 8.ダメージをHP1で耐える効果
         remainHP1(poke)
-        // 8.追加効果などの発動
+        // 9.追加効果などの発動
         additionalEffect(poke)
-        // 9.ダメージが発生したときの効果
+        // 10.ダメージが発生したときの効果
         effectWithDmg(poke)
-        // 10.ひんし判定
+        // 11.ひんし判定
         dyingJudge(poke)
 
         count += 1
@@ -551,79 +547,79 @@ function continuousMove(poke){
     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} に ${count}発 当たった !`)
 }
 
-// 14.技の効果
-function moveEffect(poke){
+// 15.技の効果（その1）
+function moveEffect1st(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
         // ほのおタイプの攻撃技を受けたことによるこおり状態の回復
-        moveEffect_melted(poke, tgt)
+        moveEffect1st_melted(poke, tgt)
 
         // ほのおタイプの技によるこおり状態の回復は使用者が場から去っている場合も発動する。
         // それ以外の技の効果は使用者が場から去っていると発動しない。
         if ( poke.myRest_hp == 0 ) continue
 
         // 反動技による反動ダメージ (わるあがきも含む)
-        moveEffect_recoil(poke, tgt)
+        moveEffect1st_recoil(poke, tgt)
         // バインド状態
-        moveEffect_bind(poke, tgt)
+        moveEffect1st_bind(poke, tgt)
         // ひみつのちからの追加効果
-        moveEffect_secretPower(poke, tgt)
+        moveEffect1st_secretPower(poke, tgt)
         // とどめばりによるこうげき上昇
-        moveEffect_fellStinger(poke, tgt)
+        moveEffect1st_fellStinger(poke, tgt)
         // スケイルショットによるぼうぎょ低下・すばやさ上昇
-        moveEffect_scaleShot(poke, tgt)
+        moveEffect1st_scaleShot(poke, tgt)
         // はたきおとす/どろぼう/ほしがる/むしくい/ついばむによるもちものに関する効果
-        moveEffect_item(poke, tgt)
+        moveEffect1st_item(poke, tgt)
         // ドラゴンテール/ともえなげによる交代・交代先の繰り出し
-        moveEffect_changeTgt(poke, tgt)
+        moveEffect1st_changeTgt(poke, tgt)
         // うちおとす/サウザンアローによるうちおとす状態
-        moveEffect_smackDown(poke, tgt)
+        moveEffect1st_smackDown(poke, tgt)
         // サウザンウェーブ/くらいつくによるにげられない状態
-        moveEffect_cantEscape(poke, tgt)
+        moveEffect1st_cantEscape(poke, tgt)
         // プラズマフィストによるプラズマシャワー状態
-        moveEffect_ionDeluge(poke, tgt)
+        moveEffect1st_ionDeluge(poke, tgt)
         // オリジンズスーパーノヴァによるサイコフィールド状態
-        moveEffect_genesisSupernova(poke, tgt)
+        moveEffect1st_genesisSupernova(poke, tgt)
         // こうそくスピン/ラジアルエッジストームによる場の状態の解除
-        moveEffect_clearField(poke, tgt)
+        moveEffect1st_clearField(poke, tgt)
         // ねっさのだいち/ねっとう/スチームバーストを受けたことによるこおり状態の回復
-        moveEffect_melt(poke, tgt)
+        moveEffect1st_melt(poke, tgt)
         // きつけを受けたことによるまひ状態の回復
-        moveEffect_smellingSalts(poke, tgt)
+        moveEffect1st_smellingSalts(poke, tgt)
         // めざましビンタを受けたことによるねむり状態の回復
-        moveEffect_wakeUpSlap(poke, tgt)
+        moveEffect1st_wakeUpSlap(poke, tgt)
         // うたかたのアリアを受けたことによるやけど状態の回復
-        moveEffect_sparklingAria(poke, tgt)
+        moveEffect1st_sparklingAria(poke, tgt)
         // ぶきみなじゅもんによるPPの減少
-        moveEffect_eerieSpell(poke, tgt)
+        moveEffect1st_eerieSpell(poke, tgt)
     }
 }
 
-// 15.特性の効果
-function abilityEffect(poke){
+// 16.特性の効果（その1）
+function abilityEffect1st(poke) {
     // 1.攻撃側のマジシャン/じしんかじょう/ビーストブースト/くろのいななき/しろのいななき
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
-        abilityEffect_attack(poke, tgt)
+        abilityEffect1st_attack(poke, tgt)
     }
     // 2.防御側のへんしょく/ぎゃくじょう
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
-        abilityEffect_defense(poke, tgt)
+        abilityEffect1st_defense(poke, tgt)
     }
 }
 
-// 16.防御側のもちものの効果
-function defenseItemEffect(poke){
+// 17.防御側の持ち物の効果（その3）
+function defenseItemEffect3rd(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
-        defenseItemEffect_item(poke, tgt)
+        defenseItemEffect3rd_item(poke, tgt)
     }
 }
 
-// 18.いにしえのうた/きずなへんげによるフォルムチェンジ
-function formChangeAbility(poke){
+// 19.いにしえのうた/きずなへんげによるフォルムチェンジ
+function formChangeAbility(poke) {
     if ( poke.myRest_hp == 0 ) return // 自分がひんしでないこと
     if ( !isAbility(poke) ) return
 
@@ -652,8 +648,16 @@ function formChangeAbility(poke){
 
 }
 
-// 19.いのちのたまの反動/かいがらのすずの回復
-function lifeorbShellbell(poke){
+// 20.いのちのたまの反動/かいがらのすずの回復
+function lifeorbShellbell(poke) {
+    // 合計ダメージの削除
+    let damage = 0
+    for ( const tgt of poke.myTarget ) {
+        if ( !tgt.success ) continue // すでに失敗していないこと
+        damage += tgt.poke.myCondition.myDamage.sum
+        tgt.poke.myCondition.myDamage.sum = 0
+    }
+
     if ( !isItem(poke) ) return // 自分の持ち物が有効であること
     if ( poke.myRest_hp == 0 ) return // 自分がひんしでないこと
     if ( poke.myCondition.mySheer_force ) return // ちからずくが無効であること
@@ -664,58 +668,48 @@ function lifeorbShellbell(poke){
         changeHP(poke, Math.floor(poke.myFull_hp / 10 * isDynamax(poke)), "-")
     }
     // かいがらのすず
-    /*
-    let damage = 0
-    if (move.num > 0) damage = move.damage
-    else for (const tgt of con.tgt){
-        if (tgt.result == "失敗") continue
-        damage += tgt.damage.done
+    if ( poke.myItem == "かいがらのすず" ) {
+        itemDeclaration(poke)
+        changeHP(poke, Math.floor(damage / 8), "+")
     }
-    if (damage == 0) return
-    if (poke.myItem == "かいがらのすず"){
-        changeHP(me, you, con, Math.floor(damage / 8), "+")
-    }
-    */
 }
 
-// 20.オボンのみなど回復のきのみ/チイラのみ/リュガのみ/ヤタピのみ/ズアのみ/カムラのみ/サンのみ/スターのみ/ミクルのみ/きのみジュース
-function recoverBerry(poke){
+// 21.防御側の持ち物の効果（その4）
+function defenseItemEffect4th(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
         eatBerryInPinch(tgt.poke)
     }
-    // 攻撃ダメージによって発動する場合のみこの処理順になる。
-    // 反動やゴツゴツメット等の効果ダメージやだっしゅつボタンによるきんちょうかんの退場ではその直後に割り込んで発動する。
+
+    // オボンのみなど回復のきのみ/チイラのみ/リュガのみ/ヤタピのみ/ズアのみ/カムラのみ/サンのみ/スターのみ/ミクルのみ/きのみジュース
+        // 攻撃側が反動やゴツゴツメット等のダメージを受けた際や、防御側のきんちょうかんがだっしゅつボタンで退場した際ではその直後に割り込んで発動する。
+    // エレキシード/グラスシード/ミストシード/サイコシード/ルームサービス
+        // ランク補正が限界だったため発動できなかったとき、攻撃技でダメージを受けるとこのタイミングで発動する。ダイマックスわざなどでフィールドが変化した際や、攻撃側が反動等のダメージを受けた際はその直後に発動する。
 }
 
-// 21.ききかいひ/にげごしによって手持ちに戻るまで
+// 22.ききかいひ/にげごしによって手持ちに戻る
     // だっしゅつボタンと同時発動した場合は、交代先は両者同時に行う
     // レッドカードと同時発動した場合は、レッドカードの交代が行われた後、ききかいひの交代先を選ぶ
-function emergencyExit(poke){
+function emergencyExit(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success )                   continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 )        continue // 対象がひんしでないこと
         if ( poke.myCondition.mySheer_force ) continue // ちからずくが無効であること
         if ( !isAbility(tgt.poke) )           continue // 特性が有効であること
+        if ( tgt.poke.myRest_hp > tgt.poke.myFull_hp / 2 )               continue // 残りHPが半分以下であること
+        if ( tgt.poke.myRest_hp + tgt.damage <= tgt.poke.myFull_hp / 2 ) continue // この攻撃で半分以下になったこと
+        if ( tgt.poke.myAbility != "ききかいひ" && tgt.poke.myAbility != "にげごし" ) continue
 
-        if ( tgt.poke.myAbility == "ききかいひ" || tgt.poke.myAbility == "にげごし" ) {
-
-        }
-
-        /*
-        if ((tgt.poke.myAbility == "ききかいひ" || tgt.poke.myAbility == "にげごし") 
-        && tgt.poke.myRest_hp + damage.done > tgt.full_HP / 2 && 0 < tgt.poke.myRest_hp && tgt.poke.myRest_hp <= tgt.full_HP / 2 && !user[0].f_con.includes("選択中")){
-            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "は　" + tgt.poke.myAbility + "で手持ちに戻った" + "\n")
-            user[0].f_con += "選択中・・・" + "\n"
-            toHand(user[0], user[1], tgt)
-        }
-        */
+        tgt.poke.myEmergency = tgt.poke.myPosition
+        abilityDeclaration(tgt.poke)
+        writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 手持ちに戻った`)
+        toHand(tgt.poke)
     }
 }
 
-// 22.とんぼがえり/ボルトチェンジ/クイックターンによって手持ちに戻るまで
-function comeBackMove(poke){
+// 23.とんぼがえり/ボルトチェンジ/クイックターンによって手持ちに戻る
+function comeBackMove(poke) {
     if ( !( poke.myMove.name == "とんぼがえり" || poke.myMove.name == "ボルトチェンジ" || poke.myMove.name == "クイックターン" ) ) return 
     if ( !isBench(poke) )                  return // 控えがいること
     if ( isSwitch(poke.myTarget[0].poke) ) return 
@@ -730,9 +724,9 @@ function comeBackMove(poke){
 }
 
 
-// 23.アイアンローラーによるフィールドの消失
+// 24.アイアンローラーによるフィールドの消失
 // 使用者が場から去っている場合も発動する
-function steelRoller(poke){
+function steelRoller(poke) {
     if ( poke.myMove.name == "アイアンローラー" ) {
         if ( fieldStatus.myGrassy )   writeLog(`グラスフイールドが 消え去った`)
         if ( fieldStatus.myElectric ) writeLog(`エレキフイールドが 消え去った`)
@@ -742,18 +736,8 @@ function steelRoller(poke){
     }
 }
 
-// 24.レッドカードによる交代先の繰り出し
-function redCard(poke){
-    if ( poke.myRed_card === false ) return
-
-    const next = shuffle(isBench(poke))[0]
-    const position = poke.myRed_card
-    poke.myRed_card = false
-    summon(next, position)
-}
-
 // 25.わるいてぐせ
-function pickPocket(poke){
+function pickPocket(poke) {
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
 
@@ -774,8 +758,8 @@ function pickPocket(poke){
     }
 }
 
-// 26.一部の技の効果
-function someMoveEffect(poke){
+// 26.技の効果（その2）
+function moveEffect2nd(poke) {
     // もえつきるによるタイプの消失
     if ( poke.myMove.name == "もえつきる" ) {
         if ( poke.myRest_hp > 0 ) {
@@ -807,90 +791,42 @@ function someMoveEffect(poke){
     */
 }
 
-// 27.一部の持ち物の効果
-function someItemEffect(poke){
+// 27.攻撃側の持ち物の効果
+function attackItemEffect(poke) {
     // ヒメリのみ
-    // 技の使用によってPP0になった場合のみこの処理順になる。ぶきみなじゅもんの効果ではその直後に割り込んで発動する。
-    if ( poke.myItem == "ヒメリのみ" && isItem(poke) ) {
-        for ( let i = 0; i < 4; i++ ) {
-            if ( poke[`myRest_pp_${i}`] == 0 ) {
-                const num = Math.min(10 * isRipen(poke), poke[`myFull_pp_${i}`])
-                poke[`myRest_pp_${i}`] = num
-                writeLog(`${poke.myTN} の ${poke.myName} は ヒメリのみで ${poke[`myMove_${i}`]}のPPを${num}回復した`)
-                enableToRecycle(poke)
-                break
-            }
-        }
-    }
-    // しろいハーブ
-    landing_whiteHerb(poke) // 自分用
-    for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )            continue // すでに失敗していないこと
-        if ( tgt.poke.myRest_hp == 0 ) continue // 対象がひんしでないこと
-        landing_whiteHerb(tgt.poke)
-    }
-    // のどスプレー/からぶりほけん
-    if ( poke.myItem == "のどスプレー" && isItem(poke) ) {
-        if ( musicMove.includes(poke.myMove.name) && poke.myRank_sp_atk < 6 ) {
-            itemDeclaration(poke)
-            changeMyRank(poke, "sp_atk", 1)
-            enableToRecycle(poke)
-        }
-    }
-    // だっしゅつパックによって手持ちに戻るまで
-    // 自分用
-    if ( poke.myItem == "だっしゅつパック" && isItem(poke) ) {
-        if ( isBench(poke) && poke.myCondition.myRank_down ) {
-            // だっしゅつボタンやききかいひが発動している場合、だっしゅつパックは発動しない
-            let check = true
-            for ( const tgt of poke.myTarget ) {
-                if ( tgt.myEject_button !== false ) check = false
-                if ( tgt.myEmergency    !== false ) check = false
-            }
-            if ( check ) {
-                itemDeclaration(poke)
-                poke.myEject_pack = poke.myPosition
-                toHand(poke)
-            }
-        }
-    }
-    // 攻撃対象用
-    for ( const tgt of poke.myTarget ) {
-        if ( !tgt.success )                      continue // すでに失敗していないこと
-        if ( !isItem(tgt.poke) )                 continue // アイテムが有効であること
-        if ( !isBench(tgt.poke) )                continue // 控えがいること
-        if ( !tgt.poke.myCondition.myRank_down ) continue // ランクが下がったこと
-        if ( tgt.poke.myItem != "だっしゅつパック" ) continue
+    attackItemEffect_leppaBerry(poke)
+    // のどスプレー
+    attackItemEffect_throatSpray(poke)
+    // からぶりほけん
+    attackItemEffect_blunderPolicy(poke)
 
-        let check = true
-        for ( const _tgt of poke.myTarget ) {
-            if ( _tgt.myEject_button !== false ) check = false
-            if ( _tgt.myEmergency    !== false ) check = false
-        }
-        if ( check ) continue // だっしゅつボタンやききかいひが発動している場合、だっしゅつパックは発動しない
-
-        itemDeclaration(tgt.poke)
-        tgt.myEject_pack = tgt.myPosition
-        toHand(tgt.poke)
-    }
     // しろいハーブ/だっしゅつパックは追加効果や反動やダイマックス技効果など技自体の効果によって発動する場合のみこの処理順になる
     // (わたげなど技以外の効果ではその直後に割り込んで発動する)
 }
 
-// かたやぶりなどの特性無視終了？
-function moldBreakStop(poke){
-    /*
-    for (let i = 0; i < tgt.p_con.split("\n").length; i++){
-        if (tgt.p_con.split("\n")[i].includes("かたやぶり：")){
-            tgt.poke.myAbility = tgt.p_con.split("\n")[i].slice(6)
-        }
-    }
-    removeText(tgt.p_con, "かたやぶり：")
-    */
+// 28.特性の効果（その2）
+function abilityEffect2nd(poke) {
+    // かたやぶり解除（？）
+    
+    // じゅうなん/すいほう/どんかん/パステルベール/ふみん/マイペース/マグマのよろい/みずのベール/めんえき/やるき
+    // かたやぶりの効果で特性を無視されたときに発動し、状態異常/状態変化を治す。
+    healAilmentForAbility(poke)
+
+    // きょうせいが発動可能になる
 }
 
-// 23.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・交代
-function returnBattle(poke){
+// 29.行動後に発動する持ち物の効果
+function itemEffectAfterAction(poke) {
+    // しろいハーブ
+    itemEffectAfterAction_whiteHerb(poke)
+    // だっしゅつパックによって手持ちに戻る
+    itemEffectAfterAction_ejectPack_me(poke)
+    itemEffectAfterAction_ejectPack_opp(poke)
+}
+
+// 30.とんぼがえり/ボルトチェンジ/クイックターン/ききかいひ/にげごし/だっしゅつボタン/だっしゅつパックによる交代先の選択・繰り出し
+    // ドラゴンテール/ともえなげは発動直後に強制交代される
+function returnBattle(poke) {
     for ( const _poke of myParty ) {
         if ( isSwitch(_poke) ) {
             writeLog(`${_poke.myTN} は 戦闘に出すポケモンを選んでください`)
@@ -907,10 +843,10 @@ function returnBattle(poke){
     }
 }
 
-// 25.おどりこ
-function ability_dancer(poke){
+// 31.おどりこ
+function ability_dancer(poke) {
 
 }
 
-
+// 32.次のポケモンの行動。全ポケモンが行動を完了したときは#5.ターン終了時の処理に進む。
 

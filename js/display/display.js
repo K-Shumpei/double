@@ -480,6 +480,9 @@ function setPokemon(){
     party.mySp_def_ev = Number(document.getElementById(`D_EV`).value)
     party.mySpeed_ev  = Number(document.getElementById(`S_EV`).value)
     // 元の情報
+    party.myName_org    = document.getElementById(`name`).value
+    party.myGender_org  = document.getElementById(`${team}_sex`).textContent
+    party.myLevel_org   = Number(document.getElementById(`lv`).value)
     party.myType_org    = document.getElementById(`type`).textContent.split("、")
     party.myAbility_org = document.getElementById(`ability`).value
     party.myAtk_org     = Number(document.getElementById(`A_AV`).value)
@@ -616,36 +619,36 @@ function checkCondition(position) {
 
     // ポケモンの状態
     const condition = poke.myCondition
-    if ( condition.myAqua_ring )          text += `アクアリング\n`
+    if ( condition.myAqua_ring )         text += `アクアリング\n`
     if ( condition.myAtrract ) {}
-    if ( condition.myAutotomize )         text += `ボディパージ：${condition.myAutotomize}回\n`
-    if ( condition.myBind.turn )          text += `バインド ${condition.myBind.turn}ターン目\n`
-    if ( condition.myCant_escape )        text += `逃げられない\n`
-    if ( condition.myCant_move )          text += `反動で動けない\n`
-    if ( condition.myCharge == 2 )        text += `じゅうでん\n`
-    if ( condition.myChi_strike )         text += `キョダイシンゲキ：${condition.myChi_strike}回\n`
-    if ( condition.myConfusion )          text += `こんらん：${condition.myConfusion}ターン目\n`
-    if ( condition.myCritical )           text += `きゅうしょアップ\n`
-    if ( condition.myDefense_curl )       text += `まるくなる\n`
-    if ( condition.myDisable.turn )       text += `かなしばり：残り${condition.myDisable.turn}ターン\n`
-    if ( condition.myEmbargo )            text += `さしおさえ：残り${condition.myEmbargo}ターン\n`
-    if ( condition.myEncore.turn )        text += `アンコール：残り${condition.myEncore.turn}ターン\n`
-    if ( condition.muFlush_fire )         text += `もらいび\n`
-    if ( condition.myForesight )          text += `みやぶられている\n`
-    if ( condition.myHeal_block )         text += `回復封じ：${condition.myHeal_block}ターン目\n`
-    if ( condition.myIngrain )            text += `ねをはる\n`
-    if ( condition.myLaser_focus == 2  )  text += `とぎすます\n`
-    if ( condition.myLock_on == 2 )       text += `ロックオン\n`
-    if ( condition.myMagnet_rise )        text += `でんじふゆう：${condition.myMagnet_rise}ターン目\n`
-    if ( condition.myMicle )              text += `ミクルのみ\n`
-    if ( condition.myMinimize )           text += `ちいさくなる\n`
-    if ( condition.myMiracle_eye )        text += `ミラクルアイ\n`
-    if ( condition.myNo_ability )         text += `特性なし\n`
-    if ( condition.myPerish_song )        text += `ほろびカウント：${condition.myPerish_song}\n`
-    if ( condition.myStockpile )          text += `たくわえる：${condition.myStockpile}回\n`
-    if ( condition.myTaunt )              text += `ちょうはつ：${condition.myTaunt}ターン目\n`
-    if ( condition.myTelekinesis )        text += `テレキネシス：${condition.myTelekinesis}ターン目\n`
-    if ( condition.myThroat_chop )        text += `じごくづき：${condition.myThroat_chop}ターン目\n`
+    if ( condition.myAutotomize )        text += `ボディパージ：${condition.myAutotomize}回\n`
+    if ( condition.myBind.turn )         text += `バインド ${condition.myBind.turn}ターン目\n`
+    if ( condition.myCant_escape )       text += `逃げられない\n`
+    if ( condition.myCant_move )         text += `反動で動けない\n`
+    if ( condition.myCharge == 2 )       text += `じゅうでん\n`
+    if ( condition.myChi_strike )        text += `キョダイシンゲキ：${condition.myChi_strike}回\n`
+    if ( condition.myConfusion )         text += `こんらん：${condition.myConfusion}ターン目\n`
+    if ( condition.myCritical )          text += `きゅうしょアップ\n`
+    if ( condition.myDefense_curl )      text += `まるくなる\n`
+    if ( condition.myDisable.turn )      text += `かなしばり：残り${condition.myDisable.turn}ターン\n`
+    if ( condition.myEmbargo )           text += `さしおさえ：残り${condition.myEmbargo}ターン\n`
+    if ( condition.myEncore.turn )       text += `アンコール：残り${condition.myEncore.turn}ターン\n`
+    if ( condition.muFlush_fire )        text += `もらいび\n`
+    if ( condition.myForesight )         text += `みやぶられている\n`
+    if ( condition.myHeal_block )        text += `回復封じ：${condition.myHeal_block}ターン目\n`
+    if ( condition.myIngrain )           text += `ねをはる\n`
+    if ( condition.myLaser_focus == 2 )  text += `とぎすます\n`
+    if ( condition.myLock_on == 2 )      text += `ロックオン\n`
+    if ( condition.myMagnet_rise )       text += `でんじふゆう：${condition.myMagnet_rise}ターン目\n`
+    if ( condition.myMicle )             text += `ミクルのみ\n`
+    if ( condition.myMinimize )          text += `ちいさくなる\n`
+    if ( condition.myMiracle_eye )       text += `ミラクルアイ\n`
+    if ( condition.myNo_ability )        text += `特性なし\n`
+    if ( condition.myPerish_song )       text += `ほろびカウント：${condition.myPerish_song}\n`
+    if ( condition.myStockpile )         text += `たくわえる：${condition.myStockpile}回\n`
+    if ( condition.myTaunt )             text += `ちょうはつ：${condition.myTaunt}ターン目\n`
+    if ( condition.myTelekinesis )       text += `テレキネシス：${condition.myTelekinesis}ターン目\n`
+    if ( condition.myThroat_chop )       text += `じごくづき：${condition.myThroat_chop}ターン目\n`
 
     // フィールドの状態
     const field = ( poke.myParty == "me" )? myField : oppField

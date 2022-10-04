@@ -1,13 +1,18 @@
 $(function () {
     var socketio = io()
 
-    // パスワード送信
+    //**************************************************
+    // 送信. パスワード
+    //**************************************************
     $("#emitPass").submit(function() {
         socketio.emit("password", $("#pass").val())
         $("#pass").val("")
         return false
     })
-    // パスワードの正誤
+
+    //**************************************************
+    // 受信. パスワードの正誤
+    //**************************************************
     socketio.on("pass", function(){
         document.getElementById("headline").textContent = "チームを登録してください"
         document.getElementById("password").style.display = "none"
@@ -17,7 +22,9 @@ $(function () {
         alert("パスワードが違います")
     })
 
-    // チームデータ送信
+    //**************************************************
+    // 送信. パーティデータ
+    //**************************************************
     $("#team_set").submit(function() {
         const my_name = $("#my_name").val()
         if (my_name == ""){
@@ -32,14 +39,18 @@ $(function () {
         return false
     })
 
-    // 一人目は対戦相手を探す
+    //**************************************************
+    // 受信. 対戦相手の探索中
+    //**************************************************
     socketio.on("find enemy", function() {
         document.getElementById("headline").textContent = "対戦相手を探しています"
         document.getElementById("register").style.display = "none"
         document.getElementById("trainer_name").style.display = "none"
     })
 
-    // 対戦相手が見つかり、選出するポケモンを選ぶ
+    //**************************************************
+    // 受信. 対戦相手が見つかる
+    //**************************************************
     socketio.on("select pokemon", function(you) {
         // 相手の手持ちポケモン設定
         for ( i = 0; i < 6; i++) { 
@@ -92,6 +103,9 @@ $(function () {
             party.mySp_def_ev = you[i].sp_def_ev
             party.mySpeed_ev  = you[i].speed_ev
             // 元の情報
+            party.myName_org    = you[i].name
+            party.myGender_org  = you[i].gender
+            party.myLevel_org   = you[i].level
             party.myType_org    = you[i].type
             party.myAbility_org = you[i].ability
             party.myAtk_org     = you[i].atk
@@ -152,7 +166,9 @@ $(function () {
         }
     })
 
-    // 選出するポケモンのデータを送信　[1匹目、2匹目、3匹目]の番号リストを送信
+    //**************************************************
+    // 送信. 選出するポケモンのデータ（[1匹目、2匹目、3匹目]の番号リストを送信）
+    //**************************************************
     $("#battle_start").submit(function() {
         let select = []
         for (let i = 0; i < 4; i++){
@@ -172,16 +188,23 @@ $(function () {
         return false
     })
 
-    // 自分が先に選出した
+    //**************************************************
+    // 受信. 自分が先に選出した
+    //**************************************************
     socketio.on("waiting me", function() {
         document.getElementById("myName").textContent += "(選出完了)"
     })
-    // 相手が先に選出した
+
+    //**************************************************
+    // 受信. 相手が先に選出した
+    //**************************************************
     socketio.on("waiting you", function() {
         document.getElementById("yourName").textContent += "(選出完了)"
     })
 
-    // 対戦開始
+    //**************************************************
+    // 受信. お互いの選出が完了し、対戦開始
+    //**************************************************
     socketio.on("battle start", function(my_select, opp_select) {
         // 自分の選出
         myParty[my_select[0]].myBench = 0
@@ -238,7 +261,9 @@ $(function () {
         showNowCondition()
     })
 
-    // コマンドの送信
+    //**************************************************
+    // 送信. コマンド入力
+    //**************************************************
     $("#battle").submit(function() {
         const form = document.forms.battle
 
@@ -335,7 +360,9 @@ $(function () {
         */
     })
 
-    // 各ターンの行動
+    //**************************************************
+    // 受信. お互いのコマンド入力　と　乱数リスト
+    //**************************************************
     socketio.on("run battle", function(myCommand, oppCommand, list) {
         // 乱数リストを記入
         randomList = list
@@ -365,7 +392,9 @@ $(function () {
         back()
     })
 
-    // ポケモンの交代
+    //**************************************************
+    // 受信. ポケモンの交代
+    //**************************************************
     socketio.on("change pokemon", function(myCommand, oppCommand, list) {
         // 乱数リストを記入
         randomList = list
@@ -415,229 +444,6 @@ $(function () {
         }
     })
 
-        /*
-        // 空欄、空欄
-        if (!me.f_con.includes("選択中") && !you.f_con.includes("ひんし") && !me.f_con.includes("選択中") && !you.f_con.includes("ひんし")){
-            runBattle(me, you)
-        }
-        // 選択中、空欄
-        if ((me.f_con.includes("選択中") && !you.f_con.includes("選択中") && !you.f_con.includes("ひんし")) 
-        || (you.f_con.includes("選択中") && !me.f_con.includes("選択中") && !me.f_con.includes("ひんし"))){
-            summon.pokeReplace(data[room]["user" + player], data[room]["user" + enemy])
-            summon.onField(data[room]["user" + player], data[room]["user" + enemy], 1)
-            bfn.buttonValidation(data[room]["user" + player])
-            data[room]["user" + player].data.command = ""
-            if (data[room]["user" + enemy].data.command != ""){
-                let atk = data[room]["user" + enemy]
-                let def = data[room]["user" + player]
-                let order = [def, atk]
-                let move = success.moveSuccessJudge(atk, def, order)
-                if (move == false){
-                    bfn.processAtFailure(atk)
-                } else {
-                    if (move[9] == "反射"){
-                        let save = atk
-                        atk = def
-                        def = save
-                    }
-                    if (movePro.moveProcess(atk, def, move, order) == "stop"){
-                        atk.data.command = ""
-                        io.to(data[room].user1.data.id).emit("run battle", data[room].user1, data[room].user2)
-                        io.to(data[room].user2.data.id).emit("run battle", data[room].user2, data[room].user1)
-                        return
-                    }
-                }
-                atk.data.command = ""
-            }
-            end.endProcess(data[room].user1, data[room].user2)
-            io.to(data[room].user1.data.id).emit("run battle", data[room].user1, data[room].user2)
-            io.to(data[room].user2.data.id).emit("run battle", data[room].user2, data[room].user1)
-            return
-        }
-        // ひんし、空欄
-        if ((me.f_con.includes("ひんし") && !you.f_con.includes("選択中") && !you.f_con.includes("ひんし")) 
-        || (you.f_con.includes("ひんし") && !me.f_con.includes("選択中") && !me.f_con.includes("ひんし"))){
-            summon.pokeReplace(data[room]["user" + player], data[room]["user" + enemy])
-            summon.onField(data[room]["user" + player], data[room]["user" + enemy], 1)
-            bfn.buttonValidation(data[room]["user" + player])
-            data[room]["user" + player].data.command = ""
-            io.to(data[room].user1.data.id).emit("run battle", data[room].user1, data[room].user2)
-            io.to(data[room].user2.data.id).emit("run battle", data[room].user2, data[room].user1)
-            return
-        }
-        // 選択中、選択中
-        if (me.f_con.includes("選択中") && you.f_con.includes("選択中")){
-            if (data[room].user1.data.command != "" && data[room].user2.data.command != ""){
-                summon.pokeReplace(data[room].user1, data[room].user2)
-                summon.pokeReplace(data[room].user2, data[room].user1)
-                summon.onField(data[room].user1, data[room].user2, "both")
-                end.endProcess(data[room].user1, data[room].user2)
-                bfn.buttonValidation(data[room].user1)
-                bfn.buttonValidation(data[room].user2)
-                data[room].user1.data.command = ""
-                data[room].user2.data.command = ""
-                io.to(data[room].user1.data.id).emit("run battle", data[room].user1, data[room].user2)
-                io.to(data[room].user2.data.id).emit("run battle", data[room].user2, data[room].user1)
-                return
-            }
-        }
-        // ひんし、ひんし
-        if (me.f_con.includes("ひんし") && you.f_con.includes("ひんし")){
-            if (data[room].user1.data.command != "" && data[room].user2.data.command != ""){
-                summon.pokeReplace(data[room].user1, data[room].user2)
-                summon.pokeReplace(data[room].user2, data[room].user1)
-                summon.onField(data[room].user1, data[room].user2, "both")
-                bfn.buttonValidation(data[room].user1)
-                bfn.buttonValidation(data[room].user2)
-                data[room].user1.data.command = ""
-                data[room].user2.data.command = ""
-                io.to(data[room].user1.data.id).emit("run battle", data[room].user1, data[room].user2)
-                io.to(data[room].user2.data.id).emit("run battle", data[room].user2, data[room].user1)
-                return
-            }
-        }
-
-        // 手持ちのポケモンの情報を記入
-        for (let i = 0; i < 4; i++){
-            for (const parameter of [
-                "name", "sex", "nature", "ability", "item", "abnormal", 
-                "move_0", "move_1", "move_2", "move_3", 
-                "recycle", "belch", "form", "life", "belch", "recycle", "form", 
-                "level", "last_HP", "full_HP", 
-                "A_AV", "B_AV", "C_AV", "D_AV", "S_AV", 
-                "PP_0", "last_0", 
-                "PP_1", "last_1", 
-                "PP_2", "last_2", 
-                "PP_3", "last_3", 
-                "H_IV", "A_IV", "B_IV", "C_IV", "D_IV", "S_IV", 
-                "H_EV", "A_EV", "B_EV", "C_EV", "D_EV", "S_EV"]){
-                $("#" + i + "_" + parameter).text(me["poke" + i][parameter])
-            }
-            $("#" + i + "_type").text(me["poke" + i].type.join("、"))
-        }
-
-        // 戦闘中のポケモンの情報を記入
-        for (let i = 0; i < 2; i++){
-            for (const parameter of [
-                "name", "sex", "level", "ability", "item", "abnormal", 
-                "move_0", "move_1", "move_2", "move_3", 
-                "last_HP", "full_HP", 
-                "A_AV", "B_AV", "C_AV", "D_AV", "S_AV", 
-                "PP_0", "last_0", 
-                "PP_1", "last_1", 
-                "PP_2", "last_2", 
-                "PP_3", "last_3", 
-                "A_rank", "B_rank", "C_rank", "D_rank", "S_rank", "X_rank", "Y_rank"]){
-                $("#A" + i + "_" + parameter).text(me["con" + i][parameter])
-            }
-            $("#A" + i + "_type").text(me["con" + i].type.join("、"))
-        }
-        for (let i = 0; i < 2; i++){
-            for (const parameter of [
-                "name", "sex", "level", "abnormal", 
-                "A_rank", "B_rank", "C_rank", "D_rank", "S_rank", "X_rank", "Y_rank"]){
-                $("#B" + i + "_" + parameter).text(you["con" + i][parameter])
-            }
-            $("#B" + i + "_type").text(you["con" + i].type.join("、"))
-        }
-
-        // フィールド状態とログの書き込み
-        document.getElementById("A_f_con").value = me.f_con
-        document.getElementById("B_f_con").value = you.f_con
-        document.getElementById("log").value = me.log
-        document.getElementById("log").scrollTop = document.getElementById("log").scrollHeight
-
-        for (const team of [{data: me, char: "A"}, {data: you, char: "B"}]){
-            // メガ進化、Z技、ダイマックスのテキスト
-            //document.getElementById(team.char + "_mega_text").textContent = team.data.data.megaTxt
-            //document.getElementById(team.char + "_Z_text").textContent = team.data.data.ZTxt
-            //document.getElementById(team.char + "_ultra_text").textContent = team.data.data.ultraTxt
-            //document.getElementById(team.char + "_dyna_text").textContent = team.data.data.dynaTxt
-            //document.getElementById(team.char + "_giga_text").textContent = team.data.data.gigaTxt
-            for (let i = 0; i < 2; i++){
-                // 画像のリセット
-                document.getElementById(team.char + i + "_image").src = ""
-                document.getElementById(team.char + i + "_HP_bar").value = 0
-                document.getElementById(team.char + i + "_type_image0").src = ""
-                document.getElementById(team.char + i + "_type_image1").src = ""
-                document.getElementById(team.char + i + "_type_image2").src = ""
-                document.getElementById(team.char + i + "_type_image3").src = ""
-
-                if (team.data["con" + i].name != ""){
-                    // ポケモンの画像の設定
-                    for (let j = 0; j < pokemon.length; j++){
-                        if (team.data["con" + i].name == pokemon[j][1]){
-                            document.getElementById(team.char + i + "_image").src = "poke_figure/" + pokemon[j][0] + ".gif"
-                        }
-                    }
-                    // ポケモンのタイプの設定
-                    let type = document.getElementById(team.char + i + "_type").textContent.split("、")
-                    for (let j = 0; j < type.length; j++){
-                        document.getElementById(team.char + i + "_type_image" + j).src = "type_figure/" + type[j] + ".gif"
-                    }
-                    document.getElementById(team.char + i + "_type").textContent = ""
-                    // HPバーの表示
-                    document.getElementById(team.char + i + "_HPbar").value = team.data["con" + i].last_HP / team.data["con" + i].full_HP
-                    document.getElementById(team.char + team.data["con" + i].num + "_bar").style.display = "block"
-                    document.getElementById(team.char + team.data["con" + i].num + "_HP_bar").value = team.data["con" + i].last_HP / team.data["con" + i].full_HP
-                }
-                // ダイマックスシンボル
-                //if (team.data.data.dynaTxt.includes("3") || team.data.data.gigaTxt.includes("3")){
-                    //let symbol = document.createElement("img")
-                    //symbol.classList.add("symbol")
-                    //symbol.src = "poke_figure/dynamaxSymbol.png"
-                    //document.getElementById(team.char + "_symbol").appendChild(symbol)
-                //} else {
-                    //document.getElementById(team.char + "_symbol").innerHTML = ""
-                //}
-            }
-        }
-
-        */
-
-    // 相手の選択を待っている時
-    socketio.on("wait your action", function() {
-        document.getElementById("battle_button").disabled = true
-    })
-
-    socketio.on("action decide", function(val) {
-        // 相手の選んだボタンにチェックをつける
-        if (val > 3){
-            document.getElementById("B_" + Number(val - 4) + "_button").checked = true
-        } else {
-            document.getElementById("B_radio_" + val).checked = true
-        }
-
-        // バトル実行
-        run_battle()
-        button_validation()
-
-        // 自分に選択中のメモがあれば決定ボタンを有効にし、洗濯中であることをサーバーに送信
-        if (new get("A").f_con.includes("選択中・・・")){
-            document.battle.battle_button.disabled = false
-            for (let i = 0; i < 4; i++){
-                document.getElementById("A_radio_" + i).disabled = true
-                document.getElementById("A_radio_" + i).checked = false
-            }
-            socketio.emit("thinking", "yes")
-        } else if (new get("B").f_con.includes("選択中・・・")){
-            for (let i = 0; i < 4; i++){
-                document.getElementById("A_radio_" + i).disabled = true
-            }
-            for (let i = 0; i < 3; i++){
-                document.getElementById("A_" + i + "_button").disabled = true
-            }
-            socketio.emit("thinking", "no")
-        }
-    })
-
-    socketio.on("summon poke", function(val) {
-        if (val > 3){
-            document.getElementById("B_" + Number(val - 4) + "_button").checked = true
-        }
-        choose_poke()
-        button_validation()
-    })
 
     // 相手の接続が切れた時
     socketio.on("disconnection", function() {

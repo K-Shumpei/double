@@ -177,6 +177,7 @@ function moveUsedEachPokemon() {
             if ( fieldStatus.mySwitch_opp ) break
         } else {
             poke.myCondition.myProtect_num = 0
+            poke.myCondition.myShell_trap = false
             if ( !poke.myCondition.myFilling.name ) poke.myMove.success = false
         }
 

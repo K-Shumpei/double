@@ -1,90 +1,89 @@
 // ターン終了時の処理順
-function endProcess(){
+function endProcess() {
 
     writeLog(`---------- ターン終了時の処理 ----------`)
 
     // 1.てんきの効果
     weatherEffect()
-    // 2.みらいよち/はめつのねがい: 技が使用された順に発動
+    // 2.ききかいひ/にげごしによる交代先の選択・繰り出し (1)
+    // 3.仲良し度による状態異常の回復
+    // 4.みらいよち/はめつのねがい: 技が使用された順に発動
     futureAttack()
-    // 3.ねがいごと
+    // 5.ねがいごと
     wishRecover()
-    // 4.場の状態・特性・もちものによる回復・ダメージ
-    fieldAbilityItemDamage()
-    // 5.アクアリング
+    // 6.イベントブロック（その1）
+    eventBlock1st()
+    // 7.ききかいひ/にげごしによる交代先の選択・繰り出し (2)
+    // 8.アクアリング
     aquaRing()
-    // 6.ねをはる
+    // 9.ねをはる
     ingrain()
-    // 7.やどりぎのタネ
+    // 10.やどりぎのタネ
     leechSeed()
-    // 8 どく/もうどく/ポイズンヒール
+    // 11.どく/もうどく/ポイズンヒール
     acidCheck()
-    // 9 やけど
+    // 12.やけど
     burnCheck()
-    // 10.あくむ
+    // 13.あくむ
     nightmare()
-    // 11.のろい
+    // 14.のろい
     curse()
-    // 12.バインド
+    // 15.バインド
     bindCheck()
-    // 13.たこがため
+    // 16.たこがため
     octolock()
-    // 14.ちょうはつの終了
+    // 17.ちょうはつの終了
     tauntEnd()
-    // 15.アンコールの終了
+    // 18.いちゃもんの終了: キョダイユウゲキによるいちゃもん状態のみターン経過で解除される
+    // 19.アンコールの終了
     encoreEnd()
-    // 16.かなしばりの終了
+    // 20.かなしばりの終了
     disableEnd()
-    // 17.でんじふゆうの終了
+    // 21.でんじふゆうの終了
     magnetRiseEnd()
-    // 18.テレキネシスの終了
+    // 22.テレキネシスの終了
     telekinesisEnd()
-    // 19.かいふくふうじの終了
+    // 23.かいふくふうじの終了
     healBlockEnd()
-    // 20.さしおさえの終了
+    // 24.さしおさえの終了
     embargoEnd()
-    // 21.ねむけ
+    // 25.ねむけ
     sleepCheck()
-    // 22.ほろびのうた
+    // 26.ほろびのうた
     perishSong()
-    // 23.片側の場の状態の継続/終了: ホスト側の状態が先にすべて解除された後に、ホストでない側の状態が解除される。
-    oneSideFieldEnd()
-    // 24.全体の場の状態の継続/終了
-    bothSideFieldEnd()
-    // 25.はねやすめ解除
+    // 27.はねやすめを使用していたひこうタイプは地面から離れる
     roostEnd()
-    // 26.その他の状態・特性・もちもの
-    otherConditionAbilityItem()
-    // 27.ダルマモード
+    // 28.ききかいひ/にげごしによる交代先の選択・繰り出し (3)
+    // 29.片側の場の状態の継続/終了: ホスト側の状態が先にすべて解除された後に、ホストでない側の状態が解除される。
+    oneSideFieldEnd()
+    // 30.全体の場の状態の継続/終了
+    bothSideFieldEnd()
+    // 31.イベントブロック（その2）
+    eventBlock2nd()
+    // 32.ききかいひ/にげごしによる交代先の選択・繰り出し (4)
+    // 33.ダルマモード/リミットシールド/スワームチェンジ/ぎょぐんによるフォルムチェンジ: すばやさ補正を考慮しない。ボールから出た直後のフォルムのすばやさ実数値が発動順に影響する。
     zenMode()
-    // 28.リミットシールド
-    shieldsDown()
-    // 29.スワームチェンジ
-    powerConstruct()
-    // 30.ぎょぐん
-    schooling()
-    // 31.はらぺこスイッチ
-    hungerSwitch()
+    // 34.イベントブロック（その3）
+    eventBlock3rd()
+    // 35.だっしゅつパックによる交代先の選択・繰り出し
+    // 36.仲間呼び
+    // 37.ひんしになったポケモンの代わりのポケモンを繰り出す
+    returnFaintedPokemon()
+    // 38.ダイマックスの終了判定
+    dynamaxEnd()
+    // 39.2.行動選択に戻る
 
     // A.その他の終了
     otherEnd()
 
     writeLog(`---------- ターン終了 ----------`)
 
-    // ダイマックスの終了
-    dynamaxEnd()
-
-    // C.ひんしのポケモンがいる時、交換する
-    returnFaintedPokemon()
-    // D.次ターンの、選択ボタンの無効化
-    // afn.cannotChooseAction()
-
     // ターン終了の記録
     fieldStatus.myTurn_end = true
 }
 
 // A.その他の終了
-function otherEnd(){
+function otherEnd() {
     // ポケモンの状態の終了
     for ( const poke of allPokeInBattle() ) {
         // 攻撃対象の削除
@@ -117,7 +116,7 @@ function otherEnd(){
         // トラップシェル
         poke.myCondition.myShell_trap = false
         // ダメージ
-        poke.myCondition.myDamage = {value: 0, party: false, position: false, nature: false}
+        poke.myCondition.myDamage = {value: 0, sum: 0, party: false, position: false, nature: false}
         // よこどり
         // マジックコート
         poke.myCondition.myMagic_coat = false
@@ -157,49 +156,11 @@ function otherEnd(){
 
 // 技選択肢の無効化　アンコール、いちゃもん、かなしばり、溜め技、ちょうはつ、ふういん
 
-// ダイマックスの終了
-function dynamaxEnd(){
-    /*
-    for (const tgt of order){
-        const user = isMe(me, you, tgt)
-        if (user[0].data.dynaTxt == "ダイマックス：3/3"){
-            user[0].data.dynaTxt = "ダイマックス：2/3"
-        } else if (user[0].data.dynaTxt == "ダイマックス：2/3"){
-            user[0].data.dynaTxt = "ダイマックス：1/3"
-        } else if (user[0].data.dynaTxt == "ダイマックス：1/3"){
-            user[0].data.dynaTxt = "ダイマックス（済）"
-            user[0].data.gigaTxt = "キョダイマックス（済）"
-            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　ダイマックスが　終了した" + "\n")
-            tgt.full_HP = Math.ceil(tgt.full_HP / 2)
-            tgt.last_HP = Math.ceil(tgt.last_HP / 2)
-            user[0]["poke" + tgt.num].last_HP = Math.ceil(user[0]["poke" + tgt.num].last_HP / 2)
-        }
-        if (user[0].data.gigaTxt == "キョダイマックス：3/3"){
-            user[0].data.gigaTxt = "キョダイマックス：2/3"
-        } else if (user[0].data.gigaTxt == "キョダイマックス：2/3"){
-            user[0].data.gigaTxt = "キョダイマックス：1/3"
-        } else if (user[0].data.gigaTxt == "キョダイマックス：1/3"){
-            user[0].data.dynaTxt = "ダイマックス（済）"
-            user[0].data.gigaTxt = "キョダイマックス（済）"
-            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　キョダイマックスが　終了した" + "\n")
-            tgt.full_HP = Math.ceil(tgt.full_HP / 2)
-            tgt.last_HP = Math.ceil(tgt.last_HP / 2)
-            user[0]["poke" + tgt.num].last_HP = Math.ceil(user[0]["poke" + tgt.num].last_HP / 2)
-        }
-    }
-    */
-}
 
-// C.ひんしのポケモンがいる時、交換する
-function returnFaintedPokemon(){
-    for ( const party of [myParty, oppParty] ) {
-        if ( faintedJudge(party) ) writeLog(`${party[0].myTN} は 戦闘に出すポケモンを選んでください`)
-    }
-}
 
 
 // 1.てんきの効果
-function weatherEffect(){
+function weatherEffect() {
     // a. にほんばれ/あめ/すなあらし/あられの終了
     for ( const weather of ["Sunny", "Rainy", "Sandstorm", "Graupel"] ) {
         if ( fieldStatus[`my${weather}`] ) {
@@ -288,8 +249,8 @@ function weatherEffect(){
     }
 }
 
-// 2.みらいよち/はめつのねがい: 技が使用された順に発動
-function futureAttack(){
+// 4.みらいよち/はめつのねがい: 技が使用された順に発動
+function futureAttack() {
     for ( const futureSight of fieldStatus.myFuture_sight ) {
         futureSight.turn += 1
         if ( futureSight.turn == 4 ) {
@@ -345,8 +306,8 @@ function futureAttack(){
     }
 }
 
-// 3.ねがいごと
-function wishRecover(){
+// 5.ねがいごと
+function wishRecover() {
     for ( const field of [myField, oppField] ) {
         for ( const wish of field.myWish_data ) {
             if ( wish.turn == 1 ) {
@@ -365,9 +326,9 @@ function wishRecover(){
     }
 }
 
-// 4.場の状態・特性・もちものによる回復・ダメージ
-function fieldAbilityItemDamage(){
-    // a. ひのうみ/キョダイベンタツ/キョダイゴクエン/キョダイホウゲキ/キョダイフンセキ(ダメージ): 技が使用された順に発動。
+// 6.イベントブロック（その1）
+function eventBlock1st() {
+    // a. ひのうみ/キョダイベンタツ/キョダイゴクエン/キョダイホウゲキ/キョダイフンセキ(ダメージ): 状態が発生した順にダメージが発動する。
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         const damage = Math.floor(poke.myFull_hp / 6 * isDynamax(poke))
         if ( getMyField(poke).myVine_lash && !poke.myType.includes("くさ") ) {
@@ -427,8 +388,8 @@ function fieldAbilityItemDamage(){
     }
 }
 
-// 5.アクアリング
-function aquaRing(){
+// 8.アクアリング
+function aquaRing() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myAqua_ring ) {
             writeLog(`${poke.myTN} の ${poke.myName} は アクアリングで 回復した`)
@@ -437,8 +398,8 @@ function aquaRing(){
     }
 }
 
-// 6.ねをはる
-function ingrain(){
+// 9.ねをはる
+function ingrain() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myIngrain ){
             writeLog(`${poke.myTN} の ${poke.myName} は 根から養分を吸い取った`)
@@ -447,8 +408,8 @@ function ingrain(){
     }
 }
 
-// 7.やどりぎのタネ
-function leechSeed(){
+// 10.やどりぎのタネ
+function leechSeed() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myLeech_seed ){
             const party = poke.myCondition.myLeech_seed.split(":")[0]
@@ -465,8 +426,8 @@ function leechSeed(){
     }
 }
 
-// 8 どく/もうどく/ポイズンヒール
-function acidCheck(){
+// 11.どく/もうどく/ポイズンヒール
+function acidCheck() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myAilment == "どく" ) {
             if ( poke.myAbility == "ポイズンヒール" && isAbility(poke) ) {
@@ -490,8 +451,8 @@ function acidCheck(){
     }
 }
 
-// 9 やけど
-function burnCheck(){
+// 12.やけど
+function burnCheck() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myAilment == "やけど" ) {
             ( poke.myAbility == "たいねつ" && isAbility(poke) )? num = 32 : num = 16
@@ -502,8 +463,8 @@ function burnCheck(){
     }
 }
 
-// 10.あくむ
-function nightmare(){
+// 13.あくむ
+function nightmare() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myNightmare ){
             const damage = Math.floor(poke.myFull_hp / 4 * isDynamax(poke))
@@ -513,8 +474,8 @@ function nightmare(){
     }
 }
 
-// 11.のろい
-function curse(){
+// 14.のろい
+function curse() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myCurse ) {
             const damage = Math.floor(poke.myFull_hp / 4 * isDynamax(poke))
@@ -524,8 +485,8 @@ function curse(){
     }
 }
 
-// 12.バインド
-function bindCheck(){
+// 15.バインド
+function bindCheck() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( !poke.myCondition.myBind.turn ) continue // バインド状態であること
 
@@ -554,8 +515,8 @@ function bindCheck(){
     }
 }
 
-// 13.たこがため
-function octolock(){
+// 16.たこがため
+function octolock() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         const ID = poke.myCondition.myOctolock
         if ( !ID ) continue // たこがため状態であること
@@ -568,8 +529,8 @@ function octolock(){
     }
 }
 
-// 14.ちょうはつの終了
-function tauntEnd(){
+// 17.ちょうはつの終了
+function tauntEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myTaunt == 4 ) {
             poke.myCondition.myTaunt = false
@@ -578,8 +539,8 @@ function tauntEnd(){
     }
 }
 
-// 15.アンコールの終了
-function encoreEnd(){
+// 19.アンコールの終了
+function encoreEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myEncore.turn == 4 ){
             poke.myCondition.myEncore.name = false
@@ -589,8 +550,8 @@ function encoreEnd(){
     }
 }
 
-// 16.かなしばりの終了
-function disableEnd(){
+// 20.かなしばりの終了
+function disableEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myDisable.turn == 4 ){
             poke.myCondition.myDisable.name = false
@@ -600,8 +561,8 @@ function disableEnd(){
     }
 }
 
-// 17.でんじふゆうの終了
-function magnetRiseEnd(){
+// 21.でんじふゆうの終了
+function magnetRiseEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myMagnet_rise ) {
             if ( poke.myCondition.myMagnet_rise == 5 ) {
@@ -614,8 +575,8 @@ function magnetRiseEnd(){
     }
 }
 
-// 18.テレキネシスの終了
-function telekinesisEnd(){
+// 22.テレキネシスの終了
+function telekinesisEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myTelekinesis ) {
             if ( poke.myCondition.myTelekinesis == 5 ) {
@@ -628,8 +589,8 @@ function telekinesisEnd(){
     }
 }
 
-// 19.かいふくふうじの終了
-function healBlockEnd(){
+// 23.かいふくふうじの終了
+function healBlockEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myHeal_block ) {
             if ( poke.myCondition.myHeal_block == 5 ) {
@@ -642,8 +603,8 @@ function healBlockEnd(){
     }
 }
 
-// 20.さしおさえの終了
-function embargoEnd(){
+// 24.さしおさえの終了
+function embargoEnd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myEmbargo ) {
             if ( poke.myCondition.myEmbargo == 5 ) {
@@ -658,8 +619,8 @@ function embargoEnd(){
     }
 }
 
-// 21.ねむけ
-function sleepCheck(){
+// 25.ねむけ
+function sleepCheck() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myYawn == 1 ) {
             poke.myCondition.myYawn = 2
@@ -671,8 +632,8 @@ function sleepCheck(){
     }
 }
 
-// 22.ほろびのうた
-function perishSong(){
+// 26.ほろびのうた
+function perishSong() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( poke.myCondition.myPerish_song ) { // 4からスタート、1の時にひんしになる
             writeLog(`${poke.myTN} の ${poke.myName} の ほろびのカウントが ${poke.myCondition.myPerish_song - 1}に なった !`)
@@ -687,8 +648,35 @@ function perishSong(){
     }
 }
 
-// 23.片側の場の状態の継続/終了: ホスト側の状態が先にすべて解除された後に、ホストでない側の状態が解除される。
-function oneSideFieldEnd(){
+// 27.はねやすめを使用していたひこうタイプは地面から離れる
+function roostEnd() {
+    for ( const poke of speedOrder(allPokeInBattle()) ) {
+        if ( !poke.myCondition.myRoost ) continue
+
+        if ( poke.myCondition.myHalloween )    poke.myType = poke.myType.pop()
+        if ( poke.myCondition.myForest_curse ) poke.myType = poke.myType.pop()
+
+        // ひこう単 => ノーマル
+        if ( poke.myCondition.myRoost == "ノーマル" ) {
+            poke.myType = ["ひこう"]
+        }
+        // ひこう複合 => ひこう消失 消失位置にひこうを復活
+        if ( poke.myCondition.myRoost == "first" ) {
+            poke.myType.unshift("ひこう")
+        }
+        if ( poke.myCondition.myRoost == "second" ) {
+            poke.myType.push("ひこう")
+        }
+
+        if ( poke.myCondition.myHalloween ) poke.myType.push("ゴースト")
+        if ( poke.myCondition.myForest_curse ) poke.myType.push("くさ")
+
+        poke.myCondition.myRoost = false
+    }
+}
+
+// 29.片側の場の状態の継続/終了: ホスト側の状態が先にすべて解除された後に、ホストでない側の状態が解除される。
+function oneSideFieldEnd() {
     for ( const field of [myField, oppField] ) {
         // a. リフレクター
         if ( field.myReflect ) {
@@ -822,8 +810,8 @@ function oneSideFieldEnd(){
     }
 }
 
-// 24.全体の場の状態の継続/終了
-function bothSideFieldEnd(){
+// 30.全体の場の状態の継続/終了
+function bothSideFieldEnd() {
     // a. トリックルーム
     if ( fieldStatus.myTrick_room ) {
         if ( fieldStatus.myTrick_room == 5 ) {
@@ -898,35 +886,10 @@ function bothSideFieldEnd(){
     }
 }
 
-// 25.はねやすめ解除
-function roostEnd(){
-    for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( !poke.myCondition.myRoost ) continue
 
-        if ( poke.myCondition.myHalloween )    poke.myType = poke.myType.pop()
-        if ( poke.myCondition.myForest_curse ) poke.myType = poke.myType.pop()
 
-        // ひこう単 => ノーマル
-        if ( poke.myCondition.myRoost == "ノーマル" ) {
-            poke.myType = ["ひこう"]
-        }
-        // ひこう複合 => ひこう消失 消失位置にひこうを復活
-        if ( poke.myCondition.myRoost == "first" ) {
-            poke.myType.unshift("ひこう")
-        }
-        if ( poke.myCondition.myRoost == "second" ) {
-            poke.myType.push("ひこう")
-        }
-
-        if ( poke.myCondition.myHalloween ) poke.myType.push("ゴースト")
-        if ( poke.myCondition.myForest_curse ) poke.myType.push("くさ")
-
-        poke.myCondition.myRoost = false
-    }
-}
-
-// 26.その他の状態・特性・もちもの
-function otherConditionAbilityItem(){
+// 31.イベントブロック（その2）
+function eventBlock2nd() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         // a. さわぐ
         if ( poke.myCondition.myUproar ){
@@ -938,54 +901,63 @@ function otherConditionAbilityItem(){
         // b. ねむりによるあばれるの中断
         // c. かそく/ムラっけ/スロースタート/ナイトメア
         if ( isAbility(poke) ) {
-            if ( poke.myAbility == "かそく" ) {
-                abilityDeclaration(poke)
-                changeMyRank(poke, "speed", 1)
-            }
-            if ( poke.myAbility == "ムラっけ" ) {
-                let parameter = ["atk", "def", "sp_atk", "sp_def", "speed"]
-                let change = ["", ""]
-                while ( change[0] == change[1] ) {
-                    change[0] = parameter[Math.floor(getRandom() * 5)]
-                    change[1] = parameter[Math.floor(getRandom() * 5)]
-                }
-                abilityDeclaration(poke)
-                changeMyRank(poke, change[0], 2)
-                changeMyRank(poke, change[1], -1)
-            }
-            if ( poke.myAbility == "スロースタート" ) {
-                if ( poke.myCondition.mySlow_start == 5 ) {
-                    poke.myCondition.mySlow_start = true
-                    writeLog(`${poke.myTN} の ${poke.myName} は 力を取り戻した !`)
-                }
-                else if ( !isNaN(poke.myCondition.mySlow_start) ) {
-                    poke.myCondition.mySlow_start += 1
-                }
-            }
-            if ( poke.myAbility == "ナイトメア" ) {
-                for ( const _poke of allPokeInBattle() ) {
-                    const damage = Math.floor(_poke.myFull_hp / 8 * isDynamax(_poke))
-                    if ( _poke.myAilment == "ねむり" ) {
-                        abilityDeclaration(poke)
-                        changeHP(_poke, Math.max(damage, 1), "-")
+            switch ( poke.myAbility ) {
+                case "かそく":
+                    abilityDeclaration(poke)
+                    changeMyRank(poke, "speed", 1)
+                    break
+                
+                case "ムラっけ":
+                    let parameter = ["atk", "def", "sp_atk", "sp_def", "speed"]
+                    let change = ["", ""]
+                    while ( change[0] == change[1] ) {
+                        change[0] = parameter[Math.floor(getRandom() * 5)]
+                        change[1] = parameter[Math.floor(getRandom() * 5)]
                     }
-                }
+                    abilityDeclaration(poke)
+                    changeMyRank(poke, change[0], 2)
+                    changeMyRank(poke, change[1], -1)
+                    break
+                
+                case "スロースタート":
+                    if ( poke.myCondition.mySlow_start == 5 ) {
+                        poke.myCondition.mySlow_start = true
+                        writeLog(`${poke.myTN} の ${poke.myName} は 力を取り戻した !`)
+                    }
+                    else if ( !isNaN(poke.myCondition.mySlow_start) ) {
+                        poke.myCondition.mySlow_start += 1
+                    }
+                    break
+                
+                case "ナイトメア":
+                    for ( const _poke of allPokeInBattle() ) {
+                        const damage = Math.floor(_poke.myFull_hp / 8 * isDynamax(_poke))
+                        if ( _poke.myAilment == "ねむり" ) {
+                            abilityDeclaration(poke)
+                            changeHP(_poke, Math.max(damage, 1), "-")
+                        }
+                    }
+                    break
             }
         }
         // d. くっつきバリ/どくどくだま/かえんだま
         if ( isItem(poke) ) {
-            if ( poke.myItem == "くっつきバリ" ) {
-                const damage = Math.floor(poke.myFull_hp / 8 * isDynamax(poke))
-                itemDeclaration(poke)
-                changeHP(poke, Math.max(damage, 1), "-")
-            }
-            if ( poke.myItem == "どくどくだま" ) {
-                itemDeclaration(poke)
-                getAbnormal(poke, "もうどく")
-            }
-            if ( poke.myItem == "かえんだま" ) {
-                itemDeclaration(poke)
-                getAbnormal(poke, "やけど")
+            switch ( poke.myItem ) {
+                case "くっつきバリ":
+                    const damage = Math.floor(poke.myFull_hp / 8 * isDynamax(poke))
+                    itemDeclaration(poke)
+                    changeHP(poke, Math.max(damage, 1), "-")
+                    break
+                
+                case "どくどくだま":
+                    itemDeclaration(poke)
+                    getAbnormal(poke, "もうどく")
+                    break
+                
+                case "かえんだま":
+                    itemDeclaration(poke)
+                    getAbnormal(poke, "やけど")
+                    break
             }
         }
         // e. ものひろい/しゅうかく/たまひろい
@@ -1000,88 +972,80 @@ function otherConditionAbilityItem(){
             bfn.berryPinch(user[0])
             bfn.berryAbnormal(user[0])
         }
+
+        // f.しろいハーブ
         */
     }
 }
 
-// 27.ダルマモード
-function zenMode(){
+// 33.ダルマモード/リミットシールド/スワームチェンジ/ぎょぐんによるフォルムチェンジ: すばやさ補正を考慮しない。ボールから出た直後のフォルムのすばやさ実数値が発動順に影響する。
+function zenMode() {
     for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myAbility == "ダルマモード" && isAbility(poke) ) {
-            // HPが半分以下
-            if ( poke.myRest_hp <= poke.myFull_hp / 2 ) {
-                if ( poke.myName == "ヒヒダルマ" ) {
-                    abilityDeclaration(poke)
-                    formChange(poke, "ヒヒダルマ(ダルマモード)", true)
+        if ( !isAbility(poke) ) continue
+
+        switch ( poke.myAbility ) {
+            case "ダルマモード":
+                // HPが半分以下
+                if ( poke.myRest_hp <= poke.myFull_hp / 2 ) {
+                    if ( poke.myName == "ヒヒダルマ" ) {
+                        abilityDeclaration(poke)
+                        formChange(poke, "ヒヒダルマ(ダルマモード)", true)
+                    }
+                    if ( poke.myName == "ヒヒダルマ(ガラルのすがた)" ) {
+                        abilityDeclaration(poke)
+                        formChange(poke, "ヒヒダルマ(ダルマモード(ガラルのすがた))", true)
+                    }
                 }
-                if ( poke.myName == "ヒヒダルマ(ガラルのすがた)" ) {
-                    abilityDeclaration(poke)
-                    formChange(poke, "ヒヒダルマ(ダルマモード(ガラルのすがた))", true)
+                // HPが半分以上
+                else {
+                    if ( poke.myName == "ヒヒダルマ(ダルマモード)" ) {
+                        abilityDeclaration(poke)
+                        formChange(poke, "ヒヒダルマ", true)
+                    }
+                    if ( poke.myName == "ヒヒダルマ(ダルマモード(ガラルのすがた))" ) {
+                        abilityDeclaration(poke)
+                        formChange(poke, "ヒヒダルマ(ガラルのすがた)", true)
+                    }
                 }
-            }
-            // HPが半分以上
-            else {
-                if ( poke.myName == "ヒヒダルマ(ダルマモード)" ) {
+                break
+
+            case "リミットシールド":
+                if ( poke.myRest_hp <= poke.myFull_hp / 2 && poke.myCondition.myShields_down ) {
+                    poke.myCondition.myShields_down = false
                     abilityDeclaration(poke)
-                    formChange(poke, "ヒヒダルマ", true)
+                    formChange(poke, "メテノ(コア)", true)
                 }
-                if ( poke.myName == "ヒヒダルマ(ダルマモード(ガラルのすがた))" ) {
+                else if ( poke.myRest_hp > poke.myFull_hp / 2 && !poke.myCondition.myShields_down ) {
+                    poke.myCondition.myShields_down = true
                     abilityDeclaration(poke)
-                    formChange(poke, "ヒヒダルマ(ガラルのすがた)", true)
+                    formChange(poke, "メテノ(りゅうせいのすがた)", true)
                 }
-            }
+                break
+
+            case "スワームチェンジ":
+                if ( poke.myRest_hp <= poke.myFull_hp / 2 && poke.myName != "ジガルデ(パーフェクトフォルム)" ) {
+                    abilityDeclaration(poke)
+                    formChange(poke, "ジガルデ(パーフェクトフォルム)", true)
+                }
+                break
+
+            case "ぎょぐん":
+                if ( poke.myRest_hp <= poke.myFull_hp / 4 && poke.myName == "ヨワシ(むれたすがた)" ) {
+                    abilityDeclaration(poke)
+                    formChange(poke, "ヨワシ(たんどくのすがた)", true)
+                }
+                else if ( poke.myRest_hp > poke.myFull_hp / 4 && poke.myName == "ヨワシ(たんどくのすがた)" ) {
+                    abilityDeclaration(poke)
+                    formChange(poke, "ヨワシ(むれたすがた)", true)
+                }
+                break
         }
     }
 }
 
-// 28.リミットシールド
-function shieldsDown(){
-    for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myAbility == "リミットシールド" && isAbility(poke) ) {
-            if ( poke.myRest_hp <= poke.myFull_hp / 2 && poke.myCondition.myShields_down ) {
-                poke.myCondition.myShields_down = false
-                abilityDeclaration(poke)
-                formChange(poke, "メテノ(コア)", true)
-            }
-            else if ( poke.myRest_hp > poke.myFull_hp / 2 && !poke.myCondition.myShields_down ) {
-                poke.myCondition.myShields_down = true
-                abilityDeclaration(poke)
-                formChange(poke, "メテノ(りゅうせいのすがた)", true)
-            }
-        }
-    }
-}
-
-// 29.スワームチェンジ
-function powerConstruct(){
-    for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myAbility == "スワームチェンジ" && isAbility(poke) ) {
-            if ( poke.myRest_hp <= poke.myFull_hp / 2 && poke.myName != "ジガルデ(パーフェクトフォルム)" ) {
-                abilityDeclaration(poke)
-                formChange(poke, "ジガルデ(パーフェクトフォルム)", true)
-            } 
-        }
-    }
-}
-
-// 30.ぎょぐん
-function schooling(){
-    for ( const poke of speedOrder(allPokeInBattle()) ) {
-        if ( poke.myAbility == "ぎょぐん" && isAbility(poke) ) {
-            if ( poke.myRest_hp <= poke.myFull_hp / 4 && poke.myName == "ヨワシ(むれたすがた)" ) {
-                abilityDeclaration(poke)
-                formChange(poke, "ヨワシ(たんどくのすがた)", true)
-            }
-            else if ( poke.myRest_hp > poke.myFull_hp / 4 && poke.myName == "ヨワシ(たんどくのすがた)" ) {
-                abilityDeclaration(poke)
-                formChange(poke, "ヨワシ(むれたすがた)", true)
-            }
-        }
-    }
-}
-
-// 31.はらぺこスイッチ
-function hungerSwitch(){
+// 34.イベントブロック（その3）
+function eventBlock3rd() {
+    // a. はらぺこスイッチによるフォルムチェンジ
     for ( const poke of speedOrder(allPokeInBattle()) ) {
         if ( !isAbility(poke) ) continue
         if ( poke.myAbility != "はらぺこスイッチ" ) continue
@@ -1090,4 +1054,54 @@ function hungerSwitch(){
         if ( poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = false
         else if ( !poke.myCondition.myHunger_switch ) poke.myCondition.myHunger_switch = true
     }
+
+    // b. だっしゅつパックによって手持ちに戻る
+    // このときだっしゅつパックの発動条件を満たしたポケモンが複数いても、最初に交代したポケモン以外は発動できない。
 }
+
+// 35.だっしゅつパックによる交代先の選択・繰り出し
+// このとき繰り出したポケモンが設置技の効果を受けた場合、ききかいひ/にげごし/だっしゅつパックは即座に発動できる。
+
+// 36.仲間呼び
+
+// 37.ひんしになったポケモンの代わりのポケモンを繰り出す
+// このとき設置技の効果でポケモンがひんしになった場合、即座に代わりのポケモンを選択することになり、次の処理に進まない。
+function returnFaintedPokemon() {
+    for ( const party of [myParty, oppParty] ) {
+        if ( faintedJudge(party) ) writeLog(`${party[0].myTN} は 戦闘に出すポケモンを選んでください`)
+    }
+}
+
+// 38.ダイマックスの終了判定
+function dynamaxEnd() {
+    /*
+    for (const tgt of order){
+        const user = isMe(me, you, tgt)
+        if (user[0].data.dynaTxt == "ダイマックス：3/3"){
+            user[0].data.dynaTxt = "ダイマックス：2/3"
+        } else if (user[0].data.dynaTxt == "ダイマックス：2/3"){
+            user[0].data.dynaTxt = "ダイマックス：1/3"
+        } else if (user[0].data.dynaTxt == "ダイマックス：1/3"){
+            user[0].data.dynaTxt = "ダイマックス（済）"
+            user[0].data.gigaTxt = "キョダイマックス（済）"
+            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　ダイマックスが　終了した" + "\n")
+            tgt.full_HP = Math.ceil(tgt.full_HP / 2)
+            tgt.last_HP = Math.ceil(tgt.last_HP / 2)
+            user[0]["poke" + tgt.num].last_HP = Math.ceil(user[0]["poke" + tgt.num].last_HP / 2)
+        }
+        if (user[0].data.gigaTxt == "キョダイマックス：3/3"){
+            user[0].data.gigaTxt = "キョダイマックス：2/3"
+        } else if (user[0].data.gigaTxt == "キョダイマックス：2/3"){
+            user[0].data.gigaTxt = "キョダイマックス：1/3"
+        } else if (user[0].data.gigaTxt == "キョダイマックス：1/3"){
+            user[0].data.dynaTxt = "ダイマックス（済）"
+            user[0].data.gigaTxt = "キョダイマックス（済）"
+            writeLog(me, you, tgt.TN + "　の　" + tgt.name + "　の　キョダイマックスが　終了した" + "\n")
+            tgt.full_HP = Math.ceil(tgt.full_HP / 2)
+            tgt.last_HP = Math.ceil(tgt.last_HP / 2)
+            user[0]["poke" + tgt.num].last_HP = Math.ceil(user[0]["poke" + tgt.num].last_HP / 2)
+        }
+    }
+    */
+}
+

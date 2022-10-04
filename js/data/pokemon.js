@@ -163,7 +163,7 @@ const pokeList = [
     {number: '125', name: 'エレブー', HP: 65, Atk: 83, Def: 57, Sp_atk: 95, Sp_def: 85, Speed: 105, all: 490, type: ['でんき'], gender: ['♂', '♀'], height: 1.1, weight: 30.0, ability: ['せいでんき', 'やるき']}, 
     {number: '126', name: 'ブーバー', HP: 65, Atk: 95, Def: 57, Sp_atk: 100, Sp_def: 85, Speed: 93, all: 495, type: ['ほのお'], gender: ['♂', '♀'], height: 1.3, weight: 44.5, ability: ['ほのおのからだ', 'やるき']}, 
     {number: '127', name: 'カイロス', HP: 65, Atk: 125, Def: 100, Sp_atk: 55, Sp_def: 70, Speed: 85, all: 500, type: ['むし'], gender: ['♂', '♀'], height: 1.5, weight: 55.0, ability: ['かいりきバサミ', 'かたやぶり', 'じしんかじょう']}, 
-    {number: '127', name: 'メガカイロス', HP: 65, Atk: 155, Def: 120, Sp_atk: 65, Sp_def: 90, Speed: 105, all: 600, type: ['むし', 'ひこう'], gender: ['♂', '♀'], height: 1.7, weight: 59.0, ability: ['スカイスキン']}, 
+    {number: '127m', name: 'メガカイロス', HP: 65, Atk: 155, Def: 120, Sp_atk: 65, Sp_def: 90, Speed: 105, all: 600, type: ['むし', 'ひこう'], gender: ['♂', '♀'], height: 1.7, weight: 59.0, ability: ['スカイスキン']}, 
     {number: '128', name: 'ケンタロス', HP: 75, Atk: 100, Def: 95, Sp_atk: 40, Sp_def: 70, Speed: 110, all: 490, type: ['ノーマル'], gender: ['♂'], height: 1.4, weight: 88.4, ability: ['いかく', 'いかりのつぼ', 'ちからずく']}, 
     {number: '129', name: 'コイキング', HP: 20, Atk: 10, Def: 55, Sp_atk: 15, Sp_def: 20, Speed: 80, all: 200, type: ['みず'], gender: ['♂', '♀'], height: 0.9, weight: 10.0, ability: ['すいすい', 'びびり']}, 
     {number: '130', name: 'ギャラドス', HP: 95, Atk: 125, Def: 79, Sp_atk: 60, Sp_def: 100, Speed: 81, all: 540, type: ['みず', 'ひこう'], gender: ['♂', '♀'], height: 6.5, weight: 235.0, ability: ['いかく', 'じしんかじょう']}, 

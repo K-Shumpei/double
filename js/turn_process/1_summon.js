@@ -232,14 +232,6 @@ function summon( poke, position ) {
     }
     // 場に出た時の効果
     poke.myCondition.myLanding = true
-    // バトル場に画像
-    for ( const _poke of pokeList ) {
-        if ( poke.myName == _poke.name ) {
-            document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = "poke_figure/" + _poke.number + ".gif"
-        }
-    }
-    // HPバーの表示
-    showHPbar(poke)
 
     // ワンダールーム状態なら防御と特防を入れ替える
     if ( fieldStatus.myWonder_room ) {
@@ -269,28 +261,32 @@ function summon( poke, position ) {
         // パワートリックを偶数回使ってこうげきとぼうぎょが元に戻ったポケモンがバトンタッチを使用した場合、第四世代まではバトン先のポケモンのこうげきとぼうぎょは入れ替わっていない。第五世代以降では、奇数回のパワートリックを引き継いだときと同様に、バトン先のポケモンのこうげきとぼうぎょは入れ替わる。
     }
 
-    /*
-
     // 特性『イリュージョン』
-    if (con.ability == "イリュージョン" ) {
-        let poke = ""
-        for (let i = 0; i < 4; i++){
-            if (team["poke" + i].life == "控え" ) {
-                poke = i
-            }
-        }
-        if (poke != "" ) {
-            for (const parameter of ["name", "sex", "level", "type"]){
-                con[parameter] = me["poke" + poke][parameter]
-            }
-            con.p_con += "特性『イリュージョン』：" + num + "\n"
+    if ( poke.myAbility == "イリュージョン" && isAbility(poke) ) {
+        for ( let i = 4; i >= 0; i-- ) {
+            const _poke = getParty(poke).filter( p => p.myBench == i && p.myRest_hp > 0 && p.name != poke.myName )
+            if ( _poke.length === 0 ) continue
+
+            poke.myCondition.myIllusion.status = true
+            poke.myCondition.myIllusion.name   = _poke.myName
+            poke.myCondition.myIllusion.gender = _poke.myGender
+            poke.myCondition.myIllusion.level  = _poke.myLevel
+            poke.myCondition.myIllusion.type   = _poke.myType
+
+            break
         }
     }
 
-    // メガ進化、Z技、ダイマックスボタンの有効化
-    //afn.specialButton(team)
-    */
-
+    // バトル場に画像
+    const thisName = ( poke.myCondition.myIllusion.status )? poke.myCondition.myIllusion.name : poke.myName
+    for ( const _poke of pokeList ) {
+        if ( _poke.name == thisName ) {
+            document.getElementById(`${poke.myParty}_${poke.myPosition}_in_battle`).src = "poke_figure/" + _poke.number + ".gif"
+        }
+    }
+    // HPバーの表示
+    showHPbar(poke)
+    
     writeLog( `${poke.myTN} は ${poke.myName} を 繰り出した !`)
 }
 

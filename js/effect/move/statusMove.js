@@ -1,5 +1,5 @@
 // ランク変化させる変化技（対象が味方全体）
-var statusMoveToChangeRankForAllOfUs = [
+const statusMoveToChangeRankForAllOfUs = [
     {name: 'アシストギア', rank: [{parameter: 'atk', change: 1}, {parameter: 'sp_atk', change: 1}]}, 
     {name: 'じばそうさ', rank: [{parameter: 'def', change: 1}, {parameter: 'sp_def', change: 1}]}, 
     {name: 'とおぼえ', rank: [{parameter: 'atk', change: 1}]}
@@ -23,7 +23,7 @@ const statusMoveToChangeRankForOneOfThem = [
     {name: 'いやなおと', rank: [{parameter: 'def', change: -2}]}, 
     {name: 'いばる', rank: [{parameter: 'atk', change: 2}]}, 
     {name: 'うそなき', rank: [{parameter: 'sp_def', change: -2}]}, 
-    {name: 'えんまく', rank: [{parameter: 'accuract', change: -1}]}, 
+    {name: 'えんまく', rank: [{parameter: 'accuracy', change: -1}]}, 
     {name: 'おきみやげ', rank: [{parameter: 'atk', change: -2}, {parameter: 'sp_atk', change: -2}]}, 
     {name: 'おたけび', rank: [{parameter: 'atk', change: -1}, {parameter: 'sp_atk', change: -1}]}, 
     {name: 'おだてる', rank: [{parameter: 'sp_atk', change: 1}]}, 
@@ -32,8 +32,8 @@ const statusMoveToChangeRankForOneOfThem = [
     {name: 'くすぐる', rank: [{parameter: 'atk', change: -1}, {parameter: 'def', change: -1}]}, 
     {name: 'こわいかお', rank: [{parameter: 'speed', change: -2}]}, 
     {name: 'すてゼリフ', rank: [{parameter: 'atk', change: -1}, {parameter: 'sp_atk', change: -1}]}, 
-    {name: 'すなかけ', rank: [{parameter: 'accuract', change: -1}]}, 
-    {name: 'スプーンまげ', rank: [{parameter: 'accuract', change: -1}]}, 
+    {name: 'すなかけ', rank: [{parameter: 'accuracy', change: -1}]}, 
+    {name: 'スプーンまげ', rank: [{parameter: 'accuracy', change: -1}]}, 
     {name: 'タールショット', rank: [{parameter: 'speed', change: -1}]}, 
     {name: 'ちからをすいとる', rank: [{parameter: 'atk', change: -1}]}, 
     {name: 'つぶらなひとみ', rank: [{parameter: 'atk', change: -1}]}, 
@@ -43,11 +43,11 @@ const statusMoveToChangeRankForOneOfThem = [
     {name: 'なかよくする', rank: [{parameter: 'atk', change: -1}]}, 
     {name: 'なみだめ', rank: [{parameter: 'atk', change: -1}, {parameter: 'sp_atk', change: -1}]}, 
     {name: 'フェザーダンス', rank: [{parameter: 'atk', change: -2}]}, 
-    {name: 'フラッシュ', rank: [{parameter: 'accuract', change: -1}]}
+    {name: 'フラッシュ', rank: [{parameter: 'accuracy', change: -1}]}
 ]
 
 // ランク変化させる変化技（対象が自分）
-var statusMoveToChangeRankForMe = [
+const statusMoveToChangeRankForMe = [
     {name: 'かくばる', rank: [{parameter: 'atk', change: 1}]}, 
     {name: 'かげぶんしん', rank: [{parameter: 'evasion', change: 1}]}, 
     {name: 'かたくなる', rank: [{parameter: 'def', change: 1}]}, 
@@ -63,10 +63,10 @@ var statusMoveToChangeRankForMe = [
     {name: 'たくわえる', rank: [{parameter: 'def', change: 1}, {parameter: 'sp_def', change: 1}]}, 
     {name: 'ちいさくなる', rank: [{parameter: 'evasion', change: 2}]}, 
     {name: 'ちょうのまい', rank: [{parameter: 'sp_atk', change: 1}, {parameter: 'sp_def', change: 1}, {parameter: 'speed', change: 1}]}, 
-    {name: 'つめとぎ', rank: [{parameter: 'atk', change: 1}, {parameter: 'accuract', change: 1}]}, 
+    {name: 'つめとぎ', rank: [{parameter: 'atk', change: 1}, {parameter: 'accuracy', change: 1}]}, 
     {name: 'つるぎのまい', rank: [{parameter: 'atk', change: 2}]}, 
     {name: 'てっぺき', rank: [{parameter: 'def', change: 2}]}, 
-    {name: 'とぐろをまく', rank: [{parameter: 'atk', change: 1}, {parameter: 'def', change: 1}, {parameter: 'accuract', change: 1}]}, 
+    {name: 'とぐろをまく', rank: [{parameter: 'atk', change: 1}, {parameter: 'def', change: 1}, {parameter: 'accuracy', change: 1}]}, 
     {name: 'とける', rank: [{parameter: 'def', change: 2}]}, 
     {name: 'ドわすれ', rank: [{parameter: 'sp_def', change: 2}]}, 
     {name: 'ナインエボルブースト', rank: [{parameter: 'atk', change: 2}, {parameter: 'def', change: 2}, {parameter: 'sp_atk', change: 2}, {parameter: 'sp_def', change: 2}, {parameter: 'speed', change: 2}]}, 

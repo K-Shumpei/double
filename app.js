@@ -38,7 +38,9 @@ io.on("connection", function(socket){
     // コネションが確率されたら実行
     socket.emit("connected", {})
 
-    // パスワード受信
+    //**************************************************
+    // 受信. パスワード
+    //**************************************************
     socket.on("password", function(txt){
         if (txt == "11111" || txt == "15872469"){
             io.to(socket.id).emit("pass", {})
@@ -47,7 +49,9 @@ io.on("connection", function(socket){
         }
     })
 
-    // チームデータ受信
+    //**************************************************
+    // 受信. パーティデータ
+    //**************************************************
     socket.on('team_data',function(party){
 
         playerCount += 1
@@ -88,29 +92,34 @@ io.on("connection", function(socket){
         }
     })
 
-    // 選出ポケモンを選んだ
+    //**************************************************
+    // 受信. 選出するポケモン
+    //**************************************************
     socket.on("get ready", function(select) {
         let room = data[isRoom(socket.id)]
         // 選出順を設定
         if ( room.id_0 == socket.id ) room.select_0 = select 
         if ( room.id_1 == socket.id ) room.select_1 = select 
         
-        if ( room.select_0 != "" && room.select_1 != "" ) { // 二人とも選出する
+        // 二人とも選出する
+        if ( room.select_0 != "" && room.select_1 != "" ) {
             io.to(room.id_0).emit("battle start", room.select_0, room.select_1)
             io.to(room.id_1).emit("battle start", room.select_1, room.select_0)
-        } else { // 片方が選出していない
-            if ( room.select_0 == "" ) {
-                io.to(room.id_0).emit("waiting you", {})
-                io.to(room.id_1).emit("waiting me", {})
-            }
-            if ( room.select_1 == "" ) {
-                io.to(room.id_1).emit("waiting you", {})
-                io.to(room.id_0).emit("waiting me", {})
-            }
+        }
+        // 片方が選出していない
+        if ( room.select_0 == "" ) {
+            io.to(room.id_0).emit("waiting you", {})
+            io.to(room.id_1).emit("waiting me", {})
+        }
+        if ( room.select_1 == "" ) {
+            io.to(room.id_1).emit("waiting you", {})
+            io.to(room.id_0).emit("waiting me", {})
         }
     })
 
-    // コマンドの受信
+    //**************************************************
+    // 受信. コマンド
+    //**************************************************
     socket.on("send command", function(move0, tgt0, hand0, move1, tgt1, hand1, special0, special1) {
         let room = data[isRoom(socket.id)]
         for (let i = 0; i < 2; i++){
@@ -137,7 +146,9 @@ io.on("connection", function(socket){
         }
     })
 
-    // 交代先の受信
+    //**************************************************
+    // 受信. 交代するポケモン
+    //**************************************************
     socket.on("send change", function(command, oppJudge) {
         let room = data[isRoom(socket.id)]
         for ( let i = 0; i < 2; i++ ) {
@@ -165,38 +176,6 @@ io.on("connection", function(socket){
         }
 
 
-    })
-
-    // 選択中・・・の時 val は yes か no
-    socket.on("thinking", function(val) {
-        const room = isRoom(socket.id)
-        if (data[room].user1.id == socket.id){
-            data[room].user1.command = val
-        } else {
-            data[room].user2.command = val
-        }
-    })
-
-    // 選択中のユーザーから受信
-    socket.on("choose poke", function(val) {
-        const room = isRoom(socket.id)
-        if (data[room].user1.id == socket.id){
-            data[room].user1.command = val
-            if (data[room].user2.command == "no" || data[room].user2.command != "yes"){
-                io.to(data[room].user1.id).emit("summon poke", data[room].user2.command)
-                io.to(data[room].user2.id).emit("summon poke", val)
-                data[room].user1.command = "yet"
-                data[room].user2.command = "yet"
-            }
-        } else {
-            data[room].user2.command = val
-            if (data[room].user1.command == "no" || data[room].user1.command != "yes"){
-                io.to(data[room].user1.id).emit("summon poke", val)
-                io.to(data[room].user2.id).emit("summon poke", data[room].user1.command)
-                data[room].user1.command = "yet"
-                data[room].user2.command = "yet"
-            } 
-        }
     })
 
     // 切断時の処理
