@@ -240,6 +240,12 @@ function isGrace(poke) {
     return 1
 }
 
+// にじ
+function isRainbow(poke) {
+    if ( getMyField(poke).myRainbow ) return 2
+    return 1
+}
+
 // くいしんぼう
 function isGluttony(poke) {
     if ( poke.myAbility == "くいしんぼう" && isAbility(poke) ) return 2
@@ -334,6 +340,8 @@ function isSheerForce(poke) {
     if ( !isAbility(poke) ) return false
     if ( poke.myAbility != "ちからずく" ) return false
 
+    // おうじゃのしるし/するどいキバでひるみ効果が付与されている場合、ちからずく非対象
+    if ( poke.myCondition.myFlinch_item ) return false
 
     const moveList_additionalEffect = []
         .concat(additionalEffectToChangeYourRank) // 相手のランク補正を下げる
@@ -358,6 +366,9 @@ function isSheerForce(poke) {
         case "いにしえのうた":
             if ( poke.myName != "メロエッタ(ボイスフォルム)" ) return false
             return true
+
+        default:
+            return false
     }
 
 }

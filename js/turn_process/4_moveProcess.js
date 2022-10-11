@@ -94,6 +94,9 @@ function isDamage(poke) {
             }
         }
 
+        // 攻撃側のするどいキバ：wikiにない
+        tgt.poke.myCondition.myFlinch = isDamage_flinch(poke, tgt) 
+
         // ダメージ計算
         damageCalculation(poke, tgt)
 
@@ -378,13 +381,21 @@ function additionalEffect(poke) {
     // removeText(con.p_con, "状態変化『がまん』")
 
     // 1.なげつける使用による持ち物の消費
+    if ( poke.myMove.name == "なげつける" ) {
+        poke.myCondition.myFling = poke.myItem
+        poke.myItem = ""
+        // こだわり解除
+        poke.myCondition.myChoice = {item: false, ability: false}
+        // どの持ち物でも行う処理
+        enableToRecycle(poke)
+    }
     
     // 2.技の効果
     // 追加効果 (ひみつのちから/オリジンズスーパーノヴァ/ぶきみなじゅもんを除く)
     for ( const tgt of poke.myTarget ) {
         if ( !tgt.success ) continue // すでに失敗していないこと
         if ( tgt.poke.myRest_hp == 0 ) continue
-        if ( poke.myAbility == "ちからずく" && isAbility(poke) && poke.myMove.name != "なげつける" ) continue
+        if ( isSheerForce(poke) ) continue
 
         // 追加効果（自分のランク変化）
         additionalEffect_myRank(poke, tgt)

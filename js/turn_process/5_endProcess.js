@@ -35,6 +35,7 @@ function endProcess() {
     // 17.ちょうはつの終了
     tauntEnd()
     // 18.いちゃもんの終了: キョダイユウゲキによるいちゃもん状態のみターン経過で解除される
+    GMaxMeltdown()
     // 19.アンコールの終了
     encoreEnd()
     // 20.かなしばりの終了
@@ -99,6 +100,7 @@ function otherEnd() {
         poke.myCondition.myEndure = false
         // ひるみ
         poke.myCondition.myFlinch = false
+        poke.myCondition.myFlinch_item = false
         // そうでん
         poke.myCondition.myElectrify = false
         // てだすけ
@@ -152,9 +154,6 @@ function otherEnd() {
     if ( fieldStatus.myFaily_lock == 1 ) fieldStatus.myFaily_lock = 2
     else if ( fieldStatus.myFaily_lock == 2 ) fieldStatus.myFaily_lock = false
 }
-
-// 技選択肢の無効化　アンコール、いちゃもん、かなしばり、溜め技、ちょうはつ、ふういん
-
 
 
 
@@ -274,25 +273,28 @@ function futureAttack() {
             // 連続回数の決定
             poke.myMove.continuous = getContinuous(poke)
             
+
             // 1.対象全員へのダメージ計算
             isDamage(poke)
             // 2.みがわり状態に攻撃技が防がれたときの効果: 本体がダメージを受けたときの処理(4~9)などより優先される
             substituteBlock(poke)
-            // 3.ひんしになる反動技使用時のダメージ: ひんしになるときは使用者のひんし判定
+            // 3.じばく/だいばくはつ/ミストバースト/ビックリヘッド/てっていこうせん使用時のダメージ: ひんしになるときは使用者のひんし判定
             dyingDamage(poke)
             // 4.ダメージを本体に与える
             giveDamage(poke)
-            // 5.相性判定のメッセージ
-            declareEffectiveness(poke)
-            // 6.ダメージの判定に関するメッセージ
+            // 5.バツグンの相性判定のメッセージ
+            superEffective(poke)
+            // 6.今ひとつの相性判定のメッセージ
+            notVeryEffective(poke)
+            // 7.ダメージの判定に関するメッセージ
             damageMassage(poke)
-            // 7.ダメージをHP1で耐える効果
+            // 8.ダメージをHP1で耐える効果
             remainHP1(poke)
-            // 8.追加効果などの発動
-            activateAdditionalEffectEtc(poke)
-            // 9.ダメージが発生したときの効果
-            effectWithDamage(poke)
-            // 10.ひんし判定
+            // 9.追加効果などの発動
+            additionalEffect(poke)
+            // 10.ダメージが発生したときの効果
+            effectWithDmg(poke)
+            // 11.ひんし判定
             dyingJudge(poke)
         }
     }
@@ -535,6 +537,17 @@ function tauntEnd() {
             poke.myCondition.myTaunt = false
             writeLog(`${poke.myTN} の ${poke.myName} の ちょうはつが とけた !`)
         }
+    }
+}
+
+// 18.いちゃもんの終了: キョダイユウゲキによるいちゃもん状態のみターン経過で解除される
+function GMaxMeltdown() {
+    for ( const poke of speedOrder(allPokeInBattle()) ) {
+        if ( poke.myCondition.myTorment.name != "キョダイユウゲキ" ) continue
+        poke.myCondition.myTorment.turn += 1
+        if ( poke.myCondition.myTorment.turn < 4 ) continue
+        poke.myCondition.myTorment = {name: false, turn: 0}
+        writeLog(`${poke.myTN} の ${poke.myName} の いちゃもんの効果が消えた !`) 
     }
 }
 

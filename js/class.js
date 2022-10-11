@@ -316,8 +316,10 @@ class Condition {
         this.explosion     = false // 爆発系の技のHP消費が確約されたらtrue
         this.filling       = {name: false, tgt: false} // ためている技
         this.first         = false // せんせいのツメ・イバンのみ・クイックドロウ - 同じ優先度内で最初に行動する
-        this.flinch        = false // ひるみ　ひるみ状態ならtrue、それ以外ならfalse
         this.flash_fire    = false // もらいびが有効ならtrue
+        this.flinch        = false // ひるみ　ひるみ状態ならtrue、それ以外ならfalse
+        this.flinch_item   = false // おうじゃのしるし/するどいキバ/あくしゅう
+        this.fling         = false // なげつけるで消費するアイテム
         this.fly           = false // そらをとぶ状態ならtrue
         this.foresight     = false // みやぶられている状態ならtrue
         this.forest_curse  = false // もりののろい状態ならtrue
@@ -382,7 +384,7 @@ class Condition {
         this.telekinesis   = false // テレキネシス状態の経過ターン数
         this.thrash        = {name: false, turn: 0} // あばれる状態になった技、経過ターン数
         this.throat_chop   = 0     // じごくづき経過ターン数(1~2)
-        this.torment       = false // いちゃもん状態ならtrue
+        this.torment       = {name: false, turn: 0} // いちゃもんになった技、経過ターン数
         this.transform     = false // へんしん状態ならtrue
         this.truant        = false // なまけ　怠けるターンはtrue、それ以外はfalse
         this.unburden      = false // かるわざが有効ならtrue
@@ -422,8 +424,10 @@ class Condition {
     set myExplosion( value )     { this.explosion = value }
     set myFilling( value )       { this.filling = value }
     set myFirst( value )         { this.first = value }
-    set myFlinch( value )        { this.flinch = value } 
     set myFlash_fire( value )    { this.flash_fire = value }
+    set myFlinch( value )        { this.flinch = value }
+    set myFlinch_item( value )   { this.flinch_item = value }
+    set myFling( value )         { this.fling = value }
     set myFly( value )           { this.fly = value } 
     set myForesight( value )     { this.foresight = value }
     set myForest_curse( value )  { this.forest_curse = value }
@@ -527,8 +531,10 @@ class Condition {
     get myExplosion()     { return this.explosion }
     get myFilling()       { return this.filling }
     get myFirst()         { return this.first }
-    get myFlinch()        { return this.flinch }
     get myFlash_fire()    { return this.flash_fire }
+    get myFlinch()        { return this.flinch }
+    get myFlinch_item()   { return this.flinch_item }
+    get myFling()         { return this.fling }
     get myFly()           { return this.fly }
     get myForesight()     { return this.foresight }
     get myForest_curse()  { return this.forest_curse }

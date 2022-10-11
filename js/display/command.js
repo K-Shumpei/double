@@ -146,7 +146,7 @@ function disableChoiceMove(poke, num) {
         if ( move.name != poke.myCondition.myEncore.name ) return true
     }
     // いちゃもん
-    if ( poke.myCondition.myTorment ) {
+    if ( poke.myCondition.myTorment.name ) {
         if ( history.length > 0 && history[0].name == move.name ) return true
     }
     // かなしばり

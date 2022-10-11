@@ -729,7 +729,7 @@ function invalidBySpec2nd_duplicate(poke, tgt) {
             return false
         
         case "いちゃもん":
-            if ( tgt.poke.myCondition.myTorment ) return true // 対象がすでにいちゃもん状態である
+            if ( tgt.poke.myCondition.myTorment.name ) return true // 対象がすでにいちゃもん状態である
             return false
 
         case "さしおさえ":

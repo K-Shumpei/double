@@ -319,8 +319,7 @@ function pwrCorr_sandForce(poke) {
 }
 
 function pwrCorr_sheerForce(poke) {
-    if ( !isAbility(poke) ) return 1
-    if ( poke.myAbility != "ちからずく" ) return 1
+    if ( isSheerForce(poke) ) return 5325 / 4096
     return 1
 }
 

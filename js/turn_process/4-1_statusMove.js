@@ -518,7 +518,7 @@ function statusMoveForOneOfThem(poke) {
             break
         
         case "いちゃもん":
-            tgt.myCondition.myTorment = true
+            tgt.myCondition.myTorment.name = "いちゃもん"
             writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は いちゃもんを受けた`)
             break
         

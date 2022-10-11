@@ -1,4 +1,46 @@
 //**************************************************
+// 1.ダメージ計算
+//**************************************************
+
+// 攻撃側のするどいキバ：wikiにない
+function isDamage_flinch(poke, tgt) {
+    // 既に発動していたら怯む
+    if ( tgt.poke.myCondition.myFlinch_item ) return true
+
+    // 既に怯んでいたら怯む
+    if ( tgt.poke.myCondition.myFlinch ) return true
+
+    // 一撃必殺技ではひるまない
+    if ( oneShot.includes(poke.myMove.name) ) return false
+    
+    // ひるみを付与する技には効果がない
+    const move = additionalEffectToMakeFlinch.filter( move => move.name == poke.myMove.name )[0]
+    if ( move !== undefined ) return false
+
+    // 確率　（てんのめぐみ、にじ　は重複しない）
+    if ( getRandom() >= 0.1 * Math.max( isGrace(poke), isRainbow(poke) ) ) return false
+
+    if ( isItem(poke) ) {
+        switch ( poke.myItem ) {
+            case "おうじゃのしるし":
+            case "するどいキバ":
+                poke.myCondition.myFlinch_item = true
+                return true
+        }
+    }
+
+    if ( isAbility(poke) ) {
+        switch ( poke.myAbility ) {
+            case "あくしゅう":
+                poke.myCondition.myFlinch_item = true
+                return true
+        }
+    }
+
+    return false
+}
+
+//**************************************************
 // 9.追加効果などの発動
 //**************************************************
 
@@ -78,10 +120,7 @@ function additionalEffect_other(poke, tgt) {
             return
 
         case "なげつける":
-            // きのみの場合
-            if ( itemList_berry.includes(poke.myItem) ) eatBerryImmediately(tgt.poke)
-            // それ以外の場合
-            switch ( poke.myItem ) {
+            switch ( poke.myCondition.myFling ) {
                 case "でんきだま":
                     getAbnormal(tgt.poke, "まひ")
                     return
@@ -122,11 +161,6 @@ function additionalEffect_other(poke, tgt) {
                     writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の 下がっていた能力変化が 元に戻った`)
                     return
             }
-
-            // こだわり解除
-            poke.myCondition.myChoice = {item: false, ability: false}
-            // どの持ち物でも行う処理
-            enableToRecycle(poke)
             return
 
         default:
@@ -546,7 +580,14 @@ function additionalEffect_dynamax(poke, tgt) {
                 }
             
                 return
-        }
+            }
+            return
+
+        case "キョダイユウゲキ":
+            if ( tgt.poke.myCondition.myTorment.name ) return
+            tgt.poke.myCondition.myTorment.name = "キョダイユウゲキ"
+            tgt.poke.myCondition.myTorment.turn = 1
+            return
     }
 }
 
@@ -626,31 +667,6 @@ function effectWithDmg_poisonTouch(poke, tgt) {
 
     abilityDeclaration(poke)
     getAbnormal(tgt.poke, "どく")
-    return
-}
-
-// 6_1.攻撃側のするどいキバ：wikiにない
-function effectWithDmg_flinch(poke, tgt) {
-    if ( oneShot.includes(poke.myMove.name) ) return // 一撃必殺技ではひるまない
-
-    if ( poke.myItem == "おうじゃのしるし" ) {
-        if ( !isItem(poke) ) return
-        if ( getRandom() >= 0.1 * isGrace(poke) ) return
-        tgt.poke.myCondition.myFlinch = true
-        return
-    }
-    if ( poke.myItem == "するどいキバ" ) {
-        if ( !isItem(poke) ) return
-        if ( getRandom() >= 0.1 * isGrace(poke) ) return
-        tgt.poke.myCondition.myFlinch = true
-        return
-    }
-    if ( poke.myAbility == "あくしゅう" ) {
-        if ( !isAbility(poke) ) return
-        if ( getRandom() >= 0.1 * isGrace(poke) ) return
-        tgt.poke.myCondition.myFlinch = true
-        return
-    }
     return
 }
 
