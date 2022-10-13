@@ -950,28 +950,28 @@ function dmgCorr_wall(poke, tgt) {
 }
 
 function dmgCorr_neuroforce(poke, tgt) {
-    if ( !isAbility(poke) ) return
+    if ( !isAbility(poke) ) return 1
     if ( poke.myAbility != "ブレインフォース" ) return 1
     if ( tgt.effective <= 1 ) return 1
     return 5120 / 4096
 }
 
 function dmgCorr_sniper(poke, tgt) {
-    if ( !isAbility(poke) ) return
+    if ( !isAbility(poke) ) return 1
     if ( poke.myAbility != "スナイパー" ) return 1
     if ( !tgt.critical ) return 1
     return 6144 / 4096
 }
 
 function dmgCorr_tintedLens(poke, tgt) {
-    if ( !isAbility(poke) ) return
+    if ( !isAbility(poke) ) return 1
     if ( poke.myAbility != "いろめがね" ) return 1
     if ( tgt.effective >= 1 ) return 1
     return 8192 / 4096
 }
 
 function dmgCorr_fluffy(poke, tgt) {
-    if ( !isAbility(tgt.poke) ) return
+    if ( !isAbility(tgt.poke) ) return 1
     if ( tgt.poke.myAbility != "もふもふ" ) return 1
     if ( poke.myMove.type != "ほのお" ) return 1
     return 8192 / 4096

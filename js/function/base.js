@@ -86,23 +86,24 @@ function isItem(poke){
 
 // 特性
 function isAbility(poke){
-    if ( poke.myCondition.myNo_ability ) return false                    // 特性なし状態
-    if ( disableByNeutralizingGas.includes(poke.myAbility) ) return true // かがくへんかガスで無効にされない特性
+    // 特性なし状態
+    if ( poke.myCondition.myNo_ability ) return false
+    
+    // かがくへんかガス
     for ( const _poke of allPokeInBattle() ) {
         if ( poke.myID == _poke.myID ) continue
-        if ( _poke.myAbility == "かがくへんかガス" ) return false           // かがくへんかガス
+        if ( _poke.myAbility != "かがくへんかガス" ) continue
+        if ( abilityList_disable_neutralizingGas.includes(poke.myAbility) ) continue
+        return false
     }
 
-    /*
-    if (me.f_con.includes("かたやぶり")){
-        const text = searchText(me.f_con, "かたやぶり")
-        const parent = text.split("：")[1].split(",")[0]
-        const child = text.split("：")[1].split(",")[1]
-        if ((con.parent != parent || con.child != child) && disableByMoldBreaker.includes(con.ability)){
-            return false
-        }
+    // かたやぶり
+    for ( const _poke of allPokeInBattle() ) {
+        if ( !_poke.myCondition.myMold_breaker ) continue
+        if ( !abilityList_disable_moldBreaker.includes(poke.myAbility) ) continue
+        return false
     }
-    */
+
     return true
 }
 

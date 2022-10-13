@@ -1155,114 +1155,225 @@ function invalidByAccuracy_accuracy(poke, tgt) {
     if ( poke.myMove.name == "ぼうふう" && isRainy(tgt) ) return false
     if ( poke.myMove.name == "ふぶき" && isSnowy(tgt) ) return false
     if ( poke.myMove.name == "どくどく" && poke.myType.includes("どく") ) return false
-    // 命中率の変化
-    if ( poke.myMove.name == "かみなり" && isSunny(poke) ) poke.myMove.accuracy = 50
-    if ( poke.myMove.name == "ぼうふう" && isSunny(poke) ) poke.myMove.accuracy = 50
-    if ( tgt.myAbility == "ミラクルスキン" && isAbility(tgt) && poke.myMove.nature == "変化" ) poke.myMove.accuracy = Math.min(50, poke.myMove.accuracy)
-    if ( oneShot.includes(poke.myMove.name) ) poke.myMove.accuracy = 30 + poke.myLevel - tgt.myLevel
-    if ( poke.myMove.name == "ぜったいれいど" && !poke.myType.includes("こおり") ) poke.myMove.accuracy = 20 + poke.myLevel - tgt.myLevel
+
+
+    // 命中判定 = 技の命中率 × 命中補正値M × ランク補正 × ミクルのみ - なかよし度効果
+    // 乱数(0~99) < 命中判定 なら命中
+
+    // 技の命中率
+    let ratio = getAccuracyRatio(poke, tgt)
+
+    // 一撃必殺技は、ランク補正や命中率を上下させる効果の影響を受けない。
+    if ( oneShot.includes(poke.myMove.name) ) {
+        const random = getRandom() * 100
+        if ( random >= ratio ) return true
+        else return false
+    }
 
     // 命中補正の初期値
-    let correction = 4096
+    // 命中補正 = 状態 × 特性 × 持ち物
+    let corr = 4096
+
     // 場の状態
-    if ( fieldStatus.myGravity ) correction = Math.round(correction * 6840 / 4096)
-    // 相手の特性
-    if ( isAbility(tgt) ) {
-        switch ( tgt.myAbility ) {
-            case "ちどりあし":
-                if ( tgt.myCondition.myConfusion ) correction = Math.round(correction * 2048 / 4096)
+    const fieldCorr = accCorr_field()
+    corr = Math.round(corr * fieldCorr)
+
+    // 特性と持ち物は素早さ実数値順に計算する
+    let order = myPokeInBattle(poke)
+    order.push(tgt)
+    order.sort( function( a,b ) {
+        // 素早さ実数値
+        if ( a.mySpeed > b.mySpeed ) return -1
+        if ( a.mySpeed < b.mySpeed ) return 1
+        // 乱数
+        if ( getRandom() < 0.5 ) return -1
+        else return 1
+    })
+
+    // 特性
+    for ( const _poke of order ) {
+        switch ( _poke.myID ) {
+            case poke.myID: // 攻撃するポケモン
+                const atkAbility = accCorr_atkAbility(_poke)
+                corr = Math.round(corr * atkAbility)
                 break
 
-            case "すながくれ":
-                if ( isSandy(tgt) ) correction = Math.round(correction * 3277 / 4096)
+            case tgt.myID: // 攻撃を受けるポケモン
+                const defAbility = accCorr_defAbility(_poke)
+                corr = Math.round(corr * defAbility)
                 break
 
-            case "ゆきがくれ":
-                if ( !isSnowy(tgt) ) correction = Math.round(correction * 3277 / 4096)
-                break
-        }
-    }
-    // 自分の特性
-    if ( isAbility(poke) ) {
-        switch ( poke.myAbility ) {
-            case "はりきり":
-                if ( poke.myMove.nature == "物理" ) correction = Math.round(correction * 3277 / 4096)
-                break
-
-            case "ふくがん":
-                correction = Math.round(correction * 5325 / 4096)
-                break
-
-            case "しょうりのほし":
-                correction = Math.round(correction * 4506 / 4096)
-                break
-        }
-    }
-    // 相手のもちもの
-    if ( isItem(tgt) ) {
-        switch ( tgt.myItem ) {
-            case "ひかりのこな":
-                correction = Math.round(correction * 3686 / 4096)
-                break
-
-            case "のんきのおこう":
-                correction = Math.round(correction * 3686 / 4096)
+            default: // 味方のポケモン
+                const allyAbility = accCorr_allyAbility(_poke)
+                corr = Math.round(corr * allyAbility)
                 break
         }
     }
-    // 自分のもちもの
-    if ( isItem(poke) ) {
-        switch ( poke.myItem ) {
-            case "こうかくレンズ":
-                correction = Math.round(correction * 4505 / 4096)
+
+    // 持ち物
+    for ( const _poke of order ) {
+        switch ( _poke.myID ) {
+            case poke.myID: // 攻撃するポケモン
+                const atkItem = accCorr_atkItem(_poke, tgt)
+                corr = Math.round(corr * atkItem)
                 break
 
-            case "フォーカスレンズ":
-                if ( tgt.myCmd_move === "" ) correction = Math.round(correction * 4915 / 4096)
+            case tgt.myID: // 攻撃を受けるポケモン
+                const defItem = accCorr_defItem(_poke)
+                corr = Math.round(corr * defItem)
+                break
+
+            default: // 味方のポケモン
                 break
         }
     }
-    // 一撃必殺技に対して補正は乗らない
-    if ( oneShot.includes(poke.myMove.name) ) correction = 4096
 
-    // 技の命中率 * 命中補正
-    let check = fiveCut(poke.myMove.accuracy * correction / 4096)
+    // 技の命中率にMを掛けた後は4096で割り、小数点を五捨五超入する。このとき命中が100を超えることもある。
+    ratio = fiveCut(ratio * corr / 4096)
 
-    // ランク補正
-    let rank = poke.myRank_accuracy - tgt.myRank_evasion
-    // 相手の回避率を無視する
-    switch ( true ) {
-        case poke.myAbility == "てんねん" && isAbility(poke):
-        case poke.myAbility == "するどいめ" && isAbility(poke):
-        case tgt.myCondition.myForesight:
-        case tgt.myCondition.myMiracle_eye:
-        case poke.myMove.name == "せいなるつるぎ":
-        case poke.myMove.name == "DDラリアット":
-        case poke.myMove.name == "なしくずし":
-            rank += tgt.myRank_evasion
-    }
-    // 自分の命中率を無視する
-    if ( poke.myAbility == "てんねん" && isAbility(poke) ) rank -= poke.myRank_accuracy
+    // ランク補正 = 自分の命中率のランク - 相手の回避率のランク
+    const atkAccRank = getAtkAccRank(poke, tgt)
+    const defAccRank = getDefAccRank(poke, tgt)
+    let rank = atkAccRank - defAccRank
 
-    rank = Math.min(rank, 6)
-    rank = Math.max(rank, -6)
+    if ( rank >= 0 ) rank = (3 + Math.min(rank, 6)) / 3
+    else rank = 3 / (3 - Math.max(rank, -6))
 
-    if ( rank > 0 ) check = Math.floor(check * (3 + rank) / 3)
-    if ( rank < 0 ) check = Math.floor(check * 3) / (3 - rank)
+    // 対応した倍率を掛けた後は小数点を切り捨てる。結果が100を超えるときは100にする。
+    ratio = Math.floor(ratio * rank)
+    ratio = Math.min(ratio, 100)
 
-    // ミクルのみ
+    // ミクルのみの効果を受けている場合は4915/4096倍し、小数点を五捨五超入する。結果が100を超えるときは100にする。
     if ( poke.myCondition.myMicle ) {
-        check = fiveCut(check * 4915 / 4096)
-        poke.myCondition.myMicle = false
+        ratio = fiveCut(ratio * 4915 / 4096)
+        ratio = Math.min(ratio, 100)
     }
 
-    check = Math.min(check, 100)
     const random = getRandom() * 100
-    if ( random >= check ) return true
+    if ( random >= ratio ) return true
     else return false
 }
 
+function getAccuracyRatio(poke, tgt) {
+    if ( poke.myMove.name == "かみなり" && isSunny(poke) ) return 50
+    if ( poke.myMove.name == "ぼうふう" && isSunny(poke) ) return 50
+    if ( tgt.myAbility == "ミラクルスキン" && isAbility(tgt) && poke.myMove.nature == "変化" ) return Math.min(50, poke.myMove.accuracy)
+    if ( oneShot.includes(poke.myMove.name) ) return 30 + poke.myLevel - tgt.myLevel
+    if ( poke.myMove.name == "ぜったいれいど" && !poke.myType.includes("こおり") ) return 20 + poke.myLevel - tgt.myLevel
 
+    return poke.myMove.accuracy
+}
+
+function accCorr_field() {
+    if ( fieldStatus.myGravity ) return 6840 / 4096
+    return 1
+}
+
+function accCorr_atkAbility(poke) {
+    if ( !isAbility(poke) ) return 1
+
+    switch ( poke.myAbility ) {
+        case "はりきり":
+            if ( poke.myMove.nature != "物理" ) return 1
+            return 3277 / 4096
+
+        case "ふくがん":
+            return 5325 / 4096
+
+        case "しょうりのほし":
+            return 4506 / 4096
+
+        default:
+            return 1
+    }
+}
+
+function accCorr_defAbility(poke) {
+    if ( !isAbility(poke) ) return 1
+
+    switch ( poke.myAbility ) {
+        case "ちどりあし":
+            if ( !poke.myCondition.myConfusion ) return 1
+            return 2048 / 4096
+
+        case "すながくれ":
+            if ( !isSandy(poke) ) return 1
+            return 3277 / 4096
+
+        case "ゆきがくれ":
+            if ( !isSnowy(poke) ) return 1
+            return 3277 / 4096
+
+        default:
+            return 1
+    }
+}
+
+function accCorr_allyAbility(poke) {
+    if ( !isAbility(poke) ) return 1
+
+    switch ( poke.myAbility ) {
+        case "しょうりのほし":
+            return 4506 / 4096
+
+        default:
+            return 1
+    }
+}
+
+function accCorr_atkItem(poke, tgt) {
+    if ( !isItem(poke) ) return 1
+
+    switch ( poke.myItem ) {
+        case "こうかくレンズ":
+            return 4505 / 4096
+
+        case "フォーカスレンズ":
+            if ( tgt.myCmd_move !== "" ) return 1
+            return 4915 / 4096
+
+        default:
+            return 1
+    }
+}
+
+function accCorr_defItem(poke) {
+    if ( !isItem(poke) ) return 1
+
+    switch ( poke.myItem ) {
+        case "ひかりのこな":
+        case "のんきのおこう":
+            return 3686 / 4096
+
+        default:
+            return 1
+    }
+}
+
+function getAtkAccRank(poke, tgt) {
+    // 相手の特性がてんねんであるとき、自分の命中率ランクを無視する。
+    if ( tgt.myAbility == "てんねん" && isAbility(tgt) ) return 0
+    return poke.myRank_accuracy
+}
+
+function getDefAccRank(poke, tgt) {
+    // 自分の特性がてんねんであるとき、相手の回避率ランクを無視する。
+    if ( poke.myAbility == "てんねん" && isAbility(poke) ) return 0
+    // 自分の特性がするどいめであるとき、相手の回避率ランクを無視する。
+    if ( poke.myAbility == "するどいめ" && isAbility(poke) ) return 0
+    // 特定の技では相手の回避率ランクを無視する（wikiにない）
+    switch ( poke.myMove.name ) {
+        case "せいなるつるぎ":
+        case "DDラリアット":
+        case "なしくずし":
+            return 0
+    }
+    // 相手がみやぶられている/ミラクルアイ状態であるとき、相手の回避率ランクが+1以上であっても0とみなす。
+    if ( tgt.myCondition.myForesight ) return Math.min(0, tgt.myRank_evasion)
+    if ( tgt.myCondition.myMiracle_eye ) return Math.min(0, tgt.myRank_evasion)
+
+    return tgt.myRank_evasion
+}
 
 //**************************************************
 // 61.みがわりによるランク補正を変動させる効果以外の無効化

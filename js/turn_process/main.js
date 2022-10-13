@@ -173,8 +173,6 @@ function moveUsedEachPokemon() {
         if ( judge ) {
             poke.myMove.success = true
             processOfAdditionalEffect(poke)
-            if ( fieldStatus.mySwitch_me ) break
-            if ( fieldStatus.mySwitch_opp ) break
         } else {
             poke.myCondition.myProtect_num = 0
             poke.myCondition.myShell_trap = false
@@ -185,7 +183,23 @@ function moveUsedEachPokemon() {
         poke.myCondition.myHistory.unshift(poke.myMove)
         poke.myMove = false
 
+        // 行動を完了したとき
+        processAfterAction(poke)
+
         if ( fieldStatus.mySwitch_me ) return
         if ( fieldStatus.mySwitch_opp ) return
+    }
+}
+
+function processAfterAction(poke) {
+    // 行動が失敗に終わった時も処理
+    poke.myCondition.myMold_breaker = false
+
+    // 行動を完了した時
+    if ( poke.myCondition.myActivate ) {
+        // ミクルのみ
+        poke.myCondition.myMicle = false
+
+        poke.myCondition.myActivate = false
     }
 }

@@ -133,7 +133,7 @@ io.on("connection", function(socket){
         }
         if (room.check_0 && room.check_1){
             let randomList = []
-            for ( let i = 0; i < 100; i++ ) randomList.push(Math.random())
+            for ( let i = 0; i < 100; i++ ) randomList.push( Math.floor( Math.random() * 100 ) / 100 )
             io.to(room.id_0).emit("run battle", room.command_0, room.command_1, randomList)
             io.to(room.id_1).emit("run battle", room.command_1, room.command_0, randomList)
 
@@ -160,7 +160,7 @@ io.on("connection", function(socket){
         }
 
         let randomList = []
-        for ( let i = 0; i < 100; i++ ) randomList.push(Math.random())
+        for ( let i = 0; i < 100; i++ ) randomList.push( Math.floor( Math.random() * 100 ) / 100 )
 
         // 自分だけが交代するとき　または　相手も交代するとき
         if ( oppJudge == 0 || ( oppJudge > 0 && room.check_0 && room.check_1 ) ) {

@@ -170,8 +170,9 @@ const abilityList_disable_wanderingSpirit = [
     'ふしぎなまもり'
 ]
 
-// かがくへんかガスにより発動しなくなる特性：これら以外
-var disableByNeutralizingGas = [
+// かがくへんかガス状況下でも発動する特性
+// これら以外は発動する
+const abilityList_disable_neutralizingGas = [
     'ARシステム', 
     'アイスフェイス', 
     'うのミサイル', 
@@ -228,7 +229,7 @@ const abilityList_disable_trace = [
 ]
 
 // かたやぶりなどで無視される特性
-var disableByMoldBreaker = [
+const abilityList_disable_moldBreaker = [
     'アイスフェイス', 
     'あついしぼう', 
     'あまのじゃく', 

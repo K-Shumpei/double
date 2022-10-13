@@ -517,7 +517,7 @@ function landing_other2nd_seed(poke) {
             return
 
         case "ミストシード":
-            if ( fieldStatus.myAbilityMisty ) return
+            if ( !fieldStatus.myAbilityMisty ) return
             if ( poke.myRank_sp_def == 6 ) return
             itemDeclaration(poke)
             changeRank(poke, "sp_def", 1, false)
@@ -594,7 +594,7 @@ function landing_weather_forecast(poke) {
             return
 
         default:
-            if ( poke.myName != "ポワルン" ) return
+            if ( poke.myName == "ポワルン" ) return
             abilityDeclaration(poke)
             formChange(poke, "ポワルン", true)
             return

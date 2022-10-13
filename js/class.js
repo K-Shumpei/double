@@ -284,6 +284,7 @@ class Party {
 // 技の処理に関係すること
 class Condition {
     constructor() {
+        this.activate      = false // 行動したらtrue
         this.after_you     = false // おさきにどうぞ　
         this.aqua_ring     = false // アクアリング状態ならtrue
         this.assurance     = false // ダメおしのダメージが上がるならtrue
@@ -346,6 +347,7 @@ class Condition {
         this.micle         = false // ミクルのみ　食べたターンは1、効果が続く次のターンは2
         this.minimize      = false // ちいさくなる状態ならtrue
         this.miracle_eye   = false // ミラクルアイ状態ならtrue
+        this.mold_breaker  = false // かたやぶりが発動していたらtrue
         this.nightmare     = false // あくむ　あくむ状態ならtrue、それ以外ならfalse
         this.no_ability    = false // 特性なし状態ならtrue
         this.no_retreat    = false // はいすいのじん状態ならtrue
@@ -392,6 +394,7 @@ class Condition {
         this.yawn          = false // あくびを受けてからのターン数(1,2)　2の時にねむる
     }
 
+    set myActivate( value )      { this.activate = value }
     set myAfter_you( value )     { this.after_you = value }
     set myAqua_ring( value )     { this.aqua_ring = value }
     set myAssurance( value )     { this.assurance = value }
@@ -454,6 +457,7 @@ class Condition {
     set myMicle( value )         { this.micle = value }
     set myMinimize( value )      { this.minimize = value }
     set myMiracle_eye( value )   { this.miracle_eye = value }
+    set myMold_breaker( value )  { this.mold_breaker = value }
     set myNightmare( value )     { this.nightmare = value }
     set myNo_ability( value )    { this.no_ability = value }
     set myNo_retreat( value )    { this.no_retreat = value }
@@ -499,6 +503,7 @@ class Condition {
     set myUproar( value )        { this.uproar = value }
     set myYawn( value )          { this.yawn = value }
     
+    get myActivate()      { return this.activate }
     get myAfter_you()     { return this.after_you }
     get myAqua_ring()     { return this.aqua_ring }
     get myAssurance()     { return this.assurance }
@@ -561,6 +566,7 @@ class Condition {
     get myMicle()         { return this.micle }
     get myMinimize()      { return this.minimize }
     get myMiracle_eye()   { return this.miracle_eye }
+    get myMold_breaker()  { return this.mold_breaker }
     get myNightmare()     { return this.nightmare }
     get myNo_ability()    { return this.no_ability }
     get myNo_retreat()    { return this.no_retreat }

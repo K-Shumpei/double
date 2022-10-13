@@ -138,6 +138,8 @@ function decideMove(poke) {
     if ( poke.myCondition.myTaunt ) poke.myCondition.myTaunt += 1
     // アンコールターンの消費
     if ( poke.myCondition.myEncore.turn ) poke.myCondition.myEncore.turn += 1
+    // かたやぶり
+    if ( poke.myAbility == "かたやぶり" && isAbility(poke) ) poke.myCondition.myMold_breaker = true
 }
 
 
@@ -497,6 +499,9 @@ function attackDeclaration(poke) {
 
     // Zワザは一度しか使用できない
     if ( poke.myZmove ) getMyField(poke).myZmove = true
+
+    // 行動したことを記録
+    poke.myCondition.myActivate = true
 }
 
 

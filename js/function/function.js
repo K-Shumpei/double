@@ -399,9 +399,8 @@ function eatBerryInPinch(poke) {
             case "ミクルのみ":
                 if ( poke.myCondition.myMicle ) break
                 eatLog = true
-                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
                 poke.myCondition.myMicle = 1
-                writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
+                writeLog(`${poke.myTN} の ${poke.myName} は ${poke.myItem} を食べた !`)
                 break
         }
     }
@@ -541,7 +540,6 @@ function eatBerryImmediately(poke) {
         case "ミクルのみ":
             if ( poke.myCondition.myMicle ) break
             poke.myCondition.myMicle = true
-            writeLog(`${poke.myTN} の ${poke.myName} は 命中率が上がった !`)
             break
     }
 

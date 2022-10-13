@@ -451,8 +451,6 @@ function effectWithDmg(poke) {
         effectWithDmg_beakBlast(poke, tgt)
         // 6.攻撃側のどくしゅによるどく
         effectWithDmg_poisonTouch(poke, tgt)
-        // 6_1.攻撃側のするどいキバ：wikiにない
-        effectWithDmg_flinch(poke, tgt)
         // 7.防御側の特性
         effectWithDmg_defAbility(poke, tgt)
         // 8.相性に関するきのみ

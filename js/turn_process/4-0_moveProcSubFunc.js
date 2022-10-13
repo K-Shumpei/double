@@ -763,7 +763,7 @@ function effectWithDmg_defAbility(poke, tgt) {
             if ( abilityList_disable_mummy.includes(poke.myAbility) ) return
             abilityDeclaration(tgt.poke)
             poke.myAbility = "ミイラ"
-            writeLog(`${poke.myTN} の ${poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
+            writeLog(`${poke.myTN} の ${poke.myName} は 特性『${tgt.poke.myAbility}』 になった !`)
             return
 
         case "ぬめぬめ":
@@ -781,8 +781,8 @@ function effectWithDmg_defAbility(poke, tgt) {
             if ( abilityList_disable_wanderingSpirit.includes(poke.myAbility) ) return
             abilityDeclaration(tgt.poke)
             [poke.myAbility, tgt.poke.myAbility] = [tgt.poke.myAbility, poke.myAbility]
-            writeLog(`${poke.myTN} の ${poke.myName} は 特性『${poke.myAbility}』 になった!`)
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった!`)
+            writeLog(`${poke.myTN} の ${poke.myName} は 特性『${poke.myAbility}』 になった !`)
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} は 特性『${tgt.poke.myAbility}』 になった !`)
             return
 
         case "ほろびのボディ":
