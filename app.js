@@ -83,8 +83,8 @@ io.on("connection", function(socket){
             room.id_1 = socket.id
             
             // ポケモンの選出
-            io.to(room.id_0).emit("select pokemon", room.party_1)
-            io.to(room.id_1).emit("select pokemon", room.party_0)
+            io.to(room.id_0).emit("select pokemon", room.party_1, true)
+            io.to(room.id_1).emit("select pokemon", room.party_0, false)
 
             // パーティデータの削除
             room.party_0 = ""

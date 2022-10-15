@@ -74,13 +74,15 @@ function AVcalc(){
     if ( !poke ) return
     const lv = Number(document.getElementById(`lv`).value)
 
-    for ( const para of dispParmeter ) {
-        const BS = document.getElementById(`${para}_BS`).textContent
-        const IV = document.getElementById(`${para}_IV`).value
-        const EV = document.getElementById(`${para}_EV`).value
+    const para = ["H", "A", "B", "C", "D", "S"]
+
+    for ( let i = 0; i < 6; i++ ) {
+        const BS = document.getElementById(`${para[i]}_BS`).textContent
+        const IV = document.getElementById(`${para[i]}_IV`).value
+        const EV = document.getElementById(`${para[i]}_EV`).value
         let AV = Math.floor((( Number(BS)*2 + Number(IV) + Math.floor( Number(EV) / 4 )) * lv ) / 100 )
 
-        switch ( para ) {
+        switch ( para[i] ) {
             case "H":
                 if ( name == "ヌケニン" ) AV = 1
                 else AV += lv + 10
@@ -100,7 +102,7 @@ function AVcalc(){
                 break
         }
 
-        document.getElementById(`${para}_AV`).value = AV
+        document.getElementById(`${para[i]}_AV`).value = AV
     }
 }
 
@@ -381,7 +383,7 @@ function edit_pokemon(){
     }
 
     // 性別、特性、性格は未実装
-    //document.getElementById(team + "_sex").textContent = " " + document.getElementById("poke_name_id").sex.value + " "
+    //document.getElementById(team + "_gender").textContent = " " + document.getElementById("poke_name_id").gender.value + " "
     //document.getElementById(team + "_ability").textContent = ability.options[num].value
     //document.getElementById(team + "_nature").textContent = document.getElementById("nature").textContent
 }
@@ -437,7 +439,7 @@ function setPokemon(){
     party.myID        = Number(team)
     party.myParty     = "me"
     party.myName      = document.getElementById(`name`).value
-    party.myGender    = document.getElementById(`${team}_sex`).textContent
+    party.myGender    = document.getElementById(`${team}_gender`).textContent
     party.myLevel     = Number(document.getElementById(`lv`).value)
     party.myType      = document.getElementById(`type`).textContent.split("、")
     party.myNature    = document.getElementById(`nature`).textContent
@@ -481,7 +483,7 @@ function setPokemon(){
     party.mySpeed_ev  = Number(document.getElementById(`S_EV`).value)
     // 元の情報
     party.myName_org    = document.getElementById(`name`).value
-    party.myGender_org  = document.getElementById(`${team}_sex`).textContent
+    party.myGender_org  = document.getElementById(`${team}_gender`).textContent
     party.myLevel_org   = Number(document.getElementById(`lv`).value)
     party.myType_org    = document.getElementById(`type`).textContent.split("、")
     party.myAbility_org = document.getElementById(`ability`).value
@@ -501,7 +503,7 @@ function setPokemon(){
     myParty[team] = party
 
     $("#" + team + "_name").text($("#name").val())
-    $("#" + team + "_sex").text($('input:radio[name="sex"]:checked').val())
+    $("#" + team + "_gender").text($('input:radio[name="gender"]:checked').val())
     $("#" + team + "_level").text($("#lv").val())
     $("#" + team + "_type").text($("#type").text())
     $("#" + team + "_ability").text($("#ability").val())

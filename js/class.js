@@ -756,6 +756,8 @@ class allField {
         // 途中交代
         this.switch_me     = false // 自分が途中交代する
         this.switch_opp    = false // 相手が途中交代する
+        // ホスト
+        this.host          = false
     }
 
     set myCrafty_shield( value ) { this.crafty_shield = value }
@@ -785,6 +787,8 @@ class allField {
     // 途中交代
     set mySwitch_me( value )     { this.switch_me = value }
     set mySwitch_opp( value )    { this.switch_opp = value }
+    // ホスト
+    set myHost( value )          { this.host = value }
 
     get myCrafty_shield() { return this.crafty_shield }
     get myDrought()       { return this.drought }
@@ -813,4 +817,6 @@ class allField {
     // 途中交代
     get mySwitch_me()     { return this.switch_me }
     get mySwitch_opp()    { return this.switch_opp }
+    // ホスト
+    get myHost()          { return this.host }
 }

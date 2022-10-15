@@ -91,12 +91,22 @@ function getOppParty(poke) {
 function allPokeInBattle() {
     let result = []
 
-    for ( const party of myParty ) {
-        if ( party.myPosition != null ) { result.push(party) }
+    if ( fieldStatus.myHost ) {
+        for ( const poke of myParty ) {
+            if ( poke.myPosition != null ) result.push(poke)
+        }
+        for ( const poke of oppParty ) {
+            if ( poke.myPosition != null ) result.push(poke)
+        }
+    } else {
+        for ( const poke of oppParty ) {
+            if ( poke.myPosition != null ) result.push(poke)
+        }
+        for ( const poke of myParty ) {
+            if ( poke.myPosition != null ) result.push(poke)
+        }
     }
-    for ( const party of oppParty ) {
-        if ( party.myPosition != null ) { result.push(party) }
-    }
+
     return result
 }
 

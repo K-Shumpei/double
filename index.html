@@ -55,27 +55,6 @@
         <script src="js/turn_process/main.js"></script>
 
     </head>
-
-    <!--
-    <style type="text/css">
-        .figure{
-            position: relative;
-            text-align: center;
-            vertical-align: middle;
-        }
-        .img{
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            z-index: 2;
-        }
-        .symbol{
-            position: absolute;
-            top: 0px;
-            left: 0px;
-        }
-    </style>
-    -->
       
     <body>
     <h1 id="headline">パスワードを入力してください</h1>
@@ -102,9 +81,9 @@
                 
                 タイプ：<span id="type"></span><br>
                 性別：
-                <input type='radio' name='sex' id="male" value="♂"> ♂
-                <input type='radio' name='sex' id="female" value="♀"> ♀
-                <input type='radio' name='sex' id="not" value="-"> -
+                <input type='radio' name='gender' id="male" value="♂"> ♂
+                <input type='radio' name='gender' id="female" value="♀"> ♀
+                <input type='radio' name='gender' id="not" value="-"> -
 
             <hr>
             
@@ -294,7 +273,7 @@
             // 名前・性別・レベル
             document.write("<tr align='center'><td><table><tr>")
             document.write("<td><span id='"+i+"_name'></span></td>")
-            document.write("<td><span id='"+i+"_sex'></span></td>")
+            document.write("<td><span id='"+i+"_gender'></span></td>")
             document.write("<td>Lv.<span id='"+i+"_level'></span></td>")
             document.write("</tr></table></td></tr>")
             // 特性・持ち物・状態異常
@@ -304,9 +283,9 @@
             document.write("<tr><td>状態異常：<span id='"+i+"_abnormal'></span></td></tr>")
             // 実数値
             document.write("<tr align='center'><td><table>")
-            document.write("<tr><td align='left'>HP</td><td align='right'><font id='"+i+"_HP_color'><span id='"+i+"_last_HP'></span></font>/<span id='"+i+"_full_HP'></span></td><td align='left'>&nbsp;<font id='"+i+"_atk'>攻撃</font></td><td align='right'><span id='"+i+"_A_AV'></span><td></tr>")
-            document.write("<tr><td align='left'><font id='"+i+"_def'>防御</font></td><td align='right'><span id='"+i+"_B_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_sp_atk'>特攻</font></td><td align='right'><span id='"+i+"_C_AV'></span><td></tr>")
-            document.write("<tr><td align='left'><font id='"+i+"_sp_def'>特防</font></td><td align='right'><span id='"+i+"_D_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_speed'>素早</font></td><td align='right'><span id='"+i+"_S_AV'></span><td></tr>")
+            document.write("<tr><td align='left'>HP</td><td align='right'><font id='"+i+"_HP_color'><span id='"+i+"_last_HP'></span></font>/<span id='"+i+"_full_HP'></span></td><td align='left'>&nbsp;<font id='"+i+"_Atk'>攻撃</font></td><td align='right'><span id='"+i+"_A_AV'></span><td></tr>")
+            document.write("<tr><td align='left'><font id='"+i+"_Def'>防御</font></td><td align='right'><span id='"+i+"_B_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_Sp_atk'>特攻</font></td><td align='right'><span id='"+i+"_C_AV'></span><td></tr>")
+            document.write("<tr><td align='left'><font id='"+i+"_Sp_def'>特防</font></td><td align='right'><span id='"+i+"_D_AV'></span></td><td align='left'>&nbsp;<font id='"+i+"_Speed'>素早</font></td><td align='right'><span id='"+i+"_S_AV'></span><td></tr>")
             document.write("</table></td></tr>")
             // 技
             document.write("<tr align='center'><td><table>")

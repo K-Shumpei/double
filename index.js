@@ -51,7 +51,7 @@ $(function () {
     //**************************************************
     // 受信. 対戦相手が見つかる
     //**************************************************
-    socketio.on("select pokemon", function(you) {
+    socketio.on("select pokemon", function(you, host) {
         // 相手の手持ちポケモン設定
         for ( i = 0; i < 6; i++) { 
             const party = new Party()
@@ -127,7 +127,9 @@ $(function () {
         // フィールドのクラス
         myField  = new Field(myParty[0].myTN)
         oppField = new Field(oppParty[0].myTN)
+        // 全体の場、ホストの設定
         fieldStatus = new allField()
+        fieldStatus.myHost = host
 
         document.getElementById("headline").textContent = "選出するポケモンを選んでください"
         document.getElementById("register").style.display = "none"
