@@ -69,8 +69,6 @@ function changePokemon(firstOrder) {
         // 交代を選択していなければスルー
         if ( poke.myCmd_hand == "" ) continue
 
-        // writeLog(`(${poke.myTN} の ${poke.myName} の行動)`)
-
         const party = getParty(poke)
 
         // 交代先のポケモンと交代位置
@@ -193,7 +191,7 @@ function moveUsedEachPokemon() {
 
 function processAfterAction(poke) {
     // 行動が失敗に終わった時も処理
-    poke.myCondition.myMold_breaker = false
+    poke.myCondition.myMold_breaker = false // かたやぶり
 
     // 行動を完了した時
     if ( poke.myCondition.myActivate ) {

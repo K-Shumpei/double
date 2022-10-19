@@ -256,7 +256,7 @@ function getAbnormal(poke, ailment) {
             writeLog(`${poke.myTN} の ${poke.myName} は ${ailment}にならない !`)
             return
         }
-        cpoke.myAilment = "こおり"
+        poke.myAilment = "こおり"
         writeLog(`${poke.myTN} の ${poke.myName} は こおりづけになった !`)
     }
     if ( ailment == "ねむり" ) {
