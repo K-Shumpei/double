@@ -153,7 +153,37 @@ function preliminaryAction(secondOrder) {
 
 // 6.技の処理
 function moveUsedEachPokemon() {
-    while ( actionOrder().length > 0 ) {
+    while ( actionOrder().length > 0 || fieldStatus.myDancer ) {
+        // 特性『おどりこ』が発動する時
+        if ( fieldStatus.myDancer ) {
+            for ( const poke of allPokeInBattle() ) {
+                if ( !isAbility(poke) ) continue
+                if ( poke.myAbility != "おどりこ" ) continue
+                if ( isHide(poke) ) continue
+
+                // 特性宣言
+                abilityDeclaration(poke)
+
+                // 技
+                const orgMove = poke.myMove
+                const dancer = moveSearchByName(fieldStatus.myDancer)
+                poke.myMove = moveConfig(poke, dancer)
+
+                // 行動
+                const judge = moveSuccessJudge(poke)
+                poke.myMove.success = judge
+                if ( judge ) processOfAdditionalEffect(poke)
+
+                // 使用した技を履歴に残す
+                poke.myCondition.myHistory.unshift(poke.myMove)
+                poke.myMove = orgMove
+            }
+            
+            fieldStatus.myDancer = false
+            continue
+        }
+
+        // それ以外
         const poke = actionOrder()[0]
 
         // クロスサンダー・クロスフレイム
@@ -168,13 +198,17 @@ function moveUsedEachPokemon() {
             poke.myCmd_tgt = ""
         }
 
-        if ( judge ) {
-            poke.myMove.success = true
-            processOfAdditionalEffect(poke)
-        } else {
-            poke.myCondition.myProtect_num = 0
-            poke.myCondition.myShell_trap = false
-            if ( !poke.myCondition.myFilling.name ) poke.myMove.success = false
+        switch ( judge ) {
+            // 技が成功した時
+            case true:
+                poke.myMove.success = true
+                processOfAdditionalEffect(poke)
+
+            // 技が失敗した時
+            case false:
+                poke.myCondition.myProtect_num = 0
+                poke.myCondition.myShell_trap = false
+                poke.myMove.success = ( poke.myCondition.myFilling.name )? true : false
         }
 
         // 使用した技を履歴に残す

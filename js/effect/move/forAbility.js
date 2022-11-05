@@ -41,7 +41,7 @@ var musicMove = [
 ]
 
 // おどりこでコピーできる技（踊技）
-var canDancer = [
+const moveList_dancer = [
     'ちょうのまい', 
     'つるぎのまい', 
     'はなびらのまい', 

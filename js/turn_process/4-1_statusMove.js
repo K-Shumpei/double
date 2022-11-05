@@ -1,17 +1,54 @@
 // 変化技の効果処理
 function statusMoveEffect(poke) {
-    if ( poke.myMove.target == "味方の場" ) statusMoveToChangeMyField(poke)
-    if ( poke.myMove.target == "相手の場" ) statusMoveToChangeYourField(poke)
-    if ( poke.myMove.target == "全体の場" ) statusMoveToChangeAllField(poke)
-    if ( poke.myMove.target == "味方全体" ) statusMoveForAllOfUs(poke)
-    if ( poke.myMove.target == "相手全体" ) statusMoveForAllOfYou(poke)
-    if ( poke.myMove.target == "不定" ) statusMoveForSomeone(poke)
-    if ( poke.myMove.target == "味方1体" ) statusMoveForOneOfUs(poke)
-    if ( poke.myMove.target == "全体" ) statusMoveForAll(poke)
-    if ( poke.myMove.target == "自分か味方" ) statusMoveForEitherOfUs(poke)
-    if ( poke.myMove.target == "自分以外" ) statusMoveForExceptForMe(poke)
-    if ( poke.myMove.target == "1体選択" ) statusMoveForOneOfThem(poke)
-    if ( poke.myMove.target == "自分" ) statusMoveForMe(poke)
+    switch ( poke.myMove.target ) {
+        case "味方の場":
+            statusMoveToChangeMyField(poke)
+            break
+
+        case "相手の場":
+            statusMoveToChangeYourField(poke)
+            break
+
+        case "全体の場":
+            statusMoveToChangeAllField(poke)
+            break
+
+        case "味方全体":
+            statusMoveForAllOfUs(poke)
+            break
+
+        case "相手全体":
+            statusMoveForAllOfYou(poke)
+            break
+
+        case "不定":
+            statusMoveForSomeone(poke)
+            break
+
+        case "味方1体":
+            statusMoveForOneOfUs(poke)
+            break
+
+        case "全体":
+            statusMoveForAll(poke)
+            break
+
+        case "自分か味方":
+            statusMoveForEitherOfUs(poke)
+            break
+
+        case "自分以外":
+            statusMoveForExceptForMe(poke)
+            break
+
+        case "1体選択":
+            statusMoveForOneOfThem(poke)
+            break
+
+        case "自分":
+            statusMoveForMe(poke)
+            break
+    }
 
     return false
 }
@@ -731,7 +768,7 @@ function statusMoveForOneOfThem(poke) {
             poke[`myMove_${poke.myCmd_move}`]    = sketch.name
             poke[`myFull_pp_${poke.myCmd_move}`] = sketch.PP
             poke[`myRest_pp_${poke.myCmd_move}`] = sketch.PP
-            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${s_move.name} を スケッチした`)
+            writeLog(`${tgt.poke.myTN} の ${tgt.poke.myName} の ${sketch.name} を スケッチした`)
             break
         
         case "すてゼリフ":

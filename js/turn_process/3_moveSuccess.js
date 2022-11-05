@@ -500,6 +500,9 @@ function attackDeclaration(poke) {
     // Zワザは一度しか使用できない
     if ( poke.myZmove ) getMyField(poke).myZmove = true
 
+    // 特性『おどりこ』
+    if ( moveList_dancer.includes(poke.myMove.name) ) fieldStatus.myDancer = poke.myMove.name
+
     // 行動したことを記録
     poke.myCondition.myActivate = true
 }

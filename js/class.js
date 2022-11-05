@@ -730,6 +730,7 @@ class Field {
 class allField {
     constructor() {
         this.crafty_shield = false // トリックガード状態ならtrue
+        this.dancer        = false // 特性『おどりこ』対象の技
         this.drought       = false // 大日照りならtrue
         this.echoed_check  = false // エコーボイスがこのターン使われていたらtrue
         this.echoed_voice  = 0     // エコーボイスが連続したターン数
@@ -761,6 +762,7 @@ class allField {
     }
 
     set myCrafty_shield( value ) { this.crafty_shield = value }
+    set myDancer( value )        { this.dancer = value }
     set myDrought( value )       { this.drought = value }
     set myEchoed_check( value )  { this.echoed_check = value }
     set myEchoed_voice( value )  { this.echoed_voice = value }
@@ -791,6 +793,7 @@ class allField {
     set myHost( value )          { this.host = value }
 
     get myCrafty_shield() { return this.crafty_shield }
+    get myDancer()        { return this.dancer }
     get myDrought()       { return this.drought }
     get myEchoed_check()  { return this.echoed_check }
     get myEchoed_voice()  { return this.echoed_voice}
