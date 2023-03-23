@@ -11,7 +11,7 @@ function isDamage_flinch(poke, tgt) {
     if ( tgt.poke.myCondition.myFlinch ) return true
 
     // 一撃必殺技ではひるまない
-    if ( oneShot.includes(poke.myMove.name) ) return false
+    if ( moveList_oneShot.includes(poke.myMove.name) ) return false
     
     // ひるみを付与する技には効果がない
     const move = additionalEffectToMakeFlinch.filter( move => move.name == poke.myMove.name )[0]
@@ -1611,7 +1611,7 @@ function attackItemEffect_leppaBerry(poke) {
 function attackItemEffect_throatSpray(poke) {
     if ( !isItem(poke) ) return
     if ( poke.myItem != "のどスプレー" ) return
-    if ( !musicMove.includes(poke.myMove.name) ) return
+    if ( !moveList_music.includes(poke.myMove.name) ) return
     if ( poke.myRank_sp_atk == 6 ) return
 
     itemDeclaration(poke)

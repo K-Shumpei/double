@@ -172,11 +172,8 @@ function statusMoveToChangeAllField(poke) {
             break
         
         case "コートチェンジ":
-            for ( const element of courtChange ) {
-                const myElement = myField[`my${element}`]
-                const oppElement = oppField[`$my${element}`]
-                myField[`my${element}`] = oppElement
-                oppField[`my${element}`] = myElement
+            for ( const element of statusList_courtChange ) {
+                [ myField[`my${element}`], oppField[`$my${element}`] ] = [ oppField[`$my${element}`], myField[`my${element}`] ]
 
                 // 壁延長についての記述が未完成
             }

@@ -517,7 +517,7 @@ function invalidByAbility1st_ability(poke, tgt) {
             return true
         
         case "ぼうおん":
-            if ( !musicMove.includes(poke.myMove.name) ) return false
+            if ( !moveList_music.includes(poke.myMove.name) ) return false
             return true
         
         case "テレパシー":
@@ -636,7 +636,7 @@ function invalidByAbility2nd_ability(poke, tgt) {
 
     switch ( tgt.poke.myAbility ) {
         case "ぼうだん":
-            if ( ballMove.includes(poke.myMove.name) ) return true
+            if ( moveList_ball.includes(poke.myMove.name) ) return true
             return false
         
         case "ねんちゃく":
@@ -1132,7 +1132,7 @@ function invalidByAbility3rd_other(poke, tgt) {
     // アロマベール: メロメロ/いちゃもん/かいふくふうじ状態の無効化
     // がんじょう: 一撃必殺技の無効化
     if ( tgt.poke.myAbility == "がんじょう" ) {
-        if ( oneShot.includes(poke.myMove.name) ) return true
+        if ( moveList_oneShot.includes(poke.myMove.name) ) return true
     }
 
     return false
@@ -1148,7 +1148,7 @@ function invalidByAccuracy_accuracy(poke, tgt) {
     if ( tgt.myAbility == "ノーガード" && isAbility(tgt) ) return false
     if ( poke.myCondition.myLock_on ) return false
     if ( tgt.myCondition.myMinimize && minimize.includes(poke.myMove.name) ) return false
-    if ( tgt.myCondition.myTelekinesis && !oneShot.includes(poke.myMove.name) ) return false
+    if ( tgt.myCondition.myTelekinesis && !moveList_oneShot.includes(poke.myMove.name) ) return false
     // 必中技
     if ( poke.myMove.accuracy == "-" ) return false
     if ( poke.myMove.name == "かみなり" && isRainy(tgt) ) return false
@@ -1164,7 +1164,7 @@ function invalidByAccuracy_accuracy(poke, tgt) {
     let ratio = getAccuracyRatio(poke, tgt)
 
     // 一撃必殺技は、ランク補正や命中率を上下させる効果の影響を受けない。
-    if ( oneShot.includes(poke.myMove.name) ) {
+    if ( moveList_oneShot.includes(poke.myMove.name) ) {
         const random = getRandom() * 100
         if ( random >= ratio ) return true
         else return false
@@ -1258,7 +1258,7 @@ function getAccuracyRatio(poke, tgt) {
     if ( poke.myMove.name == "かみなり" && isSunny(poke) ) return 50
     if ( poke.myMove.name == "ぼうふう" && isSunny(poke) ) return 50
     if ( tgt.myAbility == "ミラクルスキン" && isAbility(tgt) && poke.myMove.nature == "変化" ) return Math.min(50, poke.myMove.accuracy)
-    if ( oneShot.includes(poke.myMove.name) ) return 30 + poke.myLevel - tgt.myLevel
+    if ( moveList_oneShot.includes(poke.myMove.name) ) return 30 + poke.myLevel - tgt.myLevel
     if ( poke.myMove.name == "ぜったいれいど" && !poke.myType.includes("こおり") ) return 20 + poke.myLevel - tgt.myLevel
 
     return poke.myMove.accuracy
@@ -1715,7 +1715,7 @@ function invalidBySpec3rd_field(poke) {
     }
     // コートチェンジ: 入れ替える場の状態が無い
     if ( poke.myMove.name == "コートチェンジ" ) {
-        for ( const element of courtChange ) {
+        for ( const element of statusList_courtChange ) {
             if ( myField[`my${element}`] ) return false
             if ( oppField[`my${element}`] ) return false
         }

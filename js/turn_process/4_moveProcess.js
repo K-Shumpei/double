@@ -68,7 +68,6 @@ function processOfAdditionalEffect(poke) {
     if ( fieldStatus.mySwitch_me ) return
     if ( fieldStatus.mySwitch_opp ) return
     // 31.おどりこ
-    ability_dancer(poke)
     // 32.次のポケモンの行動。全ポケモンが行動を完了したときは#5.ターン終了時の処理に進む。
 }
 
@@ -261,7 +260,7 @@ function giveDamage(poke) {
         tgt.poke.myCondition.myDamage.party    = poke.myParty
         tgt.poke.myCondition.myDamage.position = poke.myPosition
         tgt.poke.myCondition.myDamage.nature   = poke.myMove.nature
-        if ( oneShot.includes(poke.myMove.name) ) tgt.poke.myCondition.myOne_shot = true
+        if ( moveList_oneShot.includes(poke.myMove.name) ) tgt.poke.myCondition.myOne_shot = true
         // がまん用
         if ( tgt.poke.myCondition.myBide.turn ) {
             tgt.poke.myCondition.myBide.damage += tgt.damage
@@ -877,11 +876,4 @@ function returnBattle(poke) {
         }
     }
 }
-
-// 31.おどりこ
-function ability_dancer(poke) {
-
-}
-
-// 32.次のポケモンの行動。全ポケモンが行動を完了したときは#5.ターン終了時の処理に進む。
 

@@ -396,7 +396,7 @@ function isAnticipation(poke) {
         for ( let i = 0; i < 4; i++ ) {
             const move = moveSearchByName(_poke[`myMove_${i}`])
             if ( move.nature == "変化" ) continue
-            if ( oneShot.includes(move.name) ) return true
+            if ( moveList_oneShot.includes(move.name) ) return true
             if ( compatibilityRate(move.type, _poke.myType, false) > 1 ) return true
         }
     }

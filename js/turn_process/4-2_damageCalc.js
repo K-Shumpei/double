@@ -64,7 +64,7 @@ function isDamageByFixedDamageMove(poke, tgt){
             return Math.floor(tgt.poke.myRest_hp * 3 / 4 * isDynamax(tgt.poke))
     }
 
-    if ( oneShot.includes(poke.myMove.name) ){
+    if ( moveList_oneShot.includes(poke.myMove.name) ){
         writeLog(`一撃必殺 !`)
         return tgt.poke.myRest_hp
     }

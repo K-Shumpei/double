@@ -1,5 +1,5 @@
 // 一撃必殺技（一撃技）
-var oneShot = [
+const moveList_oneShot = [
     'ハサミギロチン', 
     'つのドリル', 
     'じわれ', 
@@ -7,7 +7,7 @@ var oneShot = [
 ]
 
 // 音系の技（音技）
-var musicMove = [
+const moveList_music = [
     'いにしえのうた', 
     'いびき', 
     'いやしのすず', 
@@ -104,7 +104,7 @@ const moveList_strongJaw = [
 ]
 
 // コートチェンジで移動する状態（面技）
-var courtChange = [
+const statusList_courtChange = [
     'Reflect',      // リフレクター
     'Light_screen', // ひかりのかべ
     'Aurora_vail',  // オーロラベール
@@ -277,7 +277,7 @@ const moveList_cannotMove = [
 ]
 
 // ぼうだん（弾技）
-var ballMove = [
+const moveList_ball = [
     'アイスボール', 
     'アシッドボム', 
     'ウェザーボール', 
@@ -427,7 +427,7 @@ var mental_move_list = [
 ]
 
 // 使用すると自分のこおり状態が解ける技（溶氷技）
-var meltFrozen = [
+const moveList_melt = [
     'かえんぐるま', 
     'かえんボール', 
     'クロスフレイム', 

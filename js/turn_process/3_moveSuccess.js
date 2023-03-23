@@ -208,7 +208,7 @@ function actionFailure(poke) {
     }
     if ( poke.myAilment == "こおり" ) {
         if ( getRandom() < 0.8 ) {
-            if ( !meltFrozen.includes(poke.myMove.name) ) {
+            if ( !moveList_melt.includes(poke.myMove.name) ) {
                 writeLog(`${poke.myTN} の ${poke.myName} は 凍って動けない !`)
                 return true
             }
@@ -263,7 +263,7 @@ function actionFailure(poke) {
         return true
     }
     // 10.じごくづきで音技が出せない (Zワザを除く)
-    if ( poke.myCondition.myThroat_chop && musicMove.includes(poke.myMove.name) ) { //  && !atk.data.Z
+    if ( poke.myCondition.myThroat_chop && moveList_music.includes(poke.myMove.name) ) { //  && !atk.data.Z
         writeLog(`${poke.myTN} の ${poke.myName} は じごくづきの 効果で 技が 出せない !`)
         return true
     }
@@ -425,7 +425,7 @@ function moveReplace(poke) {
             return true
         }
         // 10.じごくづきで音技が出せない (Zワザを除く)
-        if ( poke.myCondition.myThroat_chop && musicMove.includes(poke.myMove.name) ) { //  && !atk.data.Z
+        if ( poke.myCondition.myThroat_chop && moveList_music.includes(poke.myMove.name) ) { //  && !atk.data.Z
             writeLog(`${poke.myTN} の ${poke.myName} は じごくづきの 効果で 技が 出せない !`)
             return true
         }
@@ -441,7 +441,7 @@ function moveReplace(poke) {
 
 // 7.自分のこおりを回復するわざにより自身のこおり状態が治る
 function selfMeltCheck(poke) {
-    if ( poke.myAilment == "こおり" && meltFrozen.includes(poke.myMove.name) ) {
+    if ( poke.myAilment == "こおり" && moveList_melt.includes(poke.myMove.name) ) {
         writeLog(`${poke.myMove.name} でこおりがとけた !`)
         resetAilment(poke)
     }
@@ -515,7 +515,7 @@ function moveTypeChange(poke) {
     if ( !moveList_changeType.includes(poke.myMove.name) && isAbility(poke) ) {
         switch ( poke.myAbility ) {
             case "うるおいボイス":
-                if ( !musicMove.includes(poke.myMove.name) ) break
+                if ( !moveList_music.includes(poke.myMove.name) ) break
                 poke.myMove.type = "みず"
                 break
 
@@ -1490,7 +1490,7 @@ function invalidByAccuracy(poke) {
             // 空振り保険
             if ( !isItem(poke) ) continue
             if ( poke.myItem != "からぶりほけん" ) continue
-            if ( !oneShot.includes(poke.myMove.name) ) continue
+            if ( !moveList_oneShot.includes(poke.myMove.name) ) continue
             if ( poke.myRank_speed == 6 ) continue
 
             itemDeclaration(poke)
@@ -1528,7 +1528,7 @@ function useJuwel(poke) {
     if ( poke.myMove.name == "くさのちかい" ) return false
     if ( poke.myMove.name == "ほのおのちかい" ) return false
     if ( poke.myMove.name == "みずのちかい" ) return false
-    if ( oneShot.includes(poke.myMove.name) ) return false
+    if ( moveList_oneShot.includes(poke.myMove.name) ) return false
     if ( poke.myMove.nature == "変化" ) return false
     if ( !isItem(poke) ) return false
 

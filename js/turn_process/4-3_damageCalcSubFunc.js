@@ -326,7 +326,7 @@ function pwrCorr_sheerForce(poke) {
 function pwrCorr_punkRock(poke) {
     if ( !isAbility(poke) ) return 1
     if ( poke.myAbility != "パンクロック" ) return 1
-    if ( !musicMove.includes(poke.myMove.name) ) return 1
+    if ( !moveList_music.includes(poke.myMove.name) ) return 1
     return 5325 / 4096
 }
 
@@ -985,7 +985,7 @@ function dmgCorr_half(poke, tgt) {
             break
 
         case "パンクロック":
-            if ( !musicMove.includes(poke.myMove.name) ) return 1
+            if ( !moveList_music.includes(poke.myMove.name) ) return 1
             break
 
         case "ファントムガード":

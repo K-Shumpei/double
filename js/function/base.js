@@ -159,7 +159,7 @@ function isUproar(){
 // みがわりで防がれるならtrue
 function isSubstitute(poke, target){
     if ( !target.myCondition.mySubstitute ) return false // みがわり状態であること
-    if ( musicMove.includes(poke.myMove.name) ) return false // 音技でないこと
+    if ( moveList_music.includes(poke.myMove.name) ) return false // 音技でないこと
     if ( statusMoveThroughSubstitute.includes(poke.myMove.name)) return false // みがわり貫通技でないこと
     if ( poke.myMove.name == "いじげんホール" ) return false
     if ( poke.myMove.name == "いじげんラッシュ" ) return false
